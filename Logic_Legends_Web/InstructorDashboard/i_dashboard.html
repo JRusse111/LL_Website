@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Legends | Instructor Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../CSS/global.css">
+</head>
+<body>
+
+    <!-- SECTION A: HEADER / NAVIGATION BAR -->
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">
+                <img src="../Images/logo_transparent.png" alt="Logic Legends Logo">
+                LOGIC LEGENDS
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="../index.html#gallery">Gallery</a></li>
+                    <li><a href="../index.html#download">Download</a></li>
+                    <li><a href="../InstructorDashboard/i_dashboard.html" style="color: var(--color-gold);">Dashboard</a></li>
+                    <li><a href="../LoginPage/login_page.html" id="logoutBtn" class="login-btn">LOGOUT</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Hamburger -->
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="../index.html#about" class="mobile-link">About</a></li>
+            <li><a href="../index.html#features" class="mobile-link">Features</a></li>
+            <li><a href="../index.html#gallery" class="mobile-link">Gallery</a></li>
+            <li><a href="../index.html#download" class="mobile-link">Download</a></li>
+            <li><a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" style="color: var(--color-gold);">Dashboard</a></li>
+            <li style="margin-top: 2rem;"><a href="../LoginPage/login_page.html" id="logoutBtn" class="btn btn-primary mobile-link login-btn">LOGOUT</a></li>
+        </ul>
+    </div>
+
+    <!-- SECTION B: DASHBOARD HEADER & NOTICE -->
+    <section class="dashboard-header">
+        <div class="container">
+            <h1>Instructor Dashboard</h1>
+            <p class="subtitle">Student Performance Summary</p>
+            
+            <!-- <div class="constraint-notice">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <p><strong>Note:</strong> The Instructor Dashboard is limited to summary viewing only. It does not include advanced analytics, automated grading, or custom content creation.</p>
+            </div> -->
+
+            <!-- Added Class Section Selector -->
+            <div class="section-selector-container">
+                <label for="class-section">Select Class Section:</label>
+                <select id="class-section" class="section-select">
+                    <option value="all">All Sections (Overview)</option>
+                    <option value="cs101-a">CS101 - Section A</option>
+                    <option value="cs101-b">CS101 - Section B</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION C: HIGH-LEVEL KPI CARDS -->
+    <section class="kpi-section container" id="overview">
+        <div class="kpi-grid">
+            <!-- Card 1 -->
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Avg Class Accuracy</span>
+                    <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="kpi-value" id="kpi-accuracy">78%</div>
+                <div class="kpi-subtext">+2.4% from last week</div>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Avg Attempts</span>
+                    <svg class="kpi-icon" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                </div>
+                <div class="kpi-value" id="kpi-attempts">2.4</div>
+                <div class="kpi-subtext">Attempts per level</div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Avg Completion</span>
+                    <svg class="kpi-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="kpi-value" id="kpi-time">14m 30s</div>
+                <div class="kpi-subtext">Overall level time</div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Top Weak Area</span>
+                    <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="kpi-value" id="kpi-weakest" style="font-size: 1.4rem; line-height: 1.4;">Logic Gates</div>
+                <div class="kpi-subtext" id="kpi-weakest-sub">35% success rate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION D: COMMONLY WEAK SUBJECTS -->
+    <section class="weak-subjects-section container">
+        <h2><span class="text-gold">Weakest</span> Subjects</h2>
+        <div class="subjects-container" id="weak-subjects-container">
+            
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">Logic Gates</span>
+                    <span class="subject-score">35% Accuracy</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 35%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">Truth Tables</span>
+                    <span class="subject-score">42% Accuracy</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 42%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">Logic Gates</span>
+                    <span class="subject-score">50% Accuracy</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 50%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">Rules of Inference</span>
+                    <span class="subject-score">58% Accuracy</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 58%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">Probability</span>
+                    <span class="subject-score">65% Accuracy</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: 65%;"></div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- SECTION E: STUDENT PERFORMANCE SUMMARY -->
+    <section class="students-section container" id="students">
+        <h2>Student <span class="text-gold">Performance</span></h2>
+        
+        <div class="table-wrapper">
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>Student Name / ID</th>
+                        <th>Overall Accuracy</th>
+                        <th>Total Attempts</th>
+                        <th>Avg Completion Time</th>
+                    </tr>
+                </thead>
+                <tbody id="student-table-body">
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">JD</div>
+                                Doe, John (ID: 1042)
+                            </div>
+                        </td>
+                        <td data-label="Accuracy"><span class="accuracy-badge">88%</span></td>
+                        <td data-label="Attempts">1.8</td>
+                        <td data-label="Time">12m 10s</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">AS</div>
+                                Smith, Alice (ID: 1045)
+                            </div>
+                        </td>
+                        <td data-label="Accuracy"><span class="accuracy-badge warning">42%</span></td>
+                        <td data-label="Attempts">4.5</td>
+                        <td data-label="Time">22m 45s</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">MR</div>
+                                Rodriguez, M. (ID: 1051)
+                            </div>
+                        </td>
+                        <td data-label="Accuracy"><span class="accuracy-badge">76%</span></td>
+                        <td data-label="Attempts">2.6</td>
+                        <td data-label="Time">15m 30s</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">KL</div>
+                                Lee, Kevin (ID: 1055)
+                            </div>
+                        </td>
+                        <td data-label="Accuracy"><span class="accuracy-badge">94%</span></td>
+                        <td data-label="Attempts">1.2</td>
+                        <td data-label="Time">09m 15s</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">SJ</div>
+                                Johnson, S. (ID: 1062)
+                            </div>
+                        </td>
+                        <td data-label="Accuracy"><span class="accuracy-badge warning">55%</span></td>
+                        <td data-label="Attempts">3.8</td>
+                        <td data-label="Time">18m 50s</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- SECTION F: GLOBAL FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col logo-col">
+                    <a href="../index.html" class="logo" style="margin-bottom: 1rem; display: inline-flex;">
+                        <img src="../Images/logo_transparent.png" alt="Logic Legends Logo">
+                        LOGIC LEGENDS
+                    </a>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-col">
+                        <h4>Thesis Project</h4>
+                        <p>Computer Science Department</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Development Team</h4>
+                        <p>Logic Legends Team</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Institution</h4>
+                        <p>National College of Science & Technology 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2026 Logic Legends. All rights reserved. Education Meets Innovation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVITY: VANILLA JAVASCRIPT -->
+    <script src="../JS/nav.js"></script>
+    <script type="module" src="../JS/navbar_auth.js"></script>
+    <script type="module" src="../JS/guard.js"></script>
+
+    <script>
+        // --- 3. Dynamic Class Section Data ---
+        const sectionData = {
+            'all': {
+                kpis: { accuracy: '78%', attempts: '2.4', time: '14m 30s', weakest: 'Logic Gates', weakestSub: '35% success rate' },
+                weakSubjects: [
+                    { name: 'Logic Gates', score: 35 },
+                    { name: 'Truth Tables', score: 42 },
+                    { name: 'Logic Gates', score: 50 },
+                    { name: 'Rules of Inference', score: 58 },
+                    { name: 'Probability', score: 65 }
+                ],
+                students: [
+                    { initials: 'JD', name: 'Doe, John (ID: 1042)', accuracy: 88, attempts: '1.8', time: '12m 10s' },
+                    { initials: 'AS', name: 'Smith, Alice (ID: 1045)', accuracy: 42, attempts: '4.5', time: '22m 45s' },
+                    { initials: 'MR', name: 'Rodriguez, M. (ID: 1051)', accuracy: 76, attempts: '2.6', time: '15m 30s' },
+                    { initials: 'KL', name: 'Lee, Kevin (ID: 1055)', accuracy: 94, attempts: '1.2', time: '09m 15s' },
+                    { initials: 'SJ', name: 'Johnson, S. (ID: 1062)', accuracy: 55, attempts: '3.8', time: '18m 50s' }
+                ]
+            },
+            'cs101-a': {
+                kpis: { accuracy: '85%', attempts: '1.9', time: '11m 20s', weakest: 'Truth Tables', weakestSub: '60% success rate' },
+                weakSubjects: [
+                    { name: 'Truth Tables', score: 60 },
+                    { name: 'Logic Gates', score: 68 },
+                    { name: 'Rules of Inference', score: 75 },
+                    { name: 'Probability', score: 82 }
+                ],
+                students: [
+                    { initials: 'KL', name: 'Lee, Kevin (ID: 1055)', accuracy: 94, attempts: '1.2', time: '09m 15s' },
+                    { initials: 'JD', name: 'Doe, John (ID: 1042)', accuracy: 88, attempts: '1.8', time: '12m 10s' },
+                    { initials: 'MR', name: 'Rodriguez, M. (ID: 1051)', accuracy: 76, attempts: '2.6', time: '15m 30s' }
+                ]
+            },
+            'cs101-b': {
+                kpis: { accuracy: '62%', attempts: '3.5', time: '20m 10s', weakest: 'Logic Gates', weakestSub: '25% success rate' },
+                weakSubjects: [
+                    { name: 'Logic Gates', score: 25 },
+                    { name: 'Rules of Inference', score: 38 },
+                    { name: 'Probability', score: 45 },
+                    { name: 'Truth Tables', score: 55 }
+                ],
+                students: [
+                    { initials: 'AS', name: 'Smith, Alice (ID: 1045)', accuracy: 42, attempts: '4.5', time: '22m 45s' },
+                    { initials: 'SJ', name: 'Johnson, S. (ID: 1062)', accuracy: 55, attempts: '3.8', time: '18m 50s' },
+                    { initials: 'BW', name: 'Wayne, Bruce (ID: 1070)', accuracy: 89, attempts: '2.0', time: '14m 00s' }
+                ]
+            }
+        };
+
+        const sectionSelect = document.getElementById('class-section');
+        const kpiAccuracy = document.getElementById('kpi-accuracy');
+        const kpiAttempts = document.getElementById('kpi-attempts');
+        const kpiTime = document.getElementById('kpi-time');
+        const kpiWeakest = document.getElementById('kpi-weakest');
+        const kpiWeakestSub = document.getElementById('kpi-weakest-sub');
+        const weakSubjectsContainer = document.getElementById('weak-subjects-container');
+        const studentTableBody = document.getElementById('student-table-body');
+
+        function updateDashboard(sectionId) {
+            const data = sectionData[sectionId];
+            if (!data) return;
+
+            // Update KPIs
+            kpiAccuracy.textContent = data.kpis.accuracy;
+            kpiAttempts.textContent = data.kpis.attempts;
+            kpiTime.textContent = data.kpis.time;
+            kpiWeakest.textContent = data.kpis.weakest;
+            kpiWeakestSub.textContent = data.kpis.weakestSub;
+
+            // Update Weak Subjects
+            weakSubjectsContainer.innerHTML = data.weakSubjects.map(sub => `
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span class="subject-name">${sub.name}</span>
+                        <span class="subject-score">${sub.score}% Accuracy</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${sub.score}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update Students Table
+            studentTableBody.innerHTML = data.students.map(student => {
+                const isWarning = student.accuracy < 60;
+                return `
+                    <tr>
+                        <td data-label="Student">
+                            <div class="student-name">
+                                <div class="student-avatar">${student.initials}</div>
+                                ${student.name}
+                            </div>
+                        </td>
+                        <td data-label="Accuracy">
+                            <span class="accuracy-badge ${isWarning ? 'warning' : ''}">${student.accuracy}%</span>
+                        </td>
+                        <td data-label="Attempts">${student.attempts}</td>
+                        <td data-label="Time">${student.time}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Event Listener for Select Dropdown
+        if (sectionSelect) {
+            sectionSelect.addEventListener('change', (e) => {
+                updateDashboard(e.target.value);
+            });
+            updateDashboard('all');
+        }
+    </script>
+</body>
+</html>

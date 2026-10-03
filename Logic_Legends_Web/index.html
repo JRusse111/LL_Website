@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Legends | Conquer Discrete Mathematics</title>
+    
+    <!-- Using Google Fonts for a modern, tech-oriented look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/global.css">
+    <style>
+    </style>
+</head>
+<body>
+
+    <!-- A. HEADER / NAVIGATION BAR -->
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="#hero" class="logo">
+                <img src="Images/logo_transparent.png" alt="Logic Legends Logo">
+                LOGIC LEGENDS
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="index.html#download">Download</a></li>
+                    <li><a href="InstructorDashboard/i_dashboard.html">Dashboard</a></li>
+                    <li><a href="LoginPage/login_page.html" class="login-btn">LOGIN</a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Hamburger -->
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="index.html#about" class="mobile-link">About</a></li>
+            <li><a href="index.html#features" class="mobile-link">Features</a></li>
+            <li><a href="index.html#gallery" class="mobile-link">Gallery</a></li>
+            <li><a href="index.html#download" class="mobile-link">Download</a></li>
+            <li><a href="InstructorDashboard/i_dashboard.html" class="mobile-link">Dashboard</a></li>
+            <li style="margin-top: 2rem;"><a href="LoginPage/login_page.html" class="btn btn-primary mobile-link login-btn">LOGIN</a></li>
+        </ul>
+    </div>
+
+    <!-- B. HERO SECTION -->
+    <section id="hero" class="hero">
+        <div class="container hero-content">
+            <span class="hero-tagline">Conquer Discrete Mathematics</span>
+            <h1>MASTER THE MAGIC OF <br><span class="text-gold">LOGIC</span></h1>
+            <p>Transform abstract mathematical concepts into epic mobile adventures. Master logic and problem-solving through an immersive gamified learning experience designed for computer science students.</p>
+            <div class="hero-actions">
+                <a href="#download" class="btn btn-primary">Download Now</a>
+                <a href="#gallery" class="btn btn-secondary">Learn More</a>
+                <a href="https://itch.io" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    ITCH.IO
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; margin-top: -2px;">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="container stats-grid">
+                <div class="stat-item">
+                    <h3>20+</h3>
+                    <p>Challenges</p>
+                </div>
+                <div class="stat-item">
+                    <h3>4+</h3>
+                    <p>Stage Levels</p>
+                </div>
+                <div class="stat-item">
+                    <h3>4</h3>
+                    <p>Core Topics</p>
+                </div>
+                <div class="stat-item">
+                    <h3>3+</h3>
+                    <p>Hours Content</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- C. ABOUT THE GAME (THE MISSION) -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h4>The Mission</h4>
+                <h2>WHY <span class="text-gold">LOGIC LEGENDS?</span></h2>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3 class="text-gold">The Challenge</h3>
+                    <p>Students often struggle with discrete math due to its abstract nature. Traditional textbook methods fail to engage, leading to frustration and poor understanding of core algorithmic concepts.</p>
+                </div>
+                <div class="about-card">
+                    <h3 class="text-gold">The Audience</h3>
+                    <p>Designed specifically for college students, CS majors, educators, and learners passionate about strengthening logical thinking and mathematical reasoning skills in a hands-on environment.</p>
+                </div>
+                <div class="about-card">
+                    <h3 class="text-gold">Education Meets Innovation</h3>
+                    <p>Logic Legends bridges the gap between traditional learning and modern gaming. We transform complex theorems into interactive puzzles, creating an experience that's both effective and highly entertaining.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- D. EDUCATIONAL OBJECTIVES -->
+    <section id="objectives" class="objectives">
+        <div class="container">
+            <div class="section-header">
+                <h4>What You'll Learn</h4>
+                <h2>EDUCATIONAL <span class="text-gold">OBJECTIVES</span></h2>
+                <p style="margin-top: 1rem; max-width: 600px; margin-inline: auto;">Designed to deliver genuine academic value while keeping you engaged and motivated.</p>
+            </div>
+
+            <div class="obj-grid">
+                <div class="obj-item">
+                    <h3>Subject Coverage</h3>
+                    <p>Comprehensive mastery of Discrete Mathematics 1. Dive deep into logical expressions, logical equivalence, truth tables, logic gates, and rules of inference.</p>
+                </div>
+                <div class="obj-item">
+                    <h3>Problem-Solving</h3>
+                    <p>Develop critical thinking and analytical skills by solving progressively challenging puzzles that require rapid logical deduction and strategic algorithmic planning.</p>
+                </div>
+                <div class="obj-item">
+                    <h3>Concept Mastery</h3>
+                    <p>Reinforce understanding through immediate interactive feedback. Move beyond rote memorization to practical, real-time application of theoretical mathematical concepts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- E. GAME FEATURES -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h4>Packed with Powerful Features</h4>
+                <h2>DESIGNED FOR <span class="text-gold">MAXIMUM LEARNING</span></h2>
+                <p style="margin-top: 1rem; max-width: 600px; margin-inline: auto;">Every element has been carefully crafted to build your understanding while keeping you engaged throughout your journey.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#9881;</div>
+                    <h3>Interactive Mechanics</h3>
+                    <p>Manipulate levers, push boulders, and collect fruits to unlock paths using precise logic.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#11014;</div>
+                    <h3>Progressive Levels</h3>
+                    <p>Experience a carefully balanced difficulty curve. Start with simple AND/OR operations and advance to complex rules of inference.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#127942;</div>
+                    <h3>Multiplayer & Achievements</h3>
+                    <p>Challenge fellow CS students in head-to-head logic battles and earn badges as you conquer algorithmic complexity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128200;</div>
+                    <h3>Deep Analytics</h3>
+                    <p>Track your academic progress. Identify your strong suits and the specific mathematical concepts that need improvement.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#9889;</div>
+                    <h3>Instant Feedback</h3>
+                    <p>Learn from mistakes in real-time. The game provides immediate visual feedback and hints when your logical deductions are incorrect.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128221;</div>
+                    <h3>Rigorous Assessment</h3>
+                    <p>Test your knowledge under pressure with integrated timers, player lives (hearts), and objective-based challenges that require cumulative mastery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- F. SCREENSHOTS / MEDIA GALLERY (Vanilla JS Carousel) -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <div class="section-header">
+                <h4>See It In Action</h4>
+                <h2>WATCH THE ADVENTURE <span class="text-gold">UNFOLD</span></h2>
+            </div>
+
+            <div class="carousel-container">
+                <button class="carousel-btn carousel-prev" id="btn-prev">&#10094;</button>
+                
+                <div class="carousel-track-wrapper">
+                    <div class="carousel-track" id="carousel-track">
+                        <!-- Slide 1 -->
+                        <div class="carousel-slide">
+                            <img src="Images/s1_ch1.png" alt="Retro Gaming Setup Placeholder">
+                            <div class="slide-caption">Interactive Logic Gates & Puzzle Solving</div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="carousel-slide">
+                            <img src="Images/s2_ch1.png" alt="Code Matrix Placeholder">
+                            <div class="slide-caption">Truth Tables & Rules of Inference Challenges</div>
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="carousel-slide">
+                            <img src="Images/BG2.png" alt="Hacker Concept Placeholder">
+                            <div class="slide-caption">Multiplayer Arena & Leaderboards</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-btn carousel-next" id="btn-next">&#10095;</button>
+            </div>
+
+            <!-- Carousel Indicators built by JS -->
+            <div class="carousel-indicators" id="carousel-dots"></div>
+        </div>
+    </section>
+
+    <!-- G. DOWNLOAD / PLAY SECTION -->
+    <section id="download" class="download">
+        <div class="container download-grid">
+            <div class="download-content">
+                <h4 class="text-gold" style="letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem;">Start Playing</h4>
+                <h2>YOUR JOURNEY BEGINS <span class="text-gold">TODAY</span></h2>
+                <p>Download Logic Legends now and transform the way you learn discrete mathematics. Free to play. Requires an active internet connection. iOS version coming soon.</p>
+                <a href="https://drive.google.com/file/d/1-SGLufTKQ7jVLqjcG6FrHfaTZ766dQ24/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-bottom: 1rem;">
+                DOWNLOAD FOR ANDROID
+                </a>
+                <!-- <p style="font-size: 0.9rem; color: var(--color-light); opacity: 0.7;">*APK download.</p> -->
+            </div>
+
+            <div class="sys-req-box">
+                <h3>Mobile Requirements</h3>
+                <ul class="req-list">
+                    <li>
+                        <span class="label">Platform</span>
+                        <span class="value">Android</span>
+                    </li>
+                    <li>
+                        <span class="label">Minimum OS</span>
+                        <span class="value">Android 8 or newer</span>
+                    </li>
+                    <li>
+                        <span class="label">Memory (RAM)</span>
+                        <span class="value">2GB (4GB Recommended)</span>
+                    </li>
+                    <li>
+                        <span class="label">Storage Space</span>
+                        <span class="value">900MB Free Space</span>
+                    </li>
+                    <li>
+                        <span class="label">Network</span>
+                        <span class="value">Active internet connection required</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- H. FOOTER SECTION -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col logo-col">
+                    <a href="index.html" class="logo" style="margin-bottom: 1rem; display: inline-flex;">
+                        <img src="Images/logo_transparent.png" alt="Logic Legends Logo">
+                        LOGIC LEGENDS
+                    </a>
+                    <!-- <p class="logo-col">Transforming discrete mathematics into an epic, accessible mobile adventure for computer science students worldwide.</p> -->
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-col">
+                        <h4>Thesis Project</h4>
+                        <p>Computer Science Department</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Development Team</h4>
+                        <p>Logic Legends Team</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Institution</h4>
+                        <p>National College of Science & Technology 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2026 Logic Legends. All rights reserved. Education Meets Innovation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+         VANILLA JAVASCRIPT LOGIC
+         ========================================================================== -->
+    <script src="JS/nav.js"></script>
+    <script type="module" src="JS/navbar_auth.js"></script>
+    <script>
+        // --- 3. Lightweight Vanilla JS Carousel ---
+        const track = document.getElementById('carousel-track');
+        const slides = Array.from(track.children);
+        const nextButton = document.getElementById('btn-next');
+        const prevButton = document.getElementById('btn-prev');
+        const dotsNav = document.getElementById('carousel-dots');
+        
+        let currentIndex = 0;
+
+        // Create dots based on number of slides
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('indicator');
+            if (index === 0) dot.classList.add('active');
+            dot.dataset.index = index;
+            dotsNav.appendChild(dot);
+        });
+
+        const dots = Array.from(dotsNav.children);
+
+        const updateCarousel = (index) => {
+            // Update Track Position
+            track.style.transform = `translateX(-${index * 100}%)`;
+            
+            // Update Dots
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[index].classList.add('active');
+        };
+
+        // Next Button Logic
+        nextButton.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex >= slides.length) {
+                currentIndex = 0; // Loop back to start
+            }
+            updateCarousel(currentIndex);
+        });
+
+        // Previous Button Logic
+        prevButton.addEventListener('click', () => {
+            currentIndex--;
+            if (currentIndex < 0) {
+                currentIndex = slides.length - 1; // Loop to end
+            }
+            updateCarousel(currentIndex);
+        });
+
+        // Dot Navigation Logic
+        dotsNav.addEventListener('click', e => {
+            const targetDot = e.target.closest('.indicator');
+            if (!targetDot) return;
+            
+            currentIndex = parseInt(targetDot.dataset.index);
+            updateCarousel(currentIndex);
+        });
+
+        // Optional: Auto-play carousel
+        setInterval(() => {
+            currentIndex++;
+            if (currentIndex >= slides.length) {
+                currentIndex = 0;
+            }
+            updateCarousel(currentIndex);
+        }, 5000); // Change slide every 5 seconds
+    </script>
+</body>
+</html>
