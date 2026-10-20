@@ -45,9 +45,7 @@ onAuthStateChanged(auth, async (user) => {
             event.preventDefault();
             try {
                 await signOut(auth);
-                window.location.href = window.location.pathname.includes('/InstructorDashboard/') || window.location.pathname.includes('/LoginPage/')
-                    ? '../LoginPage/login_page.html'
-                    : 'LoginPage/login_page.html';
+                window.location.href = '/LoginPage/login_page.html';
             } catch (error) {
                 console.error('Logout error:', error);
             }
