@@ -437,6 +437,13 @@ footer { background-color: var(--color-navy); padding: var(--spacing-lg) 0 20px;
     .account-access-card .form-input { margin-bottom: 1rem; }
     .account-access-card select.form-input { padding-left: 14px; }
     .account-access-card .account-access-note { font-size: 0.85rem; color: var(--color-light); }
+    .dashboard-role-status { margin-top: 0.75rem; color: var(--color-light); }
+    .dashboard-role-status strong { color: var(--color-gold); }
+    .dashboard-account-roster { margin-top: 2rem; }
+    .dashboard-account-roster h3 { margin-bottom: 0.75rem; }
+    .dashboard-account-roster ul { list-style: none; padding: 0; margin: 0; }
+    .dashboard-account-roster li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid rgba(252, 163, 17, 0.25); overflow-wrap: anywhere; }
+    .dashboard-account-roster li strong { color: var(--color-gold); white-space: nowrap; }
     .account-access-card .btn-submit { margin-bottom: 0; }
 
     .btn-submit { width: 100%; background-color: var(--color-gold); color: var(--color-black); font-family: var(--font-heading); padding: 15px; font-size: 1.1rem; font-weight: 700; border-radius: 6px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem; transition: all 0.3s ease; }

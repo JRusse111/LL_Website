@@ -17,6 +17,8 @@ These Firebase roles control the website dashboard. They do **not** grant GitHub
 4. In the Netlify project's Project configuration > Environment variables, add `FIREBASE_SERVICE_ACCOUNT_JSON` with the entire JSON as its value. Mark it secret if the option is offered, and select the Functions scope if available. Create a new deploy after saving it. Without this setting, the account form reports “Account management is not configured yet.”
 5. In Dashboard accounts, enter another verified account's email and choose **Admin** for dashboard viewing or **Super admin** for account management. A person promoted from admin to super admin must sign in again. The form does not downgrade an existing super admin.
 
+The dashboard header displays the signed-in account's current role. Super admins also see **Accounts with dashboard access**, a read-only list of accounts with dashboard roles. The list is loaded from a server function that checks the caller's `super_admin` claim; it requires the Netlify service account variable above. Regular admins cannot open this list.
+
 Netlify publishes `Logic_Legends_Web/` and deploys `netlify/functions/` through the Git-connected repository's `main` branch. A local commit must be pushed to `main` before the live website updates.
 
 The dashboard currently contains sample data directly in its static HTML. If real private student data is added later, serve it through a protected server endpoint or Firebase Security Rules; hiding HTML with client-side JavaScript alone does not make static data private.
