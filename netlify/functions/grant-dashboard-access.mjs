@@ -1,5 +1,6 @@
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
+import { canManageAccounts, claimsForRole, grantedRole } from '../lib/role-permissions.mjs';
 
 const PROJECT_ID = 'logic-legends-ac66c';
 
@@ -22,7 +23,7 @@ export default async function grantDashboardAccess(request) {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
   const bearer = request.headers.get('authorization')?.match(/^Bearer (\S+)$/i)?.[1];
-  if (!bearer) return json({ error: 'Sign in as an admin first.' }, 401);
+  if (!bearer) return json({ error: 'Sign in as a super admin first.' }, 401);
 
   let auth;
   try {
@@ -34,8 +35,8 @@ export default async function grantDashboardAccess(request) {
 
   try {
     const caller = await auth.verifyIdToken(bearer, true);
-    if (caller.admin !== true || caller.email_verified !== true) {
-      return json({ error: 'Admin access is required.' }, 403);
+    if (!canManageAccounts(caller)) {
+      return json({ error: 'Super admin access is required.' }, 403);
     }
 
     let payload;
@@ -45,8 +46,12 @@ export default async function grantDashboardAccess(request) {
       return json({ error: 'Enter a valid email address.' }, 400);
     }
     const email = typeof payload?.email === 'string' ? payload.email.trim() : '';
+    const role = payload?.role;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
       return json({ error: 'Enter a valid email address.' }, 400);
+    }
+    if (role !== 'admin' && role !== 'super_admin') {
+      return json({ error: 'Choose a valid dashboard role.' }, 400);
     }
 
     let target;
@@ -60,11 +65,14 @@ export default async function grantDashboardAccess(request) {
     }
     if (target.disabled) return json({ error: 'This account is disabled.' }, 400);
     if (!target.emailVerified) return json({ error: 'This account must verify its email first.' }, 400);
-    if (target.customClaims?.admin === true) return json({ alreadyAdmin: true });
+    const currentRole = grantedRole(target.customClaims);
+    if (currentRole === 'super_admin' || currentRole === role) {
+      return json({ alreadyGranted: true, role: currentRole });
+    }
 
-    await auth.setCustomUserClaims(target.uid, { ...target.customClaims, admin: true });
-    console.info('Dashboard access granted', { by: caller.uid, to: target.uid });
-    return json({ alreadyAdmin: false });
+    await auth.setCustomUserClaims(target.uid, claimsForRole(target.customClaims, role));
+    console.info('Dashboard access granted', { by: caller.uid, to: target.uid, role });
+    return json({ alreadyGranted: false, role });
   } catch (error) {
     if (error.code?.startsWith('auth/id-token-') || error.code === 'auth/argument-error') {
       return json({ error: 'Your session has expired. Sign in again.' }, 401);

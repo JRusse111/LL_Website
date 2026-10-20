@@ -419,6 +419,7 @@ footer { background-color: var(--color-navy); padding: var(--spacing-lg) 0 20px;
     .form-input:focus { box-shadow: 0 0 12px rgba(252, 163, 17, 0.3); }
 
     [data-admin-nav][hidden] { display: none !important; }
+    [data-super-admin-only][hidden] { display: none !important; }
 
     .form-options { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; margin-bottom: 2rem; }
     .forgot-link { background: none; border: 0; padding: 0; color: var(--color-gold); font-family: var(--font-body); font-size: 0.9rem; font-weight: 500; cursor: pointer; }
@@ -434,6 +435,8 @@ footer { background-color: var(--color-navy); padding: var(--spacing-lg) 0 20px;
     .account-access-card p { margin-bottom: 1rem; }
     .account-access-card label { display: block; margin-bottom: 0.5rem; }
     .account-access-card .form-input { margin-bottom: 1rem; }
+    .account-access-card select.form-input { padding-left: 14px; }
+    .account-access-card .account-access-note { font-size: 0.85rem; color: var(--color-light); }
     .account-access-card .btn-submit { margin-bottom: 0; }
 
     .btn-submit { width: 100%; background-color: var(--color-gold); color: var(--color-black); font-family: var(--font-heading); padding: 15px; font-size: 1.1rem; font-weight: 700; border-radius: 6px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem; transition: all 0.3s ease; }

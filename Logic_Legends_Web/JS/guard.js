@@ -22,11 +22,14 @@ onAuthStateChanged(auth, async (user) => {
 
     try {
         const token = await getIdTokenResult(user, true);
-        if (token.claims.admin !== true) {
+        if (token.claims.admin !== true && token.claims.super_admin !== true) {
             window.location.replace('../InstructorDashboard/error_page.html');
             return;
         }
 
+        document.querySelectorAll('[data-super-admin-only]').forEach(section => {
+            section.hidden = token.claims.super_admin !== true;
+        });
         document.body.style.visibility = 'visible';
     } catch (error) {
         console.error('Dashboard access check failed:', error);

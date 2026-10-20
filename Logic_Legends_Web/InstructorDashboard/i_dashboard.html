@@ -256,13 +256,19 @@
         </div>
     </section>
 
-    <section class="account-access-section container" aria-labelledby="account-access-heading">
+    <section class="account-access-section container" data-super-admin-only aria-labelledby="account-access-heading" hidden>
         <div class="account-access-card">
             <h2 id="account-access-heading">Dashboard accounts</h2>
             <p>Grant dashboard access to someone who has already signed up and verified their email.</p>
             <form id="grantDashboardAccessForm">
                 <label for="adminAccountEmail">Account email</label>
                 <input type="email" id="adminAccountEmail" class="form-input" autocomplete="off" required>
+                <label for="adminAccountRole">Access level</label>
+                <select id="adminAccountRole" class="form-input" required>
+                    <option value="admin">Admin — view dashboard</option>
+                    <option value="super_admin">Super admin — manage dashboard accounts</option>
+                </select>
+                <p class="account-access-note">Editing website code requires separate GitHub repository access.</p>
                 <button type="submit" class="btn-submit">Grant access</button>
                 <p id="grantAccessFeedback" class="form-feedback" role="status" aria-live="polite" hidden></p>
             </form>

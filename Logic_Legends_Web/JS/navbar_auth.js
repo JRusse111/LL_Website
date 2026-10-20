@@ -26,7 +26,7 @@ onAuthStateChanged(auth, async (user) => {
     if (user && user.emailVerified) {
         try {
             const token = await getIdTokenResult(user, true);
-            isAdmin = token.claims.admin === true;
+            isAdmin = token.claims.admin === true || token.claims.super_admin === true;
         } catch (error) {
             console.error('Unable to check account role:', error);
         }

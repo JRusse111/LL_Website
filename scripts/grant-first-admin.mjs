@@ -16,8 +16,8 @@ try {
   const auth = getAuth();
   const user = await auth.getUserByEmail(email);
   if (!user.emailVerified || user.disabled) throw new Error('Account must be enabled and email-verified first');
-  await auth.setCustomUserClaims(user.uid, { ...user.customClaims, admin: true });
-  console.log(`Admin access granted to ${user.email}. Sign out and sign in again.`);
+  await auth.setCustomUserClaims(user.uid, { ...user.customClaims, admin: true, super_admin: true });
+  console.log(`Super admin access granted to ${user.email}. Sign out and sign in again.`);
 } catch (error) {
   console.error('Could not grant first admin:', error.message);
   process.exitCode = 1;

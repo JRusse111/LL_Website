@@ -37,7 +37,7 @@ const googleLoginBtn = document.getElementById('googleLoginBtn');
 const resetPasswordBtn = document.getElementById('resetPasswordBtn');
 const resetFeedback = document.getElementById('resetFeedback');
 
-// Only accounts granted the admin claim can enter the dashboard.
+// Both dashboard roles can enter the dashboard.
 async function finishLogin(user) {
     if (!user.emailVerified) {
         await auth.signOut();
@@ -46,7 +46,7 @@ async function finishLogin(user) {
     }
 
     const token = await getIdTokenResult(user, true);
-    window.location.replace(token.claims.admin === true
+    window.location.replace(token.claims.admin === true || token.claims.super_admin === true
         ? '../InstructorDashboard/i_dashboard.html'
         : '../index.html');
 }

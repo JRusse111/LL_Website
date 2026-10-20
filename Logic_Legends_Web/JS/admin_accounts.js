@@ -14,6 +14,7 @@ const firebaseConfig = {
 const auth = getAuth(getApps().length ? getApp() : initializeApp(firebaseConfig));
 const form = document.getElementById('grantDashboardAccessForm');
 const emailInput = document.getElementById('adminAccountEmail');
+const roleInput = document.getElementById('adminAccountRole');
 const feedback = document.getElementById('grantAccessFeedback');
 const submitButton = form?.querySelector('button[type="submit"]');
 
@@ -28,6 +29,7 @@ form?.addEventListener('submit', async (event) => {
   if (!form.reportValidity()) return;
 
   const email = emailInput.value.trim();
+  const role = roleInput.value;
   const user = auth.currentUser;
   if (!user) {
     showFeedback('Your session has ended. Sign in again.', true);
@@ -44,14 +46,15 @@ form?.addEventListener('submit', async (event) => {
         'Authorization': `Bearer ${idToken}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, role })
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Access could not be granted.');
 
-    showFeedback(result.alreadyAdmin
-      ? 'This account already has dashboard access.'
-      : 'Dashboard access granted. Ask this person to sign in again.');
+    const roleLabel = result.role === 'super_admin' ? 'super admin' : 'admin';
+    showFeedback(result.alreadyGranted
+      ? `This account already has ${roleLabel} access.`
+      : `${roleLabel === 'super admin' ? 'Super admin' : 'Admin'} access granted. Ask this person to sign in again.`);
     form.reset();
   } catch (error) {
     showFeedback(error.message || 'Access could not be granted.', true);
