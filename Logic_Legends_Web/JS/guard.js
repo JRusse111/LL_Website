@@ -1,6 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+import { getAuth, onAuthStateChanged, getIdTokenResult } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDF_VO9YeLPCRQ1D0OJDXSgYc3i9CxYcIc",
@@ -15,24 +14,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        // Not logged in
-        window.location.replace("../InstructorDashboard/error_page.html");
-    } else if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-        // Logged in with email/password but NOT verified
-        alert("You must verify your email to view the dashboard.");
-        window.location.replace("../InstructorDashboard/error_page.html");
+onAuthStateChanged(auth, async (user) => {
+    if (!user || !user.emailVerified) {
+        window.location.replace('../InstructorDashboard/error_page.html');
+        return;
+    }
+
+    try {
+        const token = await getIdTokenResult(user, true);
+        if (token.claims.admin !== true) {
+            window.location.replace('../InstructorDashboard/error_page.html');
+            return;
+        }
+
+        document.body.style.visibility = 'visible';
+    } catch (error) {
+        console.error('Dashboard access check failed:', error);
+        window.location.replace('../InstructorDashboard/error_page.html');
     }
 });
-
-const logoutBtn = document.getElementById('logoutBtn');
-if(logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-            window.location.replace("../LoginPage/login_page.html");
-        }).catch((error) => {
-            console.error("Logout Error", error);
-        });
-    });
-}

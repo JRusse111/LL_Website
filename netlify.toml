@@ -1,0 +1,6 @@
+[build]
+  publish = "Logic_Legends_Web"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"

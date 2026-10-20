@@ -51,11 +51,12 @@ if (togglePasswordBtn && passInput) {
     togglePasswordBtn.addEventListener('click', () => {
         const isPassword = passInput.getAttribute('type') === 'password';
         passInput.setAttribute('type', isPassword ? 'text' : 'password');
-
-        if (isPassword) {
-            togglePasswordBtn.style.stroke = 'var(--color-white)';
-        } else {
-            togglePasswordBtn.style.stroke = 'var(--color-gold)';
+        togglePasswordBtn.setAttribute('aria-pressed', String(isPassword));
+        togglePasswordBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        const icon = togglePasswordBtn.querySelector('.bx');
+        if (icon) {
+            icon.classList.toggle('bx-show', !isPassword);
+            icon.classList.toggle('bx-hide', isPassword);
         }
     });
 }

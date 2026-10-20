@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     <link rel="stylesheet" href="CSS/global.css">
     <style>
     </style>
@@ -30,7 +31,7 @@
                     <li><a href="index.html#features">Features</a></li>
                     <li><a href="index.html#gallery">Gallery</a></li>
                     <li><a href="index.html#download">Download</a></li>
-                    <li><a href="InstructorDashboard/i_dashboard.html">Dashboard</a></li>
+                    <li data-admin-nav hidden><a href="InstructorDashboard/i_dashboard.html">Dashboard</a></li>
                     <li><a href="LoginPage/login_page.html" class="login-btn">LOGIN</a></li>
                 </ul>
             </nav>
@@ -51,7 +52,7 @@
             <li><a href="index.html#features" class="mobile-link">Features</a></li>
             <li><a href="index.html#gallery" class="mobile-link">Gallery</a></li>
             <li><a href="index.html#download" class="mobile-link">Download</a></li>
-            <li><a href="InstructorDashboard/i_dashboard.html" class="mobile-link">Dashboard</a></li>
+            <li data-admin-nav hidden><a href="InstructorDashboard/i_dashboard.html" class="mobile-link">Dashboard</a></li>
             <li style="margin-top: 2rem;"><a href="LoginPage/login_page.html" class="btn btn-primary mobile-link login-btn">LOGIN</a></li>
         </ul>
     </div>
@@ -67,11 +68,7 @@
                 <a href="#gallery" class="btn btn-secondary">Learn More</a>
                 <a href="https://itch.io" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
                     ITCH.IO
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; margin-top: -2px;">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
+                    <i class="bx bx-link-external" aria-hidden="true" style="margin-left: 8px;"></i>
                 </a>
             </div>
         </div>
@@ -160,32 +157,32 @@
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">&#9881;</div>
+                    <div class="feature-icon"><i class="bx bx-cog" aria-hidden="true"></i></div>
                     <h3>Interactive Mechanics</h3>
                     <p>Manipulate levers, push boulders, and collect fruits to unlock paths using precise logic.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#11014;</div>
+                    <div class="feature-icon"><i class="bx bx-up-arrow-alt" aria-hidden="true"></i></div>
                     <h3>Progressive Levels</h3>
                     <p>Experience a carefully balanced difficulty curve. Start with simple AND/OR operations and advance to complex rules of inference.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#127942;</div>
+                    <div class="feature-icon"><i class="bx bx-trophy" aria-hidden="true"></i></div>
                     <h3>Multiplayer & Achievements</h3>
                     <p>Challenge fellow CS students in head-to-head logic battles and earn badges as you conquer algorithmic complexity.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#128200;</div>
+                    <div class="feature-icon"><i class="bx bx-bar-chart-alt-2" aria-hidden="true"></i></div>
                     <h3>Deep Analytics</h3>
                     <p>Track your academic progress. Identify your strong suits and the specific mathematical concepts that need improvement.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#9889;</div>
+                    <div class="feature-icon"><i class="bx bx-bolt-circle" aria-hidden="true"></i></div>
                     <h3>Instant Feedback</h3>
                     <p>Learn from mistakes in real-time. The game provides immediate visual feedback and hints when your logical deductions are incorrect.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#128221;</div>
+                    <div class="feature-icon"><i class="bx bx-edit" aria-hidden="true"></i></div>
                     <h3>Rigorous Assessment</h3>
                     <p>Test your knowledge under pressure with integrated timers, player lives (hearts), and objective-based challenges that require cumulative mastery.</p>
                 </div>

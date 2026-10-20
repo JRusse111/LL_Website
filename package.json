@@ -1,0 +1,10 @@
+{
+  "name": "logic-legends-site",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "firebase-admin": "14.5.0"
+  }
+}

@@ -8,8 +8,9 @@ import {
     createUserWithEmailAndPassword,
     GoogleAuthProvider, 
     signInWithPopup,
-    onAuthStateChanged,
-    sendEmailVerification
+    sendEmailVerification,
+    sendPasswordResetEmail,
+    getIdTokenResult
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 // 2. Your web app's Firebase configuration
@@ -33,67 +34,97 @@ const loginForm = document.getElementById('loginForm');
 const emailInput = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
 const googleLoginBtn = document.getElementById('googleLoginBtn');
+const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+const resetFeedback = document.getElementById('resetFeedback');
+
+// Only accounts granted the admin claim can enter the dashboard.
+async function finishLogin(user) {
+    if (!user.emailVerified) {
+        await auth.signOut();
+        alert('Please verify your email address. Check your inbox for the link.');
+        return;
+    }
+
+    const token = await getIdTokenResult(user, true);
+    window.location.replace(token.claims.admin === true
+        ? '../InstructorDashboard/i_dashboard.html'
+        : '../index.html');
+}
 
 // 5. Handle Email/Password Login
 if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault(); 
         
-        const email = emailInput.value;
+        const email = emailInput.value.trim();
         const password = passwordInput.value;
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Check if the email is verified
-                if (userCredential.user.emailVerified) {
-                    console.log("Logged in as:", userCredential.user.email);
-                    window.location.href = "../index.html";
-                } else {
-                    // Kick them out if not verified
-                    auth.signOut();
-                    alert("Please verify your email address. Check your inbox for the link.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error signing in:", error);
-                alert("Login failed: " + error.message);
-            });
+        try {
+            const credential = await signInWithEmailAndPassword(auth, email, password);
+            await finishLogin(credential.user);
+        } catch (error) {
+            console.error('Error signing in:', error);
+            alert('Login failed: ' + error.message);
+        }
+    });
+}
+
+// Send a password reset link to the email entered on the login form.
+if (resetPasswordBtn && emailInput && resetFeedback) {
+    const showResetFeedback = (message, isError = false) => {
+        resetFeedback.textContent = message;
+        resetFeedback.classList.toggle('is-error', isError);
+        resetFeedback.hidden = false;
+    };
+
+    resetPasswordBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+
+        if (!email) {
+            showResetFeedback('Enter your email address above first.', true);
+            emailInput.focus();
+            return;
+        }
+
+        if (!emailInput.checkValidity()) {
+            showResetFeedback('Enter a valid email address.', true);
+            emailInput.focus();
+            return;
+        }
+
+        resetPasswordBtn.disabled = true;
+        resetPasswordBtn.textContent = 'Sending...';
+        resetFeedback.hidden = true;
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            showResetFeedback('If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.');
+        } catch (error) {
+            if (error.code === 'auth/user-not-found') {
+                showResetFeedback('If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.');
+            } else {
+                console.error('Password reset error:', error);
+                showResetFeedback('Could not send a password reset link right now. Please try again.', true);
+            }
+        } finally {
+            resetPasswordBtn.disabled = false;
+            resetPasswordBtn.textContent = 'Forgot Password?';
+        }
     });
 }
 
 // 6. Handle Google Login
 if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', () => {
-        signInWithPopup(auth, googleProvider)
-            .then((result) => {
-                console.log("Google login successful:", result.user.displayName);
-                window.location.href = "../index.html";
-            })
-            .catch((error) => {
-                console.error("Google login error:", error);
-                alert("Google login failed: " + error.message);
-            });
+    googleLoginBtn.addEventListener('click', async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            await finishLogin(result.user);
+        } catch (error) {
+            console.error('Google login error:', error);
+            alert('Google login failed: ' + error.message);
+        }
     });
 }
-
-// 7. Check if already logged in and auto-redirect
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Only auto-redirect if they have verified their email
-        // (Note: Google accounts are automatically marked as verified)
-        if (user.emailVerified) {
-            // Make sure we aren't already on the dashboard to prevent reloading
-            if (!window.location.href.includes("i_dashboard.html")) {
-                window.location.replace("../InstructorDashboard/i_dashboard.html");
-            }
-        } else {
-            // If they are logged in but NOT verified, sign them out 
-            // so they don't get stuck in an infinite loop!
-            auth.signOut();
-        }
-    }
-});
-
 
 // --- SIGN UP LOGIC ---
 const signupForm = document.getElementById('signupForm');

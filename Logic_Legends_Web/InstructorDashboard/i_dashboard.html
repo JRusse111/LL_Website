@@ -8,10 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     
     <link rel="stylesheet" href="../CSS/global.css">
 </head>
-<body>
+<body style="visibility: hidden;">
 
     <!-- SECTION A: HEADER / NAVIGATION BAR -->
     <header id="site-header">
@@ -28,7 +29,7 @@
                     <li><a href="../index.html#features">Features</a></li>
                     <li><a href="../index.html#gallery">Gallery</a></li>
                     <li><a href="../index.html#download">Download</a></li>
-                    <li><a href="../InstructorDashboard/i_dashboard.html" style="color: var(--color-gold);">Dashboard</a></li>
+                    <li data-admin-nav hidden><a href="../InstructorDashboard/i_dashboard.html" style="color: var(--color-gold);">Dashboard</a></li>
                     <li><a href="../LoginPage/login_page.html" id="logoutBtn" class="login-btn">LOGOUT</a></li>
                 </ul>
             </nav>
@@ -49,7 +50,7 @@
             <li><a href="../index.html#features" class="mobile-link">Features</a></li>
             <li><a href="../index.html#gallery" class="mobile-link">Gallery</a></li>
             <li><a href="../index.html#download" class="mobile-link">Download</a></li>
-            <li><a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" style="color: var(--color-gold);">Dashboard</a></li>
+            <li data-admin-nav hidden><a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" style="color: var(--color-gold);">Dashboard</a></li>
             <li style="margin-top: 2rem;"><a href="../LoginPage/login_page.html" id="logoutBtn" class="btn btn-primary mobile-link login-btn">LOGOUT</a></li>
         </ul>
     </div>
@@ -61,9 +62,7 @@
             <p class="subtitle">Student Performance Summary</p>
             
             <!-- <div class="constraint-notice">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
+                <i class="bx bx-info-circle" aria-hidden="true"></i>
                 <p><strong>Note:</strong> The Instructor Dashboard is limited to summary viewing only. It does not include advanced analytics, automated grading, or custom content creation.</p>
             </div> -->
 
@@ -86,7 +85,7 @@
             <div class="kpi-card">
                 <div class="kpi-header">
                     <span class="kpi-title">Avg Class Accuracy</span>
-                    <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <i class="bx bx-check-circle kpi-icon" aria-hidden="true"></i>
                 </div>
                 <div class="kpi-value" id="kpi-accuracy">78%</div>
                 <div class="kpi-subtext">+2.4% from last week</div>
@@ -96,7 +95,7 @@
             <div class="kpi-card">
                 <div class="kpi-header">
                     <span class="kpi-title">Avg Attempts</span>
-                    <svg class="kpi-icon" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                    <i class="bx bx-refresh kpi-icon" aria-hidden="true"></i>
                 </div>
                 <div class="kpi-value" id="kpi-attempts">2.4</div>
                 <div class="kpi-subtext">Attempts per level</div>
@@ -106,7 +105,7 @@
             <div class="kpi-card">
                 <div class="kpi-header">
                     <span class="kpi-title">Avg Completion</span>
-                    <svg class="kpi-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <i class="bx bx-time-five kpi-icon" aria-hidden="true"></i>
                 </div>
                 <div class="kpi-value" id="kpi-time">14m 30s</div>
                 <div class="kpi-subtext">Overall level time</div>
@@ -116,7 +115,7 @@
             <div class="kpi-card">
                 <div class="kpi-header">
                     <span class="kpi-title">Top Weak Area</span>
-                    <svg class="kpi-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <i class="bx bx-error kpi-icon" aria-hidden="true"></i>
                 </div>
                 <div class="kpi-value" id="kpi-weakest" style="font-size: 1.4rem; line-height: 1.4;">Logic Gates</div>
                 <div class="kpi-subtext" id="kpi-weakest-sub">35% success rate</div>
@@ -257,6 +256,19 @@
         </div>
     </section>
 
+    <section class="account-access-section container" aria-labelledby="account-access-heading">
+        <div class="account-access-card">
+            <h2 id="account-access-heading">Dashboard accounts</h2>
+            <p>Grant dashboard access to someone who has already signed up and verified their email.</p>
+            <form id="grantDashboardAccessForm">
+                <label for="adminAccountEmail">Account email</label>
+                <input type="email" id="adminAccountEmail" class="form-input" autocomplete="off" required>
+                <button type="submit" class="btn-submit">Grant access</button>
+                <p id="grantAccessFeedback" class="form-feedback" role="status" aria-live="polite" hidden></p>
+            </form>
+        </div>
+    </section>
+
     <!-- SECTION F: GLOBAL FOOTER -->
     <footer>
         <div class="container">
@@ -293,6 +305,7 @@
     <script src="../JS/nav.js"></script>
     <script type="module" src="../JS/navbar_auth.js"></script>
     <script type="module" src="../JS/guard.js"></script>
+    <script type="module" src="../JS/admin_accounts.js"></script>
 
     <script>
         // --- 3. Dynamic Class Section Data ---
