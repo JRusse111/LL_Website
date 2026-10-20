@@ -30,12 +30,6 @@ onAuthStateChanged(auth, async (user) => {
         document.querySelectorAll('[data-super-admin-only]').forEach(section => {
             section.hidden = token.claims.super_admin !== true;
         });
-        const roleStatus = document.getElementById('dashboardRoleStatus');
-        const roleName = document.getElementById('dashboardRoleName');
-        if (roleStatus && roleName) {
-            roleName.textContent = token.claims.super_admin === true ? 'Super admin' : 'Admin (view only)';
-            roleStatus.hidden = false;
-        }
         document.body.style.visibility = 'visible';
     } catch (error) {
         console.error('Dashboard access check failed:', error);

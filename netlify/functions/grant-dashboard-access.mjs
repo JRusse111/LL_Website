@@ -1,5 +1,19 @@
-import { adminAuth } from '../lib/admin-auth.mjs';
+import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { canManageAccounts, claimsForRole, grantedRole } from '../lib/role-permissions.mjs';
+
+const PROJECT_ID = 'logic-legends-ac66c';
+
+function adminAuth() {
+  if (!getApps().length) {
+    const rawCredential = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+    if (!rawCredential) throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is missing');
+    const serviceAccount = JSON.parse(rawCredential);
+    if (serviceAccount.project_id !== PROJECT_ID) throw new Error('Firebase service account has the wrong project ID');
+    initializeApp({ credential: cert(serviceAccount), projectId: PROJECT_ID });
+  }
+  return getAuth();
+}
 
 function json(data, status = 200) {
   return Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
