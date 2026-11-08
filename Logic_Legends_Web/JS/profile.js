@@ -119,8 +119,8 @@ function renderAccounts() {
             remove.setAttribute('aria-label', `Remove dashboard access for ${account.email || account.displayName}`);
             remove.disabled = busy;
             remove.addEventListener('click', async () => {
-                if (!await confirmChange('Remove dashboard access?', `Remove dashboard access for ${account.email || account.displayName}? Their player account will stay.`, 'Remove access')) return;
-                await mutate('DELETE', { uid: account.uid, expectedRole: account.role }, 'Dashboard access removed. The player account has been kept.');
+                if (!await confirmChange('Remove dashboard access?', `Remove dashboard access for ${account.email || account.displayName}? Their account will stay.`, 'Remove access')) return;
+                await mutate('DELETE', { uid: account.uid, expectedRole: account.role }, 'Dashboard access removed.');
             });
             actions.append(save, remove);
         }
@@ -178,7 +178,7 @@ $('addAdminForm').addEventListener('submit', async event => {
     const email = $('adminEmail').value.trim();
     const role = $('adminRole').value;
     if (!await confirmChange('Add administrator?', `Give ${email} ${roleLabel(role)} access? ${role === 'super_admin' ? 'They will be able to add, change and remove administrator access.' : 'They will be able to view the instructor dashboard.'}`, 'Grant access')) return;
-    await mutate('POST', { email, role }, 'Administrator added. Ask this person to sign in again.');
+    await mutate('POST', { email, role }, 'Administrator added.');
 });
 $('refreshAdmins').addEventListener('click', () => loadAccounts());
 $('loadMoreAdmins').addEventListener('click', () => loadAccounts(true));
