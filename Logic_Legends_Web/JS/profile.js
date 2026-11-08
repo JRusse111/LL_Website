@@ -110,7 +110,7 @@ function renderAccounts() {
             save.addEventListener('click', async () => {
                 const newRole = select.value;
                 if (!await confirmChange('Change access level?', `Change ${account.email || account.displayName} from ${roleLabel(account.role)} to ${roleLabel(newRole)}? Super admins can manage other administrators.`, 'Change role')) return;
-                await mutate('PATCH', { uid: account.uid, role: newRole, expectedRole: account.role }, 'Access level updated. Ask this person to sign in again.');
+                await mutate('PATCH', { uid: account.uid, role: newRole, expectedRole: account.role }, 'Access level updated.');
             });
             const remove = document.createElement('button');
             remove.type = 'button';
