@@ -13,8 +13,13 @@ export function claimsForRole(currentClaims, role) {
     throw new Error('Invalid dashboard role');
   }
   return {
-    ...currentClaims,
+    ...claimsWithoutDashboardAccess(currentClaims),
     admin: true,
     ...(role === 'super_admin' ? { super_admin: true } : {})
   };
+}
+
+export function claimsWithoutDashboardAccess(currentClaims) {
+  const { admin, super_admin, ...otherClaims } = currentClaims || {};
+  return otherClaims;
 }

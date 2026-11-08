@@ -1,0 +1,71 @@
+/* Shared account navigation on the homepage, account pages and dashboard. */
+#site-header .nav-container { gap: 1rem; }
+#site-header nav[aria-label="Main navigation"] { margin-left: auto; }
+.account-nav { display: flex; align-items: center; gap: .85rem; margin-left: auto; flex-shrink: 0; font-family: 'Roboto Condensed',sans-serif; }
+.account-nav [hidden],.account-dropdown [hidden] { display: none !important; }
+.account-icon { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; flex: 0 0 auto; }
+.profile-entry,.account-toggle { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; color: #fff3d6; font: 700 .88rem 'Roboto Condensed',sans-serif; letter-spacing: .05em; }
+.profile-entry:hover,.account-toggle:hover { color: #f3c46c; }
+.account-nav .login-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: .45rem 1.1rem; font: 700 .88rem 'Roboto Condensed',sans-serif; }
+.account-menu { position: relative; }
+.account-toggle { padding: .4rem .7rem; border: 1px solid #9f79454d; border-radius: 8px; cursor: pointer; background: #203a43; }
+.account-toggle-name { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-chevron { font-size: .8rem; transition: transform .15s; }
+.account-toggle[aria-expanded="true"] .account-chevron { transform: rotate(180deg); }
+.account-dropdown { position: absolute; top: calc(100% + .5rem); right: 0; width: 255px; max-width: calc(100vw - 2rem); padding: .55rem; background: #102b34; border: 1px solid #a6763d; border-top: 3px solid #f3c46c; border-radius: 9px; box-shadow: 0 16px 32px #0006; z-index: 1005; }
+.account-menu::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: .6rem; }
+.account-menu-heading { padding: .6rem .65rem .85rem; margin-bottom: .4rem; border-bottom: 1px solid #71918b40; }
+.account-menu-heading strong { display: block; color: #fff3d6; font-size: 1.05rem; overflow-wrap: anywhere; }
+.account-menu-heading small { display: block; color: #c1d2cc; font: 400 .72rem/1.6 'Montserrat',sans-serif; overflow-wrap: anywhere; }
+.account-dropdown a,.account-dropdown button { display: flex; align-items: center; width: 100%; min-height: 44px; padding: .6rem .7rem; border: 0; border-radius: 5px; color: #efe5cb; background: none; text-align: left; cursor: pointer; font: 600 .9rem 'Roboto Condensed',sans-serif; letter-spacing: .04em; text-transform: none; }
+.account-dropdown a:hover,.account-dropdown button:hover { background: #24505a; }
+.account-dropdown button[data-logout] { color: #ffcfb3; border-top: 1px solid #71918b40; border-radius: 0 0 5px 5px; margin-top: .4rem; }
+.account-dropdown button:disabled { opacity: .6; cursor: wait; }
+.account-message { position: fixed; top: 78px; right: 1rem; max-width: 340px; padding: 1rem; background: #432d27; border: 1px solid #efa88a; border-radius: 8px; color: #fff3d6; font-size: .85rem; }
+.account-nav a:focus-visible,.account-nav button:focus-visible { outline: 3px solid #f3c46c; outline-offset: 3px; }
+.mobile-menu [hidden] { display: none !important; }
+.mobile-menu:not(.active) { visibility: hidden; pointer-events: none; }
+.mobile-menu.active { visibility: visible; pointer-events: auto; }
+.mobile-account-panel { width: 100%; max-width: 560px; margin: 1.25rem auto 0; padding-top: 1.25rem; border-top: 1px solid #82998b44; }
+.mobile-user-identity { display: flex; align-items: center; gap: .85rem; padding: 1rem; border-radius: 10px; background: #29434a; color: #fff3d6; }
+.mobile-user-identity .account-icon { width: 26px; height: 26px; color: #f3c46c; }
+.mobile-user-identity strong { font: 700 1.1rem 'Roboto Condensed',sans-serif; overflow-wrap: anywhere; }
+.mobile-user-identity small { display: block; margin-top: .25rem; color: #bdd0c5; font-size: .72rem; overflow-wrap: anywhere; }
+.mobile-account-links { padding-top: .5rem; }
+.mobile-account-links button { display: block; width: 100%; min-height: 44px; padding: .8rem 1rem; border: 0; background: none; color: #ffcfb3; text-align: left; cursor: pointer; font: 700 1.1rem 'Roboto Condensed',sans-serif; }
+.mobile-account-links button:hover { background: #264951; border-radius: 7px; }
+.mobile-account-links button:focus-visible { outline: 3px solid #f3c46c; outline-offset: 3px; }
+@media (max-width: 1199px) {
+    #site-header .nav-links { display: none; }
+    #site-header .hamburger { display: block; flex-shrink: 0; }
+    .account-nav[data-signed-in="true"] { display: none; }
+    .mobile-menu { display: flex !important; height: 100dvh; padding: 5.5rem clamp(1.25rem,5vw,4rem) 2rem; align-items: stretch; justify-content: flex-start; overflow-y: auto; overscroll-behavior: contain; }
+    .home-page .mobile-menu { background: #10252b; }
+    .home-page .mobile-menu ul { width: 100%; max-width: 560px; margin-inline: auto; padding: 0; text-align: left; }
+    .mobile-menu li { margin: 0; }
+    .home-page .mobile-menu a { display: block; min-height: 44px; padding: .8rem 1rem; border-radius: 7px; font: 700 1.1rem 'Roboto Condensed',sans-serif; text-align: left; }
+    .mobile-menu a:hover { background: #264951; }
+    #site-header nav[aria-label="Main navigation"] { display: none; }
+}
+@media (min-width: 1200px) {
+    #site-header .hamburger { display: none; }
+    .mobile-menu { display: none !important; }
+}
+@media (max-width: 600px) {
+    #site-header .nav-container { gap: .6rem; padding-inline: 1rem; }
+    #site-header .logo { gap: .4rem; font-size: .95rem; }
+    #site-header .logo img { height: 2.1rem; margin-right: 0; }
+    .account-nav { gap: .5rem; }
+    .profile-entry span { display: none; }
+    .account-nav .login-btn { padding: .4rem .65rem; font-size: .78rem; }
+    .account-toggle { gap: .35rem; padding-inline: .45rem; }
+    .account-toggle-name { max-width: 65px; font-size: .8rem; }
+    .account-icon { width: 19px; height: 19px; }
+    #site-header .hamburger { width: 24px; height: 20px; }
+    .account-dropdown { right: -30px; }
+}
+@media (max-width: 360px) {
+    #site-header .logo { font-size: .8rem; }
+    #site-header .logo img { height: 1.8rem; }
+    .account-toggle-name { max-width: 45px; }
+}

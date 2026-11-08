@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="CSS/global.css">
     <link rel="stylesheet" href="CSS/home.css">
+    <link rel="stylesheet" href="CSS/account.css">
 </head>
 <body class="home-page">
     <header id="site-header">
@@ -20,33 +21,56 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#solo">Solo trials</a></li>
                     <li><a href="#garden">Logic Garden</a></li>
+                    <li><a href="#features">Features</a></li>
                     <li><a href="#gallery">Gallery</a></li>
                     <li><a href="#download">Download</a></li>
-                    <li data-admin-nav hidden><a href="InstructorDashboard/i_dashboard.html">Dashboard</a></li>
-                    <li><a href="LoginPage/login_page.html" class="login-btn">LOGIN</a></li>
+
                 </ul>
             </nav>
-            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+            <div class="account-nav" aria-label="Account">
+
+                <a class="login-btn" data-login-link href="LoginPage/login_page.html">LOGIN</a>
+                <div class="account-menu" data-user-menu hidden>
+
+                    <button class="account-toggle" type="button" data-account-toggle aria-expanded="false" aria-controls="account-dropdown" aria-label="Account menu"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><span class="account-toggle-name" data-account-name>Account</span><span class="account-chevron" aria-hidden="true">⌄</span></button>
+                    <div class="account-dropdown" id="account-dropdown" data-account-dropdown hidden>
+                        <div class="account-menu-heading"><strong data-menu-name>Account</strong><small data-menu-email></small></div>
+                        <a href="Profile/profile.html">Profile</a>
+                        <a href="InstructorDashboard/i_dashboard.html" data-admin-nav hidden>Instructor dashboard</a>
+                        <button type="button" data-logout>Logout</button>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
+        <p class="account-message" data-account-feedback role="alert" hidden></p>
     </header>
-    <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" inert>
         <ul>
             <li><a href="#about" class="mobile-link">About</a></li>
             <li><a href="#solo" class="mobile-link">Solo trials</a></li>
             <li><a href="#garden" class="mobile-link">Logic Garden</a></li>
+            <li><a href="#features" class="mobile-link">Features</a></li>
             <li><a href="#gallery" class="mobile-link">Gallery</a></li>
             <li><a href="#download" class="mobile-link">Download</a></li>
-            <li data-admin-nav hidden><a href="InstructorDashboard/i_dashboard.html" class="mobile-link">Dashboard</a></li>
-            <li><a href="LoginPage/login_page.html" class="btn btn-primary mobile-link login-btn">LOGIN</a></li>
+
         </ul>
+        <div class="mobile-account-panel" data-mobile-user hidden>
+            <div class="mobile-user-identity"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><div><strong data-mobile-account-name>Account</strong><small data-mobile-account-email></small></div></div>
+            <div class="mobile-account-links">
+                <a href="Profile/profile.html" class="mobile-link">Profile</a>
+                <a href="InstructorDashboard/i_dashboard.html" class="mobile-link" data-admin-nav hidden>Instructor dashboard</a>
+                <button type="button" data-logout>Logout</button>
+            </div>
+        </div>
     </div>
 
     <main>
         <section id="hero" class="home-hero">
             <div class="container home-hero-content">
                 <p class="eyebrow">A fantasy adventure through discrete mathematics</p>
-                <h1>Think your way <span>through the legend.</span></h1>
-                <p class="hero-lede">Explore a world of books, gardens, ruins and puzzle chambers. Choose a solo trial, solve its challenge, then return to the Logic Garden to study the ideas behind it.</p>
+                <h1>Every puzzle. <span>A new discovery.</span></h1>
+                <p class="hero-lede">Step into a realm where curiosity leads the way. Unravel the solo trials, sharpen your reasoning, and uncover the mathematics woven into every challenge.</p>
                 <div class="hero-actions">
                     <a href="#solo" class="btn btn-primary">Explore solo trials</a>
                     <a href="#download" class="btn btn-secondary">Get the Android game</a>
@@ -104,7 +128,7 @@
 
         <section id="garden" class="home-section garden-section">
             <div class="container garden-grid">
-                <div class="garden-art"><img src="Images/BG2.png" alt="Stone gateway and glowing mathematical symbols in the Logic Legends world" loading="lazy"></div>
+                <div class="garden-art"><img src="Images/logic-garden-courtyard.webp" alt="Logic Garden courtyard with a tiered fountain, hanging lanterns, stone columns and a blue stained-glass window" loading="lazy" width="1920" height="909"></div>
                 <div>
                     <p class="eyebrow">Explore &amp; study</p>
                     <h2>Return to the <span>Logic Garden.</span></h2>
@@ -117,11 +141,18 @@
 
         <section id="features" class="home-section gameplay-section">
             <div class="container">
-                <div class="section-heading"><p class="eyebrow">Inside a trial</p><h2>Explore. Understand. <span>Solve.</span></h2></div>
-                <div class="gameplay-grid">
-                    <article><span class="step-number">01</span><h3>Enter a world</h3><p>Move through a themed environment and find the book statue, board or station that begins the topic's challenge.</p></article>
-                    <article><span class="step-number">02</span><h3>Work with the puzzle</h3><p>Build truth tables, arrange proof steps, connect mappings, trace graph routes or edit tree structures, depending on the trial.</p></article>
-                    <article><span class="step-number">03</span><h3>Learn as you go</h3><p>Read the in-game guide, review the task, submit an answer and use the feedback to improve your reasoning.</p></article>
+                <div class="section-heading">
+                    <p class="eyebrow">Game features</p>
+                    <h2>More ways to <span>make your legend.</span></h2>
+                    <p>Take on a trial, learn something new, and bring your own style to the adventure.</p>
+                </div>
+                <div class="gameplay-grid feature-grid">
+                    <article><span class="feature-symbol" aria-hidden="true">10</span><h3>Ten solo trials</h3><p>Journey through four chapters of discrete mathematics, from propositional logic and proof methods to graphs and trees.</p><a href="#solo" class="feature-link">Discover the trials <span aria-hidden="true">→</span></a></article>
+                    <article><span class="feature-symbol" aria-hidden="true">p ∧ q</span><h3>Puzzles you can explore</h3><p>Work with truth tables, arrange proof steps, connect mappings and solve graph and tree challenges in interactive 3D spaces.</p></article>
+                    <article><span class="feature-symbol" aria-hidden="true">A → Z</span><h3>The Logic Garden</h3><p>Take a break from the trials. Explore the courtyard, meet the wizard and browse study books organized by academic term.</p><a href="#garden" class="feature-link">Visit the garden <span aria-hidden="true">→</span></a></article>
+                    <article><span class="feature-symbol" aria-hidden="true">2–4</span><h3>Play together</h3><p>Create a private multiplayer lobby, share its code with friends, chat with your group and ready up for your next challenge.</p></article>
+                    <article><span class="feature-symbol" aria-hidden="true">✦</span><h3>Your adventurer, your style</h3><p>Choose your character's look, preview outfits in the shop and equip the clothing you own through Customization.</p></article>
+                    <article><span class="feature-symbol" aria-hidden="true">★</span><h3>Achievements to pursue</h3><p>Visit the Achievements menu to explore milestones across individual stages and academic terms as you continue your journey.</p></article>
                 </div>
             </div>
         </section>
@@ -129,14 +160,52 @@
         <section id="gallery" class="home-section gallery-section">
             <div class="container">
                 <div class="section-heading">
-                    <p class="eyebrow">From the game project</p>
-                    <h2>A closer look at <span>the trials.</span></h2>
-                    <p>Captured views from the Unity project. Gameplay presentation may change as development continues.</p>
+                    <p class="eyebrow">See it in action</p>
+                    <h2 id="gallery-heading">Watch the adventure <span>unfold.</span></h2>
+                    <p>Step inside Logic Legends. Explore the places, meet your guide and discover the challenges waiting along the way.</p>
                 </div>
-                <div class="screenshot-grid">
-                    <figure class="screenshot-card"><img src="Images/functions-relations-gameplay.png" alt="Functions and Relations trial with domain and range crystal stations" loading="lazy"><figcaption><strong>Functions &amp; Relations</strong><span>Connect inputs and outputs in the mapping chamber.</span></figcaption></figure>
-                    <figure class="screenshot-card"><img src="Images/proofs-library-gameplay.png" alt="Proofs library with formal and informal proof sorting stations" loading="lazy"><figcaption><strong>Formal vs Informal Proofs</strong><span>Read arguments and classify them in the proofs library.</span></figcaption></figure>
-                    <figure class="screenshot-card"><img src="Images/proof-steps-gameplay.png" alt="A proof challenge showing shuffled statements and numbered proof slots" loading="lazy"><figcaption><strong>Proof steps</strong><span>Arrange statements into a valid argument.</span></figcaption></figure>
+                <div class="game-gallery" role="region" aria-roledescription="carousel" aria-labelledby="gallery-heading" tabindex="0">
+                    <div class="gallery-stage">
+                        <div id="gallery-slides">
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="1 of 7">
+                                <img src="Images/logic-garden-courtyard.webp" alt="Fountain, hanging lanterns and stone arches in the Logic Garden courtyard" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Logic Garden · Courtyard</span><h3>A moment of discovery</h3><p>Wander past the fountain and lantern-lit columns before heading into the study library.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="2 of 7">
+                                <img src="Images/functions-relations-current.webp" alt="Book pedestal and crystal mapping stations beneath ivy-covered arches" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Solo Trial 8 · Functions &amp; Relations</span><h3>Find the connection</h3><p>Explore the mapping courtyard and work with domain and range stations to connect inputs and outputs.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="3 of 7">
+                                <img src="Images/proofs-library-current.webp" alt="Student adventurer facing the formal and informal proof stations in a candlelit library" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Solo Trial 4 · Formal vs Informal Proofs</span><h3>Every argument has a story</h3><p>Step into the Proofs Library, read the arguments and decide what makes a proof formal or informal.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="4 of 7">
+                                <img src="Images/direct-indirect-gallery.webp" alt="Blue direct-proof altar and red indirect-proof altar in a stone puzzle chamber" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Solo Trial 5 · Direct &amp; Indirect Proofs</span><h3>Two paths to a proof</h3><p>Enter the Trial of Proofs and build your reasoning at the blue and red proof altars.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="5 of 7">
+                                <img src="Images/graphs-gallery.webp" alt="Graph chamber with labeled platforms, orange connections and glowing blue crystals" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Solo Trial 9 · Graphs</span><h3>Trace a way forward</h3><p>Discover the graph chamber, where connected platforms turn vertices, edges and routes into a space to explore.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="6 of 7">
+                                <img src="Images/trees-gallery.webp" alt="Tree diagram with nodes A to G on a large board surrounded by bookshelves and lanterns" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Solo Trial 10 · Trees</span><h3>Follow every branch</h3><p>Study the tree board in this lantern-lit chamber and work through the relationships between its nodes.</p></figcaption>
+                            </figure>
+                            <figure class="gallery-slide" role="group" aria-roledescription="slide" aria-label="7 of 7">
+                                <img src="Images/garden-guide-current.webp" alt="Wizard guide among the bookshelves of the Logic Garden study library" loading="lazy" width="1920" height="909">
+                                <figcaption><span class="gallery-location">Logic Garden · Study Library</span><h3>A little guidance goes a long way</h3><p>Meet the wizard among the bookshelves and revisit the ideas behind your next solo trial.</p></figcaption>
+                            </figure>
+                        </div>
+                        <div class="gallery-arrows" hidden>
+                            <button type="button" class="gallery-arrow" data-gallery-previous aria-label="Previous gallery image" aria-controls="gallery-slides"><span aria-hidden="true">‹</span></button>
+                            <button type="button" class="gallery-arrow" data-gallery-next aria-label="Next gallery image" aria-controls="gallery-slides"><span aria-hidden="true">›</span></button>
+                        </div>
+                    </div>
+                    <div class="gallery-navigation" hidden>
+                        <div class="gallery-dots" role="group" aria-label="Choose a gallery image"></div>
+                        <span class="gallery-count" aria-hidden="true">01 / 07</span>
+                    </div>
+                    <p class="visually-hidden" data-gallery-status role="status" aria-live="polite" aria-atomic="true"></p>
                 </div>
             </div>
         </section>
@@ -145,9 +214,9 @@
             <div class="container download-panel">
                 <div>
                     <p class="eyebrow">Ready to play?</p>
-                    <h2>Begin your <span>solo journey.</span></h2>
-                    <p>Download the Android build, choose Solo from the game menu, or visit the Logic Garden to study first.</p>
-                    <a href="https://drive.google.com/file/d/1-SGLufTKQ7jVLqjcG6FrHfaTZ766dQ24/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Download Android build</a>
+                    <h2>Begin your <span>journey.</span></h2>
+                    <p>Your next discovery is a tap away. Get Logic Legends for Android and turn your curiosity into a new adventure.</p>
+                    <a href="https://drive.google.com/file/d/1-SGLufTKQ7jVLqjcG6FrHfaTZ766dQ24/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Download Game</a>
                 </div>
                 <div class="download-mark" aria-hidden="true"><img src="Images/logo_transparent.png" alt=""></div>
             </div>
@@ -168,6 +237,7 @@
         </div>
     </footer>
     <script src="JS/nav.js"></script>
+    <script src="JS/gallery.js"></script>
     <script type="module" src="JS/navbar_auth.js"></script>
 </body>
 </html>

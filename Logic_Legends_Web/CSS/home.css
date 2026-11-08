@@ -51,7 +51,7 @@
     position: relative;
     isolation: isolate;
     padding: 8rem 0 5rem !important;
-    background: linear-gradient(90deg,rgba(5,25,30,.92),rgba(7,29,34,.77) 50%,rgba(7,29,34,.25)),url('../Images/forest-menu-background.png') center/cover;
+    background: linear-gradient(90deg,rgba(5,15,37,.86),rgba(9,24,47,.62) 48%,rgba(9,24,47,.12)),url('../Images/night-menu-background.webp') center/cover;
 }
 .home-hero::after { content: ""; position: absolute; z-index: -1; inset: 55% 0 0; background: linear-gradient(transparent,#091c25); }
 .home-hero-content { position: relative; width: 100%; }
@@ -85,7 +85,7 @@
 .chapter-card li { padding: .28rem 0 .28rem .2rem; font-weight: 600; }
 .chapter-card li::marker { font-family: 'Roboto Condensed',Impact,sans-serif; color: #8c4a20; font-weight: 800; }
 .garden-section { background: #102b32; }
-.garden-art img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.garden-art img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 .garden-shelves { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1.5rem 0; }
 .garden-shelves span { padding: .45rem .85rem; border: 1px solid #a67440; border-radius: 8px; background: #4a3424; color: #ffe8ae; font: 800 .85rem 'Roboto Condensed',Impact,sans-serif; text-transform: uppercase; letter-spacing: .04em; }
 .small-note { color: #c9d9d2; font-size: .95rem; }
@@ -95,14 +95,37 @@
 .step-number { display: block; color: var(--gold); font: 800 2.4rem 'Roboto Condensed',Impact,sans-serif; margin-bottom: .65rem; }
 .gameplay-grid h3 { font-size: 1.55rem; text-transform: uppercase; margin-bottom: .6rem; }
 .gameplay-grid p { font-size: .95rem; color: #e0ede5; }
+.feature-grid article { position: relative; padding: 2rem; background: linear-gradient(145deg,#19454c,#102e38); border-color: #715134; }
+.feature-symbol { display: flex; align-items: center; width: fit-content; min-height: 3.4rem; margin-bottom: 1.3rem; color: var(--gold); font: 800 1.7rem 'Roboto Condensed',Impact,sans-serif; letter-spacing: .08em; border-bottom: 2px solid #a6763d; }
+.feature-grid h3 { font-size: 1.6rem; }
+.feature-link { display: inline-flex; align-items: center; gap: .6rem; color: var(--gold); font-size: .86rem; font-weight: 700; margin-top: 1.15rem; }
+.feature-link:hover { color: #fff3d6; }
 .gallery-section { background: #12333b; }
-.screenshot-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; }
-.screenshot-card { overflow: hidden; border: 5px solid #644129; border-radius: 13px; background: #efe0bb; box-shadow: 0 10px 28px rgba(0,0,0,.28); }
-.screenshot-card:first-child { grid-column: 1/-1; }
-.screenshot-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-.screenshot-card figcaption { display: flex; flex-direction: column; gap: .25rem; padding: .85rem 1rem; color: var(--ink); }
-.screenshot-card strong { font: 800 1.3rem 'Roboto Condensed',Impact,sans-serif; text-transform: uppercase; }
-.screenshot-card span { font-size: .87rem; }
+.gallery-section .section-heading { max-width: 1050px; margin-bottom: 3rem; }
+.gallery-section .section-heading > p:last-child { max-width: 660px; margin-inline: auto; }
+.game-gallery { max-width: 1040px; margin-inline: auto; }
+.game-gallery:focus-visible { outline: 3px solid var(--gold); outline-offset: 8px; border-radius: 14px; }
+.gallery-stage { position: relative; overflow: hidden; border: 3px solid #a6763d; border-radius: 14px; box-shadow: 0 18px 40px #0005; background: #091c25; }
+.gallery-slide { position: relative; }
+.gallery-slide[hidden],.game-gallery [hidden] { display: none !important; }
+.gallery-slide img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.gallery-slide figcaption { padding: 1.15rem 1.75rem 1.3rem; background: #07151df5; border-top: 2px solid #bc8c4b; }
+.gallery-ready .gallery-slide figcaption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(100deg,#06151df5,#081a24ed); }
+.gallery-location { display: block; color: var(--gold); text-transform: uppercase; font: 700 .78rem 'Roboto Condensed',Impact,sans-serif; letter-spacing: .13em; margin-bottom: .3rem; }
+.gallery-slide h3 { font: 800 clamp(1.3rem,2.4vw,1.85rem) 'Roboto Condensed',Impact,sans-serif; margin-bottom: .3rem; }
+.gallery-slide figcaption p { color: #e0e8e7; font-size: .9rem; line-height: 1.6; max-width: 850px; }
+.gallery-arrows { position: absolute; inset: 0 0 auto; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: space-between; padding-inline: 1.1rem; pointer-events: none; }
+.gallery-arrow { pointer-events: auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 2px solid #6c461f; background: #f5bd51; color: #211b12; box-shadow: 0 3px 12px #0006; cursor: pointer; }
+.gallery-arrow span { font: 700 2.5rem/1 Georgia,serif; margin-top: -.2rem; }
+.gallery-arrow:hover { background: #ffe1a1; }
+.gallery-navigation { display: flex; align-items: center; justify-content: center; position: relative; min-height: 48px; margin-top: .7rem; }
+.gallery-dots { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+.gallery-dot { display: grid; place-items: center; width: 34px; height: 44px; background: none; border: none; cursor: pointer; }
+.gallery-dot::after { content: ''; width: 10px; height: 10px; border: 2px solid var(--gold); border-radius: 50%; transition: background-color .2s,transform .2s; }
+.gallery-dot[aria-current]::after { background: var(--gold); transform: scale(1.2); }
+.gallery-dot:hover::after { background: #f3c46c88; }
+.gallery-count { position: absolute; right: 0; color: #bacdce; font: 700 .9rem 'Roboto Condensed',Impact,sans-serif; letter-spacing: .13em; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .download-section { background: #091c25; }
 .download-panel { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding-block: clamp(2rem,5vw,4rem); background: linear-gradient(120deg,#204f50,#10313a); border: 3px solid #9c6b3b; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,.3); }
 .download-panel p:not(.eyebrow) { max-width: 580px; margin-bottom: 1.5rem; }
@@ -113,15 +136,19 @@
     .intro-grid,.garden-grid { grid-template-columns: 1fr; }
     .intro-image { max-width: 720px; }
     .garden-art { order: 2; }
-    .gameplay-grid { grid-template-columns: 1fr; }
+    .gameplay-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
     .home-hero { min-height: 690px; background-position: 58% center; }
     .home-hero h1 { font-size: clamp(3.3rem,13vw,5rem); }
     .home-hero .hero-actions { flex-direction: column; align-items: stretch; }
     .hero-scroll { display: none; }
-    .chapter-grid,.screenshot-grid { grid-template-columns: 1fr; }
-    .screenshot-card:first-child { grid-column: auto; }
+    .chapter-grid,.gameplay-grid { grid-template-columns: 1fr; }
+    .gallery-ready .gallery-slide figcaption { position: static; min-height: 182px; padding: 1.1rem; }
+    .gallery-arrows { padding-inline: .65rem; }
+    .gallery-arrow { width: 44px; height: 44px; }
+    .gallery-count { position: static; margin-left: .5rem; }
+    .gallery-dot { width: 30px; }
     .download-panel { grid-template-columns: 1fr; }
     .download-mark { display: none; }
 }

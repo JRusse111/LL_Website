@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Logic Legends | Account Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Roboto+Condensed:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/global.css">
+    <link rel="stylesheet" href="../CSS/home.css">
+    <link rel="stylesheet" href="../CSS/account.css">
+    <link rel="stylesheet" href="../CSS/profile.css">
+</head>
+<body class="home-page profile-page">
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="../index.html#hero" class="logo"><img src="../Images/logo_transparent.png" alt="">LOGIC LEGENDS</a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#solo">Solo trials</a></li>
+                    <li><a href="../index.html#garden">Logic Garden</a></li>
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="../index.html#gallery">Gallery</a></li>
+                    <li><a href="../index.html#download">Download</a></li>
+
+                </ul>
+            </nav>
+            <div class="account-nav" aria-label="Account">
+
+                <a class="login-btn" data-login-link href="../LoginPage/login_page.html">LOGIN</a>
+                <div class="account-menu" data-user-menu hidden>
+
+                    <button class="account-toggle" type="button" data-account-toggle aria-expanded="false" aria-controls="account-dropdown" aria-label="Account menu"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><span class="account-toggle-name" data-account-name>Account</span><span class="account-chevron" aria-hidden="true">⌄</span></button>
+                    <div class="account-dropdown" id="account-dropdown" data-account-dropdown hidden>
+                        <div class="account-menu-heading"><strong data-menu-name>Account</strong><small data-menu-email></small></div>
+                        <a href="../Profile/profile.html">Profile</a>
+                        <a href="../InstructorDashboard/i_dashboard.html" data-admin-nav hidden>Instructor dashboard</a>
+                        <button type="button" data-logout>Logout</button>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <p class="account-message" data-account-feedback role="alert" hidden></p>
+    </header>
+    <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" inert>
+        <ul>
+            <li><a href="../index.html#about" class="mobile-link">About</a></li>
+            <li><a href="../index.html#solo" class="mobile-link">Solo trials</a></li>
+            <li><a href="../index.html#garden" class="mobile-link">Logic Garden</a></li>
+            <li><a href="../index.html#features" class="mobile-link">Features</a></li>
+            <li><a href="../index.html#gallery" class="mobile-link">Gallery</a></li>
+            <li><a href="../index.html#download" class="mobile-link">Download</a></li>
+
+        </ul>
+        <div class="mobile-account-panel" data-mobile-user hidden>
+            <div class="mobile-user-identity"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><div><strong data-mobile-account-name>Account</strong><small data-mobile-account-email></small></div></div>
+            <div class="mobile-account-links">
+                <a href="../Profile/profile.html" class="mobile-link">Profile</a>
+                <a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" data-admin-nav hidden>Instructor dashboard</a>
+                <button type="button" data-logout>Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="profile-main">
+        <div class="profile-heading">
+            <div class="container">
+                <p class="eyebrow">Your Logic Legends account</p>
+                <h1>Your <span>profile.</span></h1>
+                <!-- <p>Your account details, your adventure and the tools for your role, all in one place.</p> -->
+            </div>
+        </div>
+        <div class="container profile-content">
+            <div id="profileLoading" class="profile-state" role="status">Loading your account…</div>
+            <div id="profileGuest" class="profile-state" hidden>
+                <h2 id="guestHeading">Welcome, adventurer.</h2>
+                <p id="guestMessage">Log in to view your account profile. New here? Create an account to get started.</p>
+                <a href="../LoginPage/login_page.html" class="btn btn-primary">Log in</a>
+                <a href="../LoginPage/sign_up_page.html" class="btn btn-secondary">Create account</a>
+            </div>
+            <p id="profileNotice" class="profile-feedback" role="status" aria-live="polite" hidden></p>
+            <div id="profileData" hidden>
+                <div class="profile-overview">
+                    <aside class="profile-card profile-identity" aria-labelledby="profileName">
+                        <div class="profile-avatar" id="profileAvatar" aria-hidden="true"></div>
+                        <h2 id="profileName"></h2>
+                        <p class="profile-email" id="profileEmail"></p>
+                        <div><span class="role-badge" id="profileRole"></span></div>
+                        <dl class="profile-facts">
+                            <div><dt>Email status</dt><dd id="profileVerification"></dd></div>
+                            <div><dt>Member since</dt><dd id="profileJoined"></dd></div>
+                        </dl>
+                    </aside>
+                    <section class="profile-card profile-adventure" aria-labelledby="adventureHeading">
+                        <p class="eyebrow">Player profile</p>
+                        <h2 id="adventureHeading">Your adventure <span>starts here.</span></h2>
+                        <p>Your player profile has a home. More game details and ways to personalize this space will be added later.</p>
+                        <div class="profile-actions">
+                            <a href="../index.html#solo" class="btn btn-primary">Explore solo trials</a>
+                            <a href="../InstructorDashboard/i_dashboard.html" class="btn btn-secondary" data-admin-nav hidden>Open dashboard</a>
+                        </div>
+                    </section>
+                </div>
+                <section id="administrators" class="profile-section" aria-labelledby="adminHeading" hidden>
+                    <div class="profile-card">
+                        <div class="profile-section-heading">
+                            <div><p class="eyebrow">Super admin tools</p><h2 id="adminHeading">Administrator accounts</h2> <p>View who has dashboard access, add an administrator or update an existing role.</p></div>
+                            <button type="button" class="profile-button" id="refreshAdmins">Refresh list</button>
+                        </div>
+                        <form id="addAdminForm" class="add-admin-form">
+                            <div><label for="adminEmail">Account email</label><input id="adminEmail" type="email" name="email" maxlength="254" autocomplete="off" placeholder="name@example.com" required></div>
+                            <div><label for="adminRole">Access level</label><select id="adminRole" name="role"><option value="admin">Admin</option><option value="super_admin">Super admin</option></select></div>
+                            <button type="submit" class="profile-button">Add administrator</button>
+                        </form>
+                        <!-- <p class="admin-help">Add an existing, verified account. Admins can view the dashboard. Super admins can also manage administrator access.</p> -->
+                        <p id="adminFeedback" class="profile-feedback" role="status" aria-live="polite" hidden></p>
+                        <div class="admin-toolbar">
+                            <div class="admin-search"><label for="adminSearch">Find an administrator</label><input id="adminSearch" type="search" placeholder="Search by name or email" autocomplete="off"></div>
+                            <p class="admin-count" id="adminCount" aria-live="polite"></p>
+                        </div>
+                        <p id="adminLoading" role="status" hidden>Loading administrator accounts…</p>
+                        <p id="adminEmpty" class="admin-help" hidden></p>
+                        <div class="admin-table-scroll">
+                            <table class="admin-table" aria-label="Administrator accounts">
+                                <thead><tr><th scope="col">Account</th><th scope="col">Access level</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+                                <tbody id="adminRows"></tbody>
+                            </table>
+                        </div>
+                        <div class="admin-pagination"><button type="button" class="profile-button" id="loadMoreAdmins" hidden>Load more accounts</button></div>
+                        <!-- <p class="admin-help">Removing access keeps the player's account. You cannot change or remove your own super admin access.</p> -->
+                    </div>
+                </section>
+                <div class="profile-session">
+                    
+                    <button type="button" class="profile-button profile-danger" data-logout>Logout</button>
+                </div>
+            </div>
+            <noscript><div class="profile-state">Enable JavaScript to sign in and view your account.</div></noscript>
+        </div>
+    </main>
+    <dialog id="accountConfirm" class="profile-dialog" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+        <h2 id="confirmTitle">Confirm account change</h2>
+        <p id="confirmMessage"></p>
+        <form method="dialog"><button class="profile-button" value="cancel" autofocus>Cancel</button><button class="profile-button" id="confirmAction" value="confirm">Confirm</button></form>
+    </dialog>
+    <footer><p>&copy; 2026 Logic Legends · National College of Science &amp; Technology</p></footer>
+    <script src="../JS/nav.js"></script>
+    <script type="module" src="../JS/navbar_auth.js"></script>
+    <script type="module" src="../JS/profile.js"></script>
+</body>
+</html>

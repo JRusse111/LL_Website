@@ -1,54 +1,83 @@
-// JS/navbar_auth.js
+import { subscribeSession, logout } from './session.js';
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-// Your exact Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDF_VO9YeLPCRQ1D0OJDXSgYc3i9CxYcIc",
-  authDomain: "logic-legends-ac66c.firebaseapp.com",
-  databaseURL: "https://logic-legends-ac66c-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "logic-legends-ac66c",
-  storageBucket: "logic-legends-ac66c.firebasestorage.app",
-  messagingSenderId: "251023689335",
-  appId: "1:251023689335:web:78a7dca5859d3f48ec2872"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Find all elements with the 'login-btn' class (Desktop & Mobile)
-const loginBtns = document.querySelectorAll('.login-btn');
-const adminNavItems = document.querySelectorAll('[data-admin-nav]');
-
-onAuthStateChanged(auth, async (user) => {
-    let isAdmin = false;
-    if (user && user.emailVerified) {
-        try {
-            const token = await getIdTokenResult(user, true);
-            isAdmin = token.claims.admin === true || token.claims.super_admin === true;
-        } catch (error) {
-            console.error('Unable to check account role:', error);
+const menus = [...document.querySelectorAll('[data-user-menu]')];
+function setOpen(menu, open) {
+    menu.querySelector('[data-account-toggle]').setAttribute('aria-expanded', String(open));
+    menu.querySelector('[data-account-dropdown]').hidden = !open;
+    if (!open) delete menu.dataset.hoverOpened;
+}
+menus.forEach(menu => {
+    const toggle = menu.querySelector('[data-account-toggle]');
+    toggle.addEventListener('click', () => {
+        const opening = menu.dataset.hoverOpened === 'true' || toggle.getAttribute('aria-expanded') !== 'true';
+        delete menu.dataset.hoverOpened;
+        setOpen(menu, opening);
+        if (opening) {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            mobileMenu?.classList.remove('active');
+            if (mobileMenu) mobileMenu.inert = true;
+            const hamburger = document.getElementById('hamburger-btn');
+            hamburger?.classList.remove('active');
+            hamburger?.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         }
-    }
-
-    adminNavItems.forEach(item => { item.hidden = !isAdmin; });
-
-    if (!user || !user.emailVerified) return;
-
-    loginBtns.forEach(btn => {
-        btn.textContent = 'LOGOUT';
-        btn.href = '#';
-        if (btn.dataset.logoutBound) return;
-        btn.dataset.logoutBound = 'true';
-        btn.addEventListener('click', async (event) => {
+    });
+    menu.addEventListener('mouseenter', () => {
+        if (matchMedia('(hover: hover)').matches && toggle.getAttribute('aria-expanded') !== 'true') {
+            menu.dataset.hoverOpened = 'true';
+            setOpen(menu, true);
+        }
+    });
+    menu.addEventListener('mouseleave', () => { if (!menu.contains(document.activeElement)) setOpen(menu, false); });
+    menu.addEventListener('focusout', event => { if (!menu.contains(event.relatedTarget)) setOpen(menu, false); });
+    menu.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { setOpen(menu, false); toggle.focus(); }
+        if (event.key === 'ArrowDown' && event.target === toggle) {
             event.preventDefault();
-            try {
-                await signOut(auth);
-                window.location.href = '/LoginPage/login_page.html';
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        });
+            setOpen(menu, true);
+            menu.querySelector('[data-account-dropdown] a').focus();
+        }
+    });
+});
+document.addEventListener('click', event => menus.forEach(menu => { if (!menu.contains(event.target)) setOpen(menu, false); }));
+document.getElementById('hamburger-btn')?.addEventListener('click', () => menus.forEach(menu => setOpen(menu, false)));
+
+subscribeSession(({ user, role, status }) => {
+    const signedIn = !!user;
+    document.querySelectorAll('[data-login-link]').forEach(item => { item.hidden = signedIn; });
+    document.querySelectorAll('.account-nav').forEach(item => { item.dataset.signedIn = String(signedIn); });
+    document.querySelectorAll('[data-mobile-user]').forEach(panel => {
+        panel.hidden = !signedIn;
+        panel.querySelector('[data-mobile-account-name]').textContent = user?.displayName || user?.email?.split('@')[0] || 'Account';
+        panel.querySelector('[data-mobile-account-email]').textContent = user?.email || '';
+    });
+    document.querySelectorAll('[data-admin-nav]').forEach(item => { item.hidden = role !== 'admin' && role !== 'super_admin'; });
+    menus.forEach(menu => {
+        menu.hidden = !signedIn;
+        if (!signedIn) { setOpen(menu, false); return; }
+        const name = user.displayName || user.email?.split('@')[0] || 'Account';
+        menu.querySelectorAll('[data-account-name]').forEach(label => { label.textContent = name; });
+        menu.querySelector('[data-menu-name]').textContent = name;
+        menu.querySelector('[data-menu-email]').textContent = user.email || '';
+        menu.querySelector('[data-account-toggle]').setAttribute('aria-label', `Account menu for ${name}`);
+    });
+    if (status === 'error') {
+        const feedback = document.querySelector('[data-account-feedback]');
+        if (feedback) { feedback.textContent = 'Your session could not be verified. Please sign in again.'; feedback.hidden = false; }
+    }
+});
+
+document.querySelectorAll('[data-logout]').forEach(button => {
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        const label = button.textContent;
+        button.textContent = 'Logging out…';
+        try { await logout(); }
+        catch {
+            const feedback = document.querySelector('[data-account-feedback]');
+            if (feedback) { feedback.textContent = 'Logout failed. Please try again.'; feedback.hidden = false; }
+            button.disabled = false;
+            button.textContent = label;
+        }
     });
 });
