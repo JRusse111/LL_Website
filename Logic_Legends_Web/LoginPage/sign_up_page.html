@@ -2,109 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic Legends | Sign Up</title>
-    
-    <!-- Google Fonts: Montserrat (Body) & Orbitron (Headings) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create your Logic Legends account.">
+    <title>Logic Legends | Create Account</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Roboto+Condensed:wght@600;700;800&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     <link rel="stylesheet" href="../CSS/global.css">
+    <link rel="stylesheet" href="../CSS/home.css">
+    <link rel="stylesheet" href="../CSS/auth.css">
+    <link rel="stylesheet" href="../CSS/account.css">
 </head>
-<body>
-
-    <!-- SECTION A: GLOBAL NAVIGATION BAR -->
+<body class="home-page auth-page">
     <header id="site-header">
         <div class="container nav-container">
-            <a href="../index.html" class="logo">
-                <img src="../Images/logo_transparent.png" alt="Logic Legends Logo">
-                LOGIC LEGENDS
-            </a>
-
-            <nav>
+            <a href="../index.html#hero" class="logo"><img src="../Images/logo_transparent.png" alt="">LOGIC LEGENDS</a>
+            <nav aria-label="Main navigation">
                 <ul class="nav-links">
                     <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#solo">Solo trials</a></li>
+                    <li><a href="../index.html#garden">Logic Garden</a></li>
                     <li><a href="../index.html#features">Features</a></li>
                     <li><a href="../index.html#gallery">Gallery</a></li>
                     <li><a href="../index.html#download">Download</a></li>
-                    <li data-admin-nav hidden><a href="../InstructorDashboard/i_dashboard.html">Dashboard</a></li>
-                    <li><a href="login_page.html" class="login-btn">LOGIN</a></li>
+
                 </ul>
             </nav>
+            <div class="account-nav" aria-label="Account">
 
-            <button class="hamburger" id="hamburger-btn" aria-label="Toggle Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+                <a class="login-btn" data-login-link href="../LoginPage/login_page.html">LOGIN</a>
+                <div class="account-menu" data-user-menu hidden>
+
+                    <button class="account-toggle" type="button" data-account-toggle aria-expanded="false" aria-controls="account-dropdown" aria-label="Account menu"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><span class="account-toggle-name" data-account-name>Account</span><span class="account-chevron" aria-hidden="true">⌄</span></button>
+                    <div class="account-dropdown" id="account-dropdown" data-account-dropdown hidden>
+                        <div class="account-menu-heading"><strong data-menu-name>Account</strong><small data-menu-email></small></div>
+                        <a href="../Profile/profile.html">Profile</a>
+                        <a href="../InstructorDashboard/i_dashboard.html" data-admin-nav hidden>Instructor dashboard</a>
+                        <button type="button" data-logout>Logout</button>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
+        <p class="account-message" data-account-feedback role="alert" hidden></p>
     </header>
-    <!-- Mobile Navigation Overlay -->
-    <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" inert>
         <ul>
             <li><a href="../index.html#about" class="mobile-link">About</a></li>
+            <li><a href="../index.html#solo" class="mobile-link">Solo trials</a></li>
+            <li><a href="../index.html#garden" class="mobile-link">Logic Garden</a></li>
             <li><a href="../index.html#features" class="mobile-link">Features</a></li>
             <li><a href="../index.html#gallery" class="mobile-link">Gallery</a></li>
             <li><a href="../index.html#download" class="mobile-link">Download</a></li>
-            <li data-admin-nav hidden><a href="../InstructorDashboard/i_dashboard.html" class="mobile-link">Dashboard</a></li>
-            <li style="margin-top: 2rem;"><a href="login_page.html" class="btn btn-primary mobile-link login-btn">LOGIN</a></li>
+
         </ul>
+        <div class="mobile-account-panel" data-mobile-user hidden>
+            <div class="mobile-user-identity"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><div><strong data-mobile-account-name>Account</strong><small data-mobile-account-email></small></div></div>
+            <div class="mobile-account-links">
+                <a href="../Profile/profile.html" class="mobile-link">Profile</a>
+                <a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" data-admin-nav hidden>Instructor dashboard</a>
+                <button type="button" data-logout>Logout</button>
+            </div>
+        </div>
     </div>
 
-    <!-- SECTION B: CENTERED LAYOUT CONTAINER -->
-    <main class="signup-main">
-        
-        <!-- SECTION C: THE FORM CARD -->
-        <div class="signup-card">
-            
-            <div class="card-header">
-                <img src="../Images/logo_transparent.png" alt="Logic Legends Logo" class="card-logo">
-                <h1>Create Account</h1>
-            </div>
-
-            <!-- Google Sign Up Button -->
-            <button type="button" id="googleSignupBtn" class="btn-google">
-                <img src="../Images/google-icon.png" class="google-icon" width="22" height="22" style="width:22px;height:22px;max-width:22px;object-fit:cover;flex:0 0 22px;" alt="" aria-hidden="true">
-                Sign up with Google
-            </button>
-
-            <!-- Divider -->
-            <div class="divider">OR</div>
-
-            <!-- Registration Form -->
-            <form action="#" method="POST" class="signup-form" id="signupForm">
-                
-                <!-- Email Input -->
-                <div class="input-group">
-                    <i class="bx bx-envelope input-icon-left" aria-hidden="true"></i>
-                    <input type="email" id="signupEmailInput" class="form-input" placeholder="Email Address" aria-label="Email address" autocomplete="email" required>
+    <main class="auth-main">
+        <div class="auth-shell">
+            <section class="auth-story" aria-label="The Logic Legends adventure">
+                <img class="auth-game-banner" src="../Images/LL_banner(2).png" alt="Logic Legends" width="1804" height="486">
+                <div class="auth-story-content">
+                    <p class="eyebrow">A little curiosity. A new adventure.</p>
+                    <h2>Every legend <span>starts somewhere.</span></h2>
+                    <p class="auth-story-copy">Explore new worlds, take on the solo trials and discover the ideas behind every puzzle.</p>
+                    <a class="auth-world-link" href="../index.html#gallery">Explore the world <span aria-hidden="true">→</span></a>
                 </div>
-
-                <!-- Password Input -->
-                <div class="input-group">
-                    <i class="bx bx-lock-alt input-icon-left" aria-hidden="true"></i>
-                    <input type="password" class="form-input" id="signupPasswordInput" placeholder="Password" aria-label="Password" autocomplete="new-password" required>
-                    <!-- Eye Icon for Visibility Toggle -->
-                    <button type="button" class="input-icon-right" id="togglePassword" aria-label="Show password" aria-pressed="false"><i class="bx bx-show" aria-hidden="true"></i></button>
+            </section>
+            <section class="auth-form-panel" aria-labelledby="auth-heading">
+                <nav class="auth-tabs" aria-label="Account pages">
+                    <a href="login_page.html">Log in</a>
+                    <a href="sign_up_page.html" aria-current="page">Create account</a>
+                </nav>
+                <div class="auth-form-heading">
+                    <h1 id="auth-heading">Begin your journey.</h1>
+                    <p>Create your Logic Legends account and let curiosity lead the way.</p>
                 </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn-submit">Sign Up</button>
-            </form>
-
-            <!-- Card Footer / Login Link -->
-            <div class="card-footer">
-                <p>Already have an account?</p>
-                <a href="login_page.html" class="btn-outline">Log In</a>
-            </div>
-
+                <form action="#" method="POST" class="auth-form" id="signupForm">
+                    <label for="signupEmailInput">Email address</label>
+                    <div class="input-group">
+                        <i class="bx bx-envelope input-icon-left" aria-hidden="true"></i>
+                        <input type="email" id="signupEmailInput" name="email" class="form-input" placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+                    <label for="signupPasswordInput">Password</label>
+                    <div class="input-group">
+                        <i class="bx bx-lock-alt input-icon-left" aria-hidden="true"></i>
+                        <input type="password" id="signupPasswordInput" name="password" class="form-input" placeholder="Create a password" autocomplete="new-password" minlength="6" aria-describedby="passwordHint" required>
+                        <button type="button" class="input-icon-right" id="togglePassword" aria-label="Show password" aria-controls="signupPasswordInput" aria-pressed="false"><i class="bx bx-show" aria-hidden="true"></i></button>
+                    </div>
+                    <p class="auth-password-hint" id="passwordHint">Use at least 6 characters.</p>
+                    <button type="submit" class="btn-submit">Create account</button>
+                </form>
+                <div class="divider">OR CONTINUE WITH</div>
+                <button type="button" id="googleSignupBtn" class="btn-google">
+                    <img src="../Images/google-icon.png" class="google-icon" width="22" height="22" alt="" aria-hidden="true">
+                    Continue with Google
+                </button>
+                <p class="auth-account-link">Already have an account? <a href="login_page.html">Log in</a></p>
+            </section>
         </div>
     </main>
-
-    <!-- ==========================================================================
-         JAVASCRIPT INTERACTIVITY
-         ========================================================================== -->
+    <footer class="auth-footer"><p>&copy; 2026 Logic Legends · National College of Science &amp; Technology</p></footer>
     <script src="../JS/nav.js"></script>
     <script type="module" src="../JS/navbar_auth.js"></script>
     <script type="module" src="../JS/auth.js"></script>

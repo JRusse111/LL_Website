@@ -1,32 +1,7 @@
-// JS/auth.js
-
-// 1. Import Firebase modules
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider, 
-    signInWithPopup,
-    sendEmailVerification,
-    sendPasswordResetEmail,
-    getIdTokenResult
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-// 2. Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDF_VO9YeLPCRQ1D0OJDXSgYc3i9CxYcIc",
-  authDomain: "logic-legends-ac66c.firebaseapp.com",
-  databaseURL: "https://logic-legends-ac66c-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "logic-legends-ac66c",
-  storageBucket: "logic-legends-ac66c.firebasestorage.app",
-  messagingSenderId: "251023689335",
-  appId: "1:251023689335:web:78a7dca5859d3f48ec2872"
-};
-
-// 3. Initialize Firebase and Auth
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider,
+    signInWithPopup, sendEmailVerification, sendPasswordResetEmail, getIdTokenResult
+} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { auth, appUrl } from './firebase.js';
 const googleProvider = new GoogleAuthProvider();
 
 // 4. DOM Elements
@@ -45,10 +20,8 @@ async function finishLogin(user) {
         return;
     }
 
-    const token = await getIdTokenResult(user, true);
-    window.location.replace(token.claims.admin === true || token.claims.super_admin === true
-        ? '../InstructorDashboard/i_dashboard.html'
-        : '../index.html');
+    await getIdTokenResult(user, true);
+    window.location.replace(appUrl('Profile/profile.html'));
 }
 
 // 5. Handle Email/Password Login
@@ -148,7 +121,7 @@ if (signupForm) {
                         // Force sign out so they can't access the app yet
                         auth.signOut();
                         alert("Account created! Please check your email and click the verification link before logging in.");
-                        window.location.href = "login_page.html";
+                        window.location.href = appUrl('LoginPage/login_page.html');
                     });
             })
             .catch((error) => {
@@ -163,9 +136,8 @@ if (googleSignupBtn) {
     googleSignupBtn.addEventListener('click', () => {
         // Firebase uses the exact same function for Google Login and Google Sign Up!
         signInWithPopup(auth, googleProvider)
-            .then((result) => {
-                console.log("Google signup/login successful:", result.user.displayName);
-                window.location.href = "../index.html";
+            .then(async (result) => {
+                await finishLogin(result.user);
             })
             .catch((error) => {
                 console.error("Google signup error:", error);
