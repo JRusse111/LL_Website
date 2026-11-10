@@ -1,5 +1,5 @@
 import { auth } from './firebase.js';
-import { normalizeEmail } from './account-policy.mjs';
+import { normalizeAnyEmail } from './account-policy.mjs';
 const form = document.getElementById('grantDashboardAccessForm');
 const emailInput = document.getElementById('adminAccountEmail');
 const roleInput = document.getElementById('adminAccountRole');
@@ -16,7 +16,7 @@ form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
 
-  let email; try { email = normalizeEmail(emailInput.value); } catch (e) { showFeedback(e.message, true); return; }
+  let email; try { email = normalizeAnyEmail(emailInput.value); } catch (e) { showFeedback(e.message, true); return; }
   const role = roleInput.value;
   const user = auth.currentUser;
   if (!user) {

@@ -1,4 +1,4 @@
-import { normalizeEmail } from './account-policy.mjs';
+import { normalizeAnyEmail } from './account-policy.mjs';
 import { auth } from './firebase.js';
 import { subscribeSession } from './session.js';
 
@@ -176,7 +176,7 @@ async function mutate(method, body, message) {
 $('addAdminForm').addEventListener('submit', async event => {
     event.preventDefault();
     if (busy || !$('addAdminForm').reportValidity()) return;
-    let email; try { email = normalizeEmail($('adminEmail').value); } catch (e) { feedback(e.message, true); return; }
+    let email; try { email = normalizeAnyEmail($('adminEmail').value); } catch (e) { feedback(e.message, true); return; }
     const role = $('adminRole').value;
     if (!await confirmChange('Add administrator?', `Give ${email} ${roleLabel(role)} access? ${role === 'super_admin' ? 'They will be able to add, change and remove administrator access.' : 'They will be able to view the instructor dashboard.'}`, 'Grant access')) return;
     await mutate('POST', { ...Object.fromEntries(new FormData($('addAdminForm'))), email, role }, 'Account access saved.');

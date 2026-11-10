@@ -4,6 +4,8 @@
 
 ## Completed checks
 
+The recorded checks below predate the non-NCST staff sign-in change in the current working tree; that new exception has not been exercised against Firebase or covered by those results.
+
 - **39 backend/policy regression tests**: verified NCST domain normalization, current-account role checks, stale/revoked token denial, unverified activation boundaries, new instructor/student provisioning, concurrent identity reuse, invitation failure/retry, section ownership, duplicate enrollment, membership-only removal, surname sorting, immediate existing-player progress, answer-weighted statistics, profile access, feedback attribution, read-only points snapshot, capability restrictions, expiration, ban/unban separation and audit records.
 - **Headless Chrome browser tests at 1440×900 and 390×900**: actual frontend plus actual handlers with injected in-memory Firebase Auth/RTDB. Created empty sections, enrolled an existing player and saw their 75.0% recorded progress immediately, provisioned a new student, verified sorting and all ten profile rows, provisioned an instructor, applied/removed a feedback restriction, submitted/read feedback and displayed a points snapshot. No page-level JavaScript exceptions or global horizontal overflow in checked dashboard/home views.
 - Production Netlify function modules import successfully with Firebase Admin 14.5.0.
@@ -29,8 +31,8 @@ The preview server is not Netlify's publish output and must never be deployed as
 These are local fixture/browser results, **not** production Firebase Emulator Suite or deployed-service acceptance results. Still required:
 
 1. Configure server credentials and verified invitation sender; deliver and redeem real verification/password-setup links using test NCST accounts.
-2. Verify an NCST Super Admin exists before activating the strict policy; preserve legacy accounts/UIDs and plan any approved email changes separately.
-3. Enable the required Identity Platform capability and deploy/register the two blocking hooks. Confirm direct Firebase signup and Google sign-in reject other domains.
+2. Verify a Super Admin exists before activating the policy; preserve legacy accounts/UIDs. Assign staff claims to any approved non-NCST administrators before they sign in.
+3. Enable the required Identity Platform capability and deploy/register the two blocking hooks. Confirm direct Firebase signup rejects other domains, while verified staff with non-NCST domains can sign in and ordinary non-NCST accounts cannot.
 4. Review the additive rules migration against a current production export and execute the shared backend's emulator rules tests before deployment.
 5. Confirm the real points field and set `LEADERBOARD_POINTS_FIELD`; no points writer was found in the inspected game checkout, so production configuration cannot be guessed.
 6. Check production availability of `users/UID/trialRuns` receipts. Unsynced/local-only game history is not accessible to the website until the existing game sync is connected.

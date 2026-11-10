@@ -1,7 +1,14 @@
 export const NCST_DOMAIN = 'ncst.edu.ph';
-export function normalizeEmail(value) {
+export function normalizeAnyEmail(value) {
     const email = typeof value === 'string' ? value.trim().toLowerCase() : '';
-    if (email.length > 254 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@ncst\.edu\.ph$/.test(email)) {
+    if (email.length > 254 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email)) {
+        throw Object.assign(new Error('Enter a valid email address.'), { status: 400 });
+    }
+    return email;
+}
+export function normalizeEmail(value) {
+    const email = normalizeAnyEmail(value);
+    if (!email.endsWith(`@${NCST_DOMAIN}`)) {
         throw Object.assign(new Error('Use your @ncst.edu.ph email address.'), { status: 400 });
     }
     return email;

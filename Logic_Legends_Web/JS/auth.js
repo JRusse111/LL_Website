@@ -1,14 +1,24 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
     sendEmailVerification, sendPasswordResetEmail, updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 import { auth, appUrl } from './firebase.js';
-import { normalizeEmail } from './account-policy.mjs';
+import { normalizeEmail, normalizeAnyEmail } from './account-policy.mjs';
 import { api } from './api.js';
-const provider = new GoogleAuthProvider(); provider.setCustomParameters({ hd: 'ncst.edu.ph' });
+const provider = new GoogleAuthProvider();
 async function finishLogin(user) {
-    try { normalizeEmail(user.email); } catch (e) { await signOut(auth); throw e; }
     if (!user.emailVerified) {
         try { await sendEmailVerification(user); } finally { await signOut(auth); }
-        throw new Error('Verify your NCST email using the link in your inbox, then sign in.');
+        throw new Error('Verify your email using the link in your inbox, then sign in.');
+    }
+    try {
+        const email = normalizeAnyEmail(user.email);
+        try { normalizeEmail(email); }
+        catch {
+            const { role } = await api('session');
+            if (!['super_admin', 'admin', 'instructor'].includes(role)) throw new Error('New accounts must use an @ncst.edu.ph email. Other email domains are only allowed for staff accounts added by a super admin.');
+        }
+    } catch (error) {
+        await signOut(auth);
+        throw error;
     }
     location.replace(appUrl('Profile/profile.html'));
 }
@@ -22,7 +32,7 @@ function attach(id, work) {
     });
 }
 attach('loginForm', async () => {
-    const email = normalizeEmail(document.getElementById('emailInput').value);
+    const email = normalizeAnyEmail(document.getElementById('emailInput').value);
     const result = await signInWithEmailAndPassword(auth, email, document.getElementById('passwordInput').value); await finishLogin(result.user);
 });
 attach('signupForm', async form => {
@@ -45,7 +55,7 @@ for (const id of ['googleLoginBtn', 'googleSignupBtn']) document.getElementById(
 document.getElementById('resetPasswordBtn')?.addEventListener('click', async event => {
     const button = event.currentTarget, status = document.getElementById('resetFeedback'); if (button.disabled) return;
     button.disabled = true;
-    try { await sendPasswordResetEmail(auth, normalizeEmail(document.getElementById('emailInput').value)); status.textContent = 'If the account exists, a password-setup link has been sent. Check your inbox.'; status.classList.remove('is-error'); }
+    try { await sendPasswordResetEmail(auth, normalizeAnyEmail(document.getElementById('emailInput').value)); status.textContent = 'If the account exists, a password-setup link has been sent. Check your inbox.'; status.classList.remove('is-error'); }
     catch (e) { status.textContent = e.code === 'auth/user-not-found' ? 'If the account exists, a password-setup link has been sent.' : e.message; status.classList.add('is-error'); }
     finally { status.hidden = false; button.disabled = false; }
 });

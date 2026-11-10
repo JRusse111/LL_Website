@@ -6,7 +6,7 @@ Date: 11 November 2026. Project: `LL_Website`. No commit, push, production mutat
 
 | Feature | Local implementation |
 | --- | --- |
-| NCST accounts | Shared exact-domain validation and lowercase/trim normalization in signup, login, role provisioning and enrollment. Firebase Auth blocking functions supplied for provider-side enforcement. |
+| NCST accounts | New self-registered accounts and student enrollment require the exact NCST domain. Existing staff may use any verified email domain after a Super Admin grants a staff role. Firebase Auth blocking functions enforce this at provider level when deployed. |
 | Account creation | Super Admin can provision Admin, Instructor or Super Admin users with Firebase Admin SDK. Instructors can provision students through their own sections. Existing email reuses its Auth UID. New users receive verification + password-setup links by email, not another registration. |
 | Sections | Section selector, Add Section +, empty state, Add Student, per-student removal, ownership checks and duplicate membership prevention. Surname-first display and sorting use structured profile fields. |
 | Progress | Immediate reads of `users/UID/trialRuns` for enrolled existing players. Ten-trial profile and section statistics read saved receipts. No replay/new Unity session is required when records already exist. |
@@ -20,7 +20,7 @@ The original forest/teal/gold theme and navigation remain. Tables scroll inside 
 
 Existing Firebase project: `logic-legends-ac66c`; same Auth UIDs and regional Realtime Database used by Unity. No second account store, student-specific identity, wallet or inventory was created.
 
-Claims retain the existing boolean convention: `super_admin`, `admin`, plus `instructor`. Only a verified, currently enabled NCST Super Admin can grant/change/remove any dashboard role. Server checks use the current Firebase UserRecord and `verifyIdToken(token, true)`, not stale token roles or supplied email. Roles are not editable through profile fields. Claims unrelated to dashboard access are retained.
+Claims retain the existing boolean convention: `super_admin`, `admin`, plus `instructor`. Only a verified, currently enabled Super Admin can grant/change/remove any dashboard role, including for accounts outside the NCST domain. Server checks use the current Firebase UserRecord and `verifyIdToken(token, true)`, not stale token roles or supplied email. Ordinary users still need an NCST address. Roles are not editable through profile fields. Claims unrelated to dashboard access are retained.
 
 The game's existing solo Admin email allowlist is unchanged. Website role assignment does not replace that game-specific authorization check; coordinate any intended unified game Admin policy separately.
 
@@ -38,11 +38,11 @@ Keep the website's existing pinned root dependency and lockfile (`firebase-admin
 
 ### Provider-level email policy — required before public release
 
-Frontend checks alone cannot stop someone calling Firebase signup directly. `firebase/functions.mjs` supplies `ncstBeforeCreate` and `ncstBeforeSignIn`. These validate the exact NCST domain; sign-in also checks the server moderation flag. Admin SDK provisioning separately validates the domain because Admin-created users must not depend on a client hook.
+Frontend checks alone cannot stop someone calling Firebase signup directly. `firebase/functions.mjs` supplies `ncstBeforeCreate` and `ncstBeforeSignIn`. Account creation validates the exact NCST domain. Sign-in allows an outside-domain account only when its current Firebase record has a verified `super_admin`, `admin` or `instructor` claim; sign-in also checks the server moderation flag. Super Admin provisioning accepts a valid email address from any domain. Student provisioning remains NCST-only.
 
 Firebase Authentication **with Identity Platform** is required for blocking functions. This is a service/plan/configuration change and was **not enabled or deployed** here. Install dependencies in `firebase/`, then deploy only codebase `website-auth-policy` to the existing project after review. Register/verify the blocking triggers and test password and Google providers. Keep Firebase's one-account-per-email behavior enabled. The copy of `account-policy.mjs` inside this deployment source must match the public shared module (covered by tests).
 
-Existing non-NCST accounts are not deleted, rewritten or stripped of gameplay records. The new website APIs reject them. **Before deployment, ensure a verified NCST Super Admin exists** using the existing secure bootstrap process; otherwise old Gmail-only admins would be locked out of the website. Do not silently change an account email or transfer progress to a new UID. Any approved email migration must preserve that UID and reverify ownership.
+Existing non-NCST accounts are not deleted, rewritten or stripped of gameplay records. They can sign in only after a Super Admin grants a staff role; unassigned non-NCST accounts remain blocked. The secure bootstrap script accepts any valid, verified email for the initial Super Admin. Do not silently change an account email or transfer progress to a new UID. Any approved email migration must preserve that UID and reverify ownership.
 
 Firebase reference: [blocking functions](https://firebase.google.com/docs/auth/extend-with-blocking-functions), [Admin email action links](https://firebase.google.com/docs/auth/admin/email-action-links).
 

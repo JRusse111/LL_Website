@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
-import { normalizeEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
+import { normalizeEmail, normalizeAnyEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
 import { fail } from './access.mjs';
-export async function ensureIdentity(auth, email, names, sendInvitation) {
-    email = normalizeEmail(email);
+export async function ensureIdentity(auth, email, names, sendInvitation, { allowNonNcst = false } = {}) {
+    email = allowNonNcst ? normalizeAnyEmail(email) : normalizeEmail(email);
     let user, created = false;
     try { user = await auth.getUserByEmail(email); }
     catch (error) {

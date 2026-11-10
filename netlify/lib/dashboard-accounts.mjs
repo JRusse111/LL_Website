@@ -1,7 +1,7 @@
 import { canManageAccounts, claimsForRole, claimsWithoutDashboardAccess, grantedRole } from './role-permissions.mjs';
 import { session, bodyOf, json, fail, key } from './access.mjs';
 import { ensureIdentity, invite } from './provision.mjs';
-import { normalizeEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
+import { normalizeAnyEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
 function view(user) { return { uid: user.uid, email: user.email || '', displayName: user.displayName || '', role: grantedRole(user.customClaims), emailVerified: user.emailVerified === true, disabled: user.disabled === true }; }
 export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation, logger = console }) {
     return async request => {
@@ -19,7 +19,7 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
             if (!removing && !['admin', 'super_admin', 'instructor'].includes(role)) throw fail('Choose a valid dashboard role.');
             let target, created = false;
             if (request.method === 'POST') {
-                const provisioned = await ensureIdentity(auth, normalizeEmail(data.email), data, sendInvitation);
+                const provisioned = await ensureIdentity(auth, normalizeAnyEmail(data.email), data, sendInvitation, { allowNonNcst: true });
                 target = provisioned.user; created = provisioned.created;
                 if (target.uid === caller.uid) throw fail('You cannot change your own super admin access.', 409);
                 if (grantedRole(target.customClaims) && !data.resendInvitation) throw fail('This account already has dashboard access. Edit its role in the list.', 409);
@@ -35,7 +35,7 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
                 if (!grantedRole(target.customClaims)) throw fail('This account no longer has dashboard access.', 409);
                 if (data.expectedRole !== undefined && data.expectedRole !== grantedRole(target.customClaims)) throw fail('This role has changed. Refresh before editing it.', 409);
             }
-            if (!removing) normalizeEmail(target.email);
+            if (!removing) normalizeAnyEmail(target.email);
             if (!removing && target.disabled) throw fail('Resolve this account’s disabled status first.', 409);
             // Provisioned users can receive claims now, but no access until email ownership is verified.
             const claims = removing ? claimsWithoutDashboardAccess(target.customClaims) : claimsForRole(target.customClaims, role);

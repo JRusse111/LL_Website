@@ -22,7 +22,10 @@ export async function session(request, auth, db, capability, now = Date.now(), a
     try { const token = await auth.verifyIdToken(bearer, true); user = await auth.getUser(token.uid); }
     catch { throw fail('Your session has expired. Sign in again.', 401); }
     if (user.disabled || !allowUnverified && !user.emailVerified) throw fail('Verify your email and sign in with an enabled account.', 403);
-    try { normalizeEmail(user.email); } catch { throw fail('An NCST account is required.', 403); }
+    try { normalizeEmail(user.email); }
+    catch {
+        if (!isStaff(user)) throw fail('Use an @ncst.edu.ph account unless a super admin has granted you staff access.', 403);
+    }
     const moderation = db ? (await db.ref(`website/moderation/${user.uid}`).get()).val() || {} : {};
     if (moderation.ban?.active) throw fail('This account is banned. Contact the administrator.', 403);
     const restriction = moderation.restriction;
