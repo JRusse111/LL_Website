@@ -1,0 +1,47 @@
+✔ unauthenticated requests never disclose the account list (22.8965ms)
+✔ every operation rejects players, admins and stale super-admin tokens (5.0868ms)
+✔ unverified or disabled super admins cannot manage accounts (0.8234ms)
+✔ revoked tokens are rejected, and revocation checking is enabled (0.4883ms)
+✔ lists only administrators and exposes only the required account fields (0.5608ms)
+✔ preserves pagination even when a page has no administrators (0.5927ms)
+✔ adds an existing verified player without discarding game claims (0.6724ms)
+✔ can promote an administrator to super admin (0.4106ms)
+✔ demotion removes the old super-admin claim (0.4018ms)
+✔ remove access preserves the player account and unrelated claims (0.4363ms)
+✔ a super admin cannot demote or remove their own access (0.51ms)
+✔ stale edits and duplicate grants are rejected instead of overwriting current roles (0.5636ms)
+✔ validates accounts, roles and payloads before writing claims (1.4031ms)
+✔ a role saved before a revocation failure is reported as saved (0.3185ms)
+✔ missing backend credentials produce an explicit unavailable response (0.2168ms)
+✔ exact NCST domain; capitalization and outer whitespace normalize to one identity (1.317ms)
+✔ statistics use receipts once, ignore admin runs and ordinary wrong answers as retries (0.6712ms)
+✔ every API requires a current enabled verified NCST identity, not stale token roles (23.818ms)
+✔ new instructor can be provisioned without prior signup and unrelated claims survive role edits (3.0342ms)
+✔ create section, link existing player immediately, prevent duplicates and remove only membership (4.6727ms)
+✔ new student provisioning invites once and roster is sorted by surname then first name (15.9067ms)
+✔ profile data is private and self name edits never modify progress (0.7196ms)
+✔ feedback is attributed by server and only super admin can list it (1.1123ms)
+✔ leaderboard uses points only and makes no database writes (0.5114ms)
+✔ restrictions are capability-specific and expiration is enforced without banning (1.4577ms)
+✔ ban revokes sessions, unban preserves restrictions and never deletes progress (1.273ms)
+✔ moderation requires super admin, a reason, confirmation and supported capabilities (1.235ms)
+✔ concurrent provisioning reuses one Firebase identity and cannot duplicate membership (1.0518ms)
+✔ failed invitation delivery retains the UID and can be retried without another account (0.823ms)
+✔ missing invitation configuration fails before new Auth identity creation (0.3081ms)
+✔ unverified signup can save only own names and cannot open protected progress (0.4732ms)
+✔ revoked sessions and dashboard restrictions cannot read student records (1.3247ms)
+✔ editing an existing legacy role cannot grant access to a non-NCST email (0.5664ms)
+✔ deployed Auth policy uses the same domain rules as website/backend (4.9744ms)
+✔ database rule migration preserves existing wallet validation, indexes and input file (70.3916ms)
+✔ only a verified super admin can manage dashboard accounts (0.866ms)
+✔ granting admin preserves other claims without adding super admin (0.7818ms)
+✔ granting super admin includes dashboard access (0.9705ms)
+✔ unknown roles are rejected (0.3972ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 174.368

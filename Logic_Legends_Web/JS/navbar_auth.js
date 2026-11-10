@@ -51,7 +51,7 @@ subscribeSession(({ user, role, status }) => {
         panel.querySelector('[data-mobile-account-name]').textContent = user?.displayName || user?.email?.split('@')[0] || 'Account';
         panel.querySelector('[data-mobile-account-email]').textContent = user?.email || '';
     });
-    document.querySelectorAll('[data-admin-nav]').forEach(item => { item.hidden = role !== 'admin' && role !== 'super_admin'; });
+    document.querySelectorAll('[data-admin-nav]').forEach(item => { item.hidden = role !== 'admin' && role !== 'instructor' && role !== 'super_admin'; });
     menus.forEach(menu => {
         menu.hidden = !signedIn;
         if (!signedIn) { setOpen(menu, false); return; }

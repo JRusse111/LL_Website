@@ -11,5 +11,10 @@
     "jwks-rsa": {
       "jose": "4.15.9"
     }
+  },
+  "scripts": {
+    "test": "node --test tests/role-permissions.test.mjs tests/dashboard-accounts.test.mjs tests/education.test.mjs tests/policy-migration.test.mjs",
+    "preview:qa": "node tests/education-preview-server.mjs",
+    "test:browser": "node tests/browser-smoke.mjs"
   }
 }

@@ -1,0 +1,44 @@
+[hidden] { display:none !important; }
+.education-shell { padding:8rem 0 4rem; min-height:80vh; }
+.education-shell h1 { font-size:clamp(2rem,5vw,3.8rem); line-height:1.15; margin-bottom:1rem; }
+.education-shell h1 span { color:var(--gold,#e9c77f); }
+.education-card { padding:clamp(1rem,3vw,2rem); margin-top:1.5rem; border:1px solid #8a6a3c; border-radius:16px; background:linear-gradient(140deg,#173e46,#102b35); color:#fff3d6; }
+.education-card h2 { font-size:1.65rem; margin-bottom:.8rem; }
+.education-card p { line-height:1.65; margin:.6rem 0; }
+.education-toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:.85rem; margin:1rem 0; }
+.education-toolbar label { flex:1; min-width:200px; }
+.education-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin:1rem 0; }
+.add-admin-form > div:first-child,.add-admin-form > .education-fields { grid-column:1/-1; }
+.education-card label,.profile-dialog label { display:block; font-size:.9rem; line-height:1.6; }
+.education-card input,.education-card select,.education-card textarea,.profile-dialog input,.profile-dialog textarea,.profile-dialog select { display:block; width:100%; margin-top:.4rem; min-height:44px; padding:.65rem .85rem; background:#091e29; color:#fff3d6; border:1px solid #8ba297; border-radius:7px; font:inherit; }
+.profile-dialog input[type=checkbox] { display:inline-block; width:auto; min-height:0; margin-right:.6rem; accent-color:#e7bf72; }
+.education-card textarea { min-height:130px; resize:vertical; }
+.education-card .profile-button,.profile-dialog button { min-height:44px; }
+.education-toolbar .profile-button,.education-card .profile-button,.profile-dialog .profile-button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.65rem 1rem; border:1px solid #819789; border-radius:8px; background:#264a53; color:#fff0d4; font:700 .9rem 'Roboto Condensed',sans-serif; cursor:pointer; }
+.education-toolbar .profile-button:hover,.education-card .profile-button:hover,.profile-dialog .profile-button:hover { background:#34606b; }
+.education-toolbar .profile-button:disabled,.education-card .profile-button:disabled { opacity:.5; cursor:default; }
+.education-toolbar select,.education-toolbar input { display:block; width:100%; min-height:44px; margin-top:.4rem; padding:.65rem .85rem; color:#fff3d6; background:#091e29; border:1px solid #8ba297; border-radius:7px; font:inherit; }
+.education-table { width:100%; border-collapse:collapse; text-align:left; font-size:.9rem; }
+.education-table th,.education-table td { padding:.85rem; border-bottom:1px solid #8fa79044; vertical-align:top; }
+.education-table th { color:#edce91; }
+.education-table td:first-child { min-width:150px; }
+.education-table a { text-decoration:underline; color:#e8d49e; }
+.education-table small { display:block; padding-top:.4rem; overflow-wrap:anywhere; }
+.education-table button { margin:0 .35rem .45rem 0; }
+.table-scroll { overflow-x:auto; }
+.education-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+.education-stat { padding:1rem; background:#091e2955; border:1px solid #8fa79044; border-radius:9px; }
+.education-stat strong { display:block; font-size:1.4rem; line-height:1.5; margin-top:.6rem; }
+.status-complete { color:#a5f0b1; font-weight:700; }
+.status-incomplete,.is-error { color:#ffaeae; }
+.preserve-lines { white-space:pre-line; overflow-wrap:anywhere; }
+.feedback-entry { padding:1rem 0; border-bottom:1px solid #8fa79044; }
+.feedback-entry small { display:block; margin:.5rem 0; }
+.feedback-entry p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.education-card [role=status],.profile-dialog [role=status] { padding:.75rem 0; }
+.profile-dialog { width:min(560px,calc(100vw - 2rem)); max-height:90dvh; overflow:auto; }
+.profile-dialog .dialog-actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1rem; }
+.profile-dialog > form:not([method="dialog"]) { display:block; margin-top:1rem; }
+.profile-dialog fieldset { min-width:0; margin-top:1rem; padding:.85rem; border:1px solid #8ba297; border-radius:7px; }
+.education-card :focus-visible,.profile-dialog :focus-visible { outline:3px solid #f5ce76; outline-offset:3px; }
+@media(max-width:600px) { .education-shell { padding-top:6.8rem; } .education-table th,.education-table td { padding:.65rem .5rem; } .education-toolbar>* { flex-basis:100%; } .education-stats { grid-template-columns:1fr; } }

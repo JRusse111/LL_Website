@@ -1,0 +1,71 @@
+import { subscribeSession } from './session.js';
+import { api, $, element, percent, notice, perform, playerLink } from './api.js';
+import { normalizeEmail } from './account-policy.mjs';
+let selected = '', version = 0;
+async function loadSections() {
+    const current = ++version, result = await api('sections');
+    if (current !== version) return;
+    $('sectionSelect').replaceChildren(element('option', 'Select a section'));
+    $('sectionSelect').firstChild.value = '';
+    for (const s of result.sections) { const option = element('option', s.name); option.value = s.id; $('sectionSelect').append(option); }
+    if (result.sections.some(s => s.id === selected)) $('sectionSelect').value = selected;
+    else selected = result.sections[0]?.id || '';
+    $('sectionSelect').value = selected;
+    await loadRoster();
+}
+async function loadRoster() {
+    const current = ++version;
+    $('studentRows').replaceChildren(); $('learnerRows').replaceChildren();
+    $('sectionContent').hidden = !selected; $('sectionEmpty').hidden = !!selected;
+    if (!selected) return;
+    notice($('dashboardNotice'), 'Loading section…');
+    const result = await api('section', { params: { id: selected } });
+    if (current !== version) return;
+    const { overview, players } = result;
+    $('studentCount').textContent = String(overview.total);
+    $('averageAccuracy').textContent = percent(overview.accuracy);
+    $('weakestTopic').textContent = overview.weakest ? `${overview.weakest.title} · ${percent(overview.weakest.accuracy)}` : 'No data yet';
+    $('rosterEmpty').hidden = players.length > 0;
+    for (const player of players) {
+        const row = element('tr'), name = element('td'); name.append(playerLink(player)); row.append(name);
+        const actions = element('td'), remove = element('button', 'Remove Student', 'profile-button profile-danger');
+        remove.type = 'button'; remove.addEventListener('click', () => perform(remove, $('dashboardNotice'), async () => {
+            if (!confirm(`Remove ${player.name} from this section? Their account and game history will stay.`)) return;
+            await api('enroll', { method: 'DELETE', body: { sectionId: selected, uid: player.uid } }); await loadRoster();
+        })); actions.append(remove); row.append(actions); $('studentRows').append(row);
+        const summary = element('tr'), summaryName = element('td'); summaryName.append(playerLink(player));
+        summary.append(summaryName, element('td', `${player.completed} / 10`), element('td', percent(player.accuracy))); $('learnerRows').append(summary);
+    }
+    notice($('dashboardNotice'), '');
+}
+$('sectionSelect').addEventListener('change', async () => { selected = $('sectionSelect').value; try { await loadRoster(); } catch (e) { notice($('dashboardNotice'), e.message, true); } });
+$('addSection').addEventListener('click', () => $('sectionDialog').showModal());
+$('sectionForm').addEventListener('submit', event => {
+    event.preventDefault(); const button = event.submitter;
+    perform(button, $('sectionDialogNotice'), async () => {
+        const result = await api('sections', { method: 'POST', body: { name: $('sectionName').value } });
+        selected = result.section.id; $('sectionDialog').close(); $('sectionForm').reset(); await loadSections();
+    });
+});
+$('showAddStudent').addEventListener('click', () => $('studentDialog').showModal());
+$('studentForm').addEventListener('submit', event => {
+    event.preventDefault();
+    perform(event.submitter, $('studentDialogNotice'), async () => {
+        const fields = Object.fromEntries(new FormData(event.target)); fields.email = normalizeEmail(fields.email); fields.sectionId = selected;
+        const result = await api('enroll', { method: 'POST', body: fields });
+        $('studentDialog').close(); event.target.reset(); await loadRoster();
+        notice($('dashboardNotice'), result.deliveryPending ? 'Student enrolled. Invitation delivery is pending. Use Resend invitation after mail is configured.' : result.created ? 'Student enrolled. Activation instructions were emailed; no separate registration is needed.' : 'Existing player linked. Saved progress is shown now.');
+    });
+});
+$('resendStudentInvitation').addEventListener('click', event => perform(event.target, $('studentDialogNotice'), async () => {
+    const fields = Object.fromEntries(new FormData($('studentForm'))); fields.email = normalizeEmail(fields.email); fields.sectionId = selected; fields.resendInvitation = true;
+    const result = await api('enroll', { method: 'POST', body: fields });
+    notice($('studentDialogNotice'), result.invitationSent ? 'Invitation sent.' : result.activationRequired ? 'Invitation delivery is pending. Contact the site administrator.' : 'This email is already verified.', result.deliveryPending);
+}));
+$('refreshSection').addEventListener('click', event => perform(event.target, $('dashboardNotice'), loadRoster));
+document.querySelectorAll('[data-close-dialog]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+subscribeSession(next => {
+    if (next.status === 'loading') return;
+    if (!next.user || !['super_admin', 'admin', 'instructor'].includes(next.role)) { version++; selected = ''; $('sectionContent').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren(); return; }
+    loadSections().catch(e => { selected = ''; $('sectionContent').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren(); notice($('dashboardNotice'), e.message, true); });
+});

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../CSS/home.css">
     <link rel="stylesheet" href="../CSS/account.css">
     <link rel="stylesheet" href="../CSS/profile.css">
-</head>
+<link rel="stylesheet" href="../CSS/education.css"></head>
 <body class="home-page profile-page">
     <header id="site-header">
         <div class="container nav-container">
@@ -97,8 +97,8 @@
                     </aside>
                     <section class="profile-card profile-adventure" aria-labelledby="adventureHeading">
                         <p class="eyebrow">Player profile</p>
-                        <h2 id="adventureHeading">Your adventure <span>starts here.</span></h2>
-                        <p>Your player profile has a home. More game details and ways to personalize this space will be added later.</p>
+                        <h2 id="adventureHeading">Continue your <span>adventure.</span></h2>
+                        <p>Follow your saved progress across all ten trials.</p>
                         <div class="profile-actions">
                             <a href="../index.html#solo" class="btn btn-primary">Explore solo trials</a>
                             <a href="../InstructorDashboard/i_dashboard.html" class="btn btn-secondary" data-admin-nav hidden>Open dashboard</a>
@@ -112,9 +112,9 @@
                             <button type="button" class="profile-button" id="refreshAdmins">Refresh list</button>
                         </div>
                         <form id="addAdminForm" class="add-admin-form">
-                            <div><label for="adminEmail">Account email</label><input id="adminEmail" type="email" name="email" maxlength="254" autocomplete="off" placeholder="name@example.com" required></div>
-                            <div><label for="adminRole">Access level</label><select id="adminRole" name="role"><option value="admin">Admin</option><option value="super_admin">Super admin</option></select></div>
-                            <button type="submit" class="profile-button">Add administrator</button>
+                            <div><label for="adminEmail">Account email</label><input id="adminEmail" type="email" name="email" maxlength="254" autocomplete="off" placeholder="name@ncst.edu.ph" required></div>
+                            <div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><div><label for="adminRole">Access level</label><select id="adminRole" name="role"><option value="instructor">Instructor</option><option value="admin">Admin</option><option value="super_admin">Super admin</option></select></div>
+                            <button type="submit" class="profile-button">Create / grant access</button>
                         </form>
                         <!-- <p class="admin-help">Add an existing, verified account. Admins can view the dashboard. Super admins can also manage administrator access.</p> -->
                         <p id="adminFeedback" class="profile-feedback" role="status" aria-live="polite" hidden></p>
@@ -134,8 +134,9 @@
                         <!-- <p class="admin-help">Removing access keeps the player's account. You cannot change or remove your own super admin access.</p> -->
                     </div>
                 </section>
-                <div class="profile-session">
-                    
+                <section class="education-card" id="gameProgress" hidden><h2 id="progressName">Player progress</h2><p id="progressSummary"></p><p id="progressNotice" role="status" hidden></p><details id="editPlayerName"><summary>Update your name</summary><form id="nameForm"><div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><button class="profile-button" type="submit">Save name</button></form></details><div class="table-scroll"><table class="education-table"><thead><tr><th>Trial</th><th>Status</th><th>Correct</th><th>Incorrect</th><th>Accuracy</th><th>Timer retries</th></tr></thead><tbody id="trialRows"></tbody></table></div><p>Retries come from saved Game Over / Try Again records, not incorrect answers. Unanswered trials show “No data yet.”</p></section><section class="education-card" aria-labelledby="feedbackHeading"><h2 id="feedbackHeading">Share your feedback</h2><p data-community-signin>Sign in to send feedback.</p><form data-feedback-form hidden><label>Your experience<textarea name="text" minlength="5" maxlength="2000" required></textarea></label><button class="profile-button" type="submit">Send feedback</button><p data-feedback-status role="status" hidden></p></form></section><section class="education-card" id="playerModeration" hidden><p class="eyebrow">Super admin only</p><h2>Player Moderation</h2><p>Bans suspend Firebase account access until unbanned. Restrictions below affect only the supported website capabilities. No account or progress is deleted.</p><form id="playerSearchForm" class="education-toolbar"><label>Find players<input id="playerSearch" type="search" placeholder="Name or email"></label><button class="profile-button" type="submit">Search</button></form><p id="moderationNotice" role="status" hidden></p><p id="moderationEmpty" hidden>No matching players on this page. Load more to continue the search.</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Player</th><th>Status / reason / duration</th><th>Actions</th></tr></thead><tbody id="moderationRows"></tbody></table></div><button id="morePlayers" type="button" class="profile-button" hidden>Load more players</button></section>
+<section class="education-card" id="feedbackManagement" hidden><p class="eyebrow">Super admin only</p><h2>Player feedback</h2><button class="profile-button" type="button" id="refreshFeedback">Refresh feedback</button><p id="feedbackManagementNotice" role="status" hidden></p><div id="feedbackItems"></div><button id="moreFeedback" type="button" class="profile-button" hidden>Load earlier feedback</button></section><div class="profile-session">
+
                     <button type="button" class="profile-button profile-danger" data-logout>Logout</button>
                 </div>
             </div>
@@ -151,5 +152,5 @@
     <script src="../JS/nav.js"></script>
     <script type="module" src="../JS/navbar_auth.js"></script>
     <script type="module" src="../JS/profile.js"></script>
-</body>
+<dialog id="moderationActionDialog" class="profile-dialog"><h2 id="moderationActionTitle">Confirm moderation</h2><form id="moderationForm"><label>Reason<textarea id="moderationReason" minlength="5" maxlength="500" required></textarea></label><fieldset id="restrictionOptions" hidden><legend>Supported website capabilities</legend><label><input type="checkbox" value="feedback">Submitting feedback</label><label><input type="checkbox" value="dashboard">Instructor dashboard / student records</label><label>Restriction expires (optional)<input id="restrictionExpiry" type="datetime-local"></label></fieldset><label><input id="confirmModeration" type="checkbox" required>I confirm this moderation action.</label><p id="moderationDialogNotice" role="status" hidden></p><div class="dialog-actions"><button type="button" class="profile-button" data-close-dialog>Cancel</button><button type="submit" class="profile-button profile-danger">Apply action</button></div></form></dialog><script type="module" src="../JS/player-progress.js"></script><script type="module" src="../JS/community.js"></script><script type="module" src="../JS/admin-tools.js"></script></body>
 </html>

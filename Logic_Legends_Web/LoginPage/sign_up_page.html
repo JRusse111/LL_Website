@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../CSS/home.css">
     <link rel="stylesheet" href="../CSS/auth.css">
     <link rel="stylesheet" href="../CSS/account.css">
-</head>
+<link rel="stylesheet" href="../CSS/education.css"></head>
 <body class="home-page auth-page">
     <header id="site-header">
         <div class="container nav-container">
@@ -88,10 +88,10 @@
                     <p>Create your Logic Legends account and let curiosity lead the way.</p>
                 </div>
                 <form action="#" method="POST" class="auth-form" id="signupForm">
-                    <label for="signupEmailInput">Email address</label>
+                    <div class="education-fields"><label>Surname<input name="surname" required maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" required maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><label for="signupEmailInput">NCST email address</label>
                     <div class="input-group">
                         <i class="bx bx-envelope input-icon-left" aria-hidden="true"></i>
-                        <input type="email" id="signupEmailInput" name="email" class="form-input" placeholder="you@example.com" autocomplete="email" required>
+                        <input type="email" id="signupEmailInput" name="email" class="form-input" placeholder="you@ncst.edu.ph" autocomplete="email" required>
                     </div>
                     <label for="signupPasswordInput">Password</label>
                     <div class="input-group">

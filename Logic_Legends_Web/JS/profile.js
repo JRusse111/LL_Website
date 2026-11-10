@@ -1,8 +1,9 @@
+import { normalizeEmail } from './account-policy.mjs';
 import { auth } from './firebase.js';
 import { subscribeSession } from './session.js';
 
 const $ = id => document.getElementById(id);
-const roleLabel = role => ({ super_admin: 'Super admin', admin: 'Admin', player: 'Player' }[role] || 'Player');
+const roleLabel = role => ({ super_admin: 'Super admin', admin: 'Admin', instructor: 'Instructor', player: 'Player' }[role] || 'Player');
 let session = null;
 let accounts = [];
 let nextCursor = null;
@@ -29,7 +30,7 @@ async function api(method = 'GET', body, cursor) {
     const version = generation;
     const user = auth.currentUser;
     if (!user || user.uid !== session?.user?.uid) throw new Error('Your session has ended. Please sign in again.');
-    const token = await user.getIdToken(true);
+    const token = await user.getIdToken();
     if (version !== generation) throw new DOMException('Session changed', 'AbortError');
     const url = new URL('/.netlify/functions/dashboard-accounts', location.origin);
     if (cursor) url.searchParams.set('cursor', cursor);
@@ -79,7 +80,7 @@ function renderAccounts() {
         const roleCell = row.insertCell();
         const select = document.createElement('select');
         select.setAttribute('aria-label', `Access level for ${account.email || account.displayName}`);
-        for (const role of ['admin', 'super_admin']) {
+        for (const role of ['instructor', 'admin', 'super_admin']) {
             const option = document.createElement('option');
             option.value = role;
             option.textContent = roleLabel(role);
@@ -122,7 +123,7 @@ function renderAccounts() {
                 if (!await confirmChange('Remove dashboard access?', `Remove dashboard access for ${account.email || account.displayName}? Their account will stay.`, 'Remove access')) return;
                 await mutate('DELETE', { uid: account.uid, expectedRole: account.role }, 'Dashboard access removed.');
             });
-            actions.append(save, remove);
+            const resend = document.createElement('button');resend.type='button';resend.className='profile-button';resend.textContent='Resend invitation';resend.hidden=account.emailVerified;resend.addEventListener('click',()=>mutate('POST',{email:account.email,role:account.role,resendInvitation:true},'Invitation request completed.'));actions.append(save, remove, resend);
         }
         $('adminRows').append(row);
     }
@@ -163,7 +164,7 @@ async function mutate(method, body, message) {
         accounts = accounts.filter(account => account.uid !== result.account.uid);
         if (!result.removed) accounts.push(result.account);
         loaded = true;
-        feedback(message + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
+        feedback(message + (result.deliveryPending ? ' Invitation delivery is pending; configure mail and resend it.' : result.invitationSent ? ' Activation instructions were emailed.' : '') + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
         if (method === 'POST') $('addAdminForm').reset();
     } catch (error) {
         if (error.name !== 'AbortError' && version === generation) feedback(error.message || 'This change could not be saved.', true);
@@ -175,10 +176,10 @@ async function mutate(method, body, message) {
 $('addAdminForm').addEventListener('submit', async event => {
     event.preventDefault();
     if (busy || !$('addAdminForm').reportValidity()) return;
-    const email = $('adminEmail').value.trim();
+    let email; try { email = normalizeEmail($('adminEmail').value); } catch (e) { feedback(e.message, true); return; }
     const role = $('adminRole').value;
     if (!await confirmChange('Add administrator?', `Give ${email} ${roleLabel(role)} access? ${role === 'super_admin' ? 'They will be able to add, change and remove administrator access.' : 'They will be able to view the instructor dashboard.'}`, 'Grant access')) return;
-    await mutate('POST', { email, role }, 'Administrator added.');
+    await mutate('POST', { ...Object.fromEntries(new FormData($('addAdminForm'))), email, role }, 'Account access saved.');
 });
 $('refreshAdmins').addEventListener('click', () => loadAccounts());
 $('loadMoreAdmins').addEventListener('click', () => loadAccounts(true));

@@ -1,147 +1,51 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider,
-    signInWithPopup, sendEmailVerification, sendPasswordResetEmail, getIdTokenResult
-} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
+    sendEmailVerification, sendPasswordResetEmail, updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 import { auth, appUrl } from './firebase.js';
-const googleProvider = new GoogleAuthProvider();
-
-// 4. DOM Elements
-const loginForm = document.getElementById('loginForm');
-const emailInput = document.getElementById('emailInput');
-const passwordInput = document.getElementById('passwordInput');
-const googleLoginBtn = document.getElementById('googleLoginBtn');
-const resetPasswordBtn = document.getElementById('resetPasswordBtn');
-const resetFeedback = document.getElementById('resetFeedback');
-
-// Both dashboard roles can enter the dashboard.
+import { normalizeEmail } from './account-policy.mjs';
+import { api } from './api.js';
+const provider = new GoogleAuthProvider(); provider.setCustomParameters({ hd: 'ncst.edu.ph' });
 async function finishLogin(user) {
+    try { normalizeEmail(user.email); } catch (e) { await signOut(auth); throw e; }
     if (!user.emailVerified) {
-        await auth.signOut();
-        alert('Please verify your email address. Check your inbox for the link.');
-        return;
+        try { await sendEmailVerification(user); } finally { await signOut(auth); }
+        throw new Error('Verify your NCST email using the link in your inbox, then sign in.');
     }
-
-    await getIdTokenResult(user, true);
-    window.location.replace(appUrl('Profile/profile.html'));
+    location.replace(appUrl('Profile/profile.html'));
 }
-
-// 5. Handle Email/Password Login
-if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        try {
-            const credential = await signInWithEmailAndPassword(auth, email, password);
-            await finishLogin(credential.user);
-        } catch (error) {
-            console.error('Error signing in:', error);
-            alert('Login failed: ' + error.message);
-        }
+function attach(id, work) {
+    const form = document.getElementById(id); if (!form) return;
+    form.addEventListener('submit', async event => {
+        event.preventDefault(); const button = event.submitter; if (button.disabled) return; button.disabled = true;
+        try { await work(form); }
+        catch (e) { alert(e.code === 'auth/email-already-in-use' ? 'This account already exists. Use your invitation or Forgot Password; do not register again.' : e.message); }
+        finally { button.disabled = false; }
     });
 }
-
-// Send a password reset link to the email entered on the login form.
-if (resetPasswordBtn && emailInput && resetFeedback) {
-    const showResetFeedback = (message, isError = false) => {
-        resetFeedback.textContent = message;
-        resetFeedback.classList.toggle('is-error', isError);
-        resetFeedback.hidden = false;
-    };
-
-    resetPasswordBtn.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-
-        if (!email) {
-            showResetFeedback('Enter your email address above first.', true);
-            emailInput.focus();
-            return;
-        }
-
-        if (!emailInput.checkValidity()) {
-            showResetFeedback('Enter a valid email address.', true);
-            emailInput.focus();
-            return;
-        }
-
-        resetPasswordBtn.disabled = true;
-        resetPasswordBtn.textContent = 'Sending...';
-        resetFeedback.hidden = true;
-
-        try {
-            await sendPasswordResetEmail(auth, email);
-            showResetFeedback('If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.');
-        } catch (error) {
-            if (error.code === 'auth/user-not-found') {
-                showResetFeedback('If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.');
-            } else {
-                console.error('Password reset error:', error);
-                showResetFeedback('Could not send a password reset link right now. Please try again.', true);
-            }
-        } finally {
-            resetPasswordBtn.disabled = false;
-            resetPasswordBtn.textContent = 'Forgot Password?';
-        }
-    });
-}
-
-// 6. Handle Google Login
-if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', async () => {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            await finishLogin(result.user);
-        } catch (error) {
-            console.error('Google login error:', error);
-            alert('Google login failed: ' + error.message);
-        }
-    });
-}
-
-// --- SIGN UP LOGIC ---
-const signupForm = document.getElementById('signupForm');
-const signupEmailInput = document.getElementById('signupEmailInput');
-const signupPasswordInput = document.getElementById('signupPasswordInput');
-const googleSignupBtn = document.getElementById('googleSignupBtn');
-
-// Handle Email/Password Sign Up
-if (signupForm) {
-    signupForm.addEventListener('submit', (e) => {
-        e.preventDefault(); 
-        
-        const email = signupEmailInput.value;
-        const password = signupPasswordInput.value;
-
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Account created! Now send the verification email
-                sendEmailVerification(userCredential.user)
-                    .then(() => {
-                        // Force sign out so they can't access the app yet
-                        auth.signOut();
-                        alert("Account created! Please check your email and click the verification link before logging in.");
-                        window.location.href = appUrl('LoginPage/login_page.html');
-                    });
-            })
-            .catch((error) => {
-                console.error("Error signing up:", error);
-                alert("Sign up failed: " + error.message);
-            });
-    });
-}
-
-// Handle Google Sign Up
-if (googleSignupBtn) {
-    googleSignupBtn.addEventListener('click', () => {
-        // Firebase uses the exact same function for Google Login and Google Sign Up!
-        signInWithPopup(auth, googleProvider)
-            .then(async (result) => {
-                await finishLogin(result.user);
-            })
-            .catch((error) => {
-                console.error("Google signup error:", error);
-                alert("Google sign up failed: " + error.message);
-            });
-    });
-}
+attach('loginForm', async () => {
+    const email = normalizeEmail(document.getElementById('emailInput').value);
+    const result = await signInWithEmailAndPassword(auth, email, document.getElementById('passwordInput').value); await finishLogin(result.user);
+});
+attach('signupForm', async form => {
+    const email = normalizeEmail(document.getElementById('signupEmailInput').value);
+    const result = await createUserWithEmailAndPassword(auth, email, document.getElementById('signupPasswordInput').value);
+    const surname = form.elements.surname.value.trim(), firstName = form.elements.firstName.value.trim(), middle = form.elements.middleName.value.trim();
+    try {
+        await updateProfile(result.user, { displayName: `${surname}, ${firstName}${middle ? ` ${middle}` : ''}` });
+        await api('profile-setup', { method: 'PATCH', body: { surname, firstName, middleName: middle } });
+        await sendEmailVerification(result.user);
+        alert('Account created. Verify your NCST email using the link in your inbox, then sign in.');
+        location.assign(appUrl('LoginPage/login_page.html'));
+    } finally { await signOut(auth); }
+});
+for (const id of ['googleLoginBtn', 'googleSignupBtn']) document.getElementById(id)?.addEventListener('click', async event => {
+    const button = event.currentTarget; if (button.disabled) return; button.disabled = true;
+    try { const result = await signInWithPopup(auth, provider); await finishLogin(result.user); }
+    catch (e) { alert(e.message); } finally { button.disabled = false; }
+});
+document.getElementById('resetPasswordBtn')?.addEventListener('click', async event => {
+    const button = event.currentTarget, status = document.getElementById('resetFeedback'); if (button.disabled) return;
+    button.disabled = true;
+    try { await sendPasswordResetEmail(auth, normalizeEmail(document.getElementById('emailInput').value)); status.textContent = 'If the account exists, a password-setup link has been sent. Check your inbox.'; status.classList.remove('is-error'); }
+    catch (e) { status.textContent = e.code === 'auth/user-not-found' ? 'If the account exists, a password-setup link has been sent.' : e.message; status.classList.add('is-error'); }
+    finally { status.hidden = false; button.disabled = false; }
+});

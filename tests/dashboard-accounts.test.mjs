@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createDashboardAccountsHandler } from '../netlify/lib/dashboard-accounts.mjs';
 
 const logger = { info() {}, warn() {}, error() {} };
-const record = (uid, claims = {}, extra = {}) => ({ uid, email: `${uid}@example.test`, emailVerified: true, disabled: false, customClaims: claims, ...extra });
+const record = (uid, claims = {}, extra = {}) => ({ uid, email: `${uid}@ncst.edu.ph`, emailVerified: true, disabled: false, customClaims: claims, ...extra });
 
 function setup({ caller = 'owner', overrides = {}, listPage, verifyFailure = false, revokeFailure = false } = {}) {
     const users = new Map([
@@ -71,7 +71,7 @@ test('every operation rejects players, admins and stale super-admin tokens', asy
     for (const caller of ['player', 'staff']) {
         for (const method of ['GET', 'POST', 'PATCH', 'DELETE']) {
             const { call, writes } = setup({ caller });
-            const response = await call(method, method === 'GET' ? undefined : { email: 'player@example.test', uid: 'staff', role: 'super_admin' });
+            const response = await call(method, method === 'GET' ? undefined : { email: 'player@ncst.edu.ph', uid: 'staff', role: 'super_admin' });
             assert.equal(response.status, 403, `${caller} ${method}`);
             assert.equal(response.data.accounts, undefined);
             assert.deepEqual(writes, []);
@@ -116,7 +116,7 @@ test('preserves pagination even when a page has no administrators', async () => 
 
 test('adds an existing verified player without discarding game claims', async () => {
     const { call, writes, revocations } = setup();
-    const response = await call('POST', { email: ' player@example.test ', role: 'admin' });
+    const response = await call('POST', { email: ' player@ncst.edu.ph ', role: 'admin' });
     assert.equal(response.status, 200);
     assert.equal(response.data.account.role, 'admin');
     assert.deepEqual(writes, [{ uid: 'player', claims: { game_level: 3, admin: true } }]);
@@ -157,17 +157,17 @@ test('a super admin cannot demote or remove their own access', async () => {
 test('stale edits and duplicate grants are rejected instead of overwriting current roles', async () => {
     const { call, writes } = setup();
     assert.equal((await call('PATCH', { uid: 'staff', role: 'super_admin', expectedRole: 'super_admin' })).status, 409);
-    assert.equal((await call('POST', { email: 'coowner@example.test', role: 'admin' })).status, 409);
+    assert.equal((await call('POST', { email: 'coowner@ncst.edu.ph', role: 'admin' })).status, 409);
     assert.deepEqual(writes, []);
 });
 
 test('validates accounts, roles and payloads before writing claims', async () => {
     const { call, writes } = setup();
     for (const [body, expected] of [
-        [{ email: 'pending@example.test', role: 'admin' }, 400],
-        [{ email: 'disabled@example.test', role: 'admin' }, 400],
-        [{ email: 'missing@example.test', role: 'admin' }, 404],
-        [{ email: 'player@example.test', role: 'owner' }, 400],
+
+        [{ email: 'disabled@ncst.edu.ph', role: 'admin' }, 409],
+        [{ email: 'missing@ncst.edu.ph', role: 'admin' }, 400],
+        [{ email: 'player@ncst.edu.ph', role: 'owner' }, 400],
         [{ email: 'bad email', role: 'admin' }, 400]
     ]) assert.equal((await call('POST', body)).status, expected);
     assert.equal((await call('PATCH', { uid: '', role: 'admin' })).status, 400);

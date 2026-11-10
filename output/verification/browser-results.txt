@@ -1,0 +1,3 @@
+PASS 1440px: empty section, existing-player linkage/75% progress, new student, surname sorting, 10-trial profile, new instructor account, restriction enforcement/removal, player feedback, super-admin feedback list, points snapshot, responsive layout.
+PASS 390px: empty section, existing-player linkage/75% progress, new student, surname sorting, 10-trial profile, new instructor account, restriction enforcement/removal, player feedback, super-admin feedback list, points snapshot, responsive layout.
+PASS: no browser JavaScript exceptions. Isolated in-memory Auth/RTDB only; no live accounts or deployment.

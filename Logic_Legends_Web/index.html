@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="CSS/global.css">
     <link rel="stylesheet" href="CSS/home.css">
     <link rel="stylesheet" href="CSS/account.css">
-</head>
+<link rel="stylesheet" href="CSS/profile.css"><link rel="stylesheet" href="CSS/education.css"></head>
 <body class="home-page">
     <header id="site-header">
         <div class="container nav-container">
@@ -221,7 +221,7 @@
                 <div class="download-mark" aria-hidden="true"><img src="Images/logo_transparent.png" alt=""></div>
             </div>
         </section>
-    </main>
+    <div class="container" id="community"><section class="education-card"><h2>Leaderboard</h2><p>Existing player points, loaded as a read-only snapshot.</p><p data-leaderboard-status role="status">Sign in to view the leaderboard snapshot.</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody data-leaderboard-rows></tbody></table></div></section><section class="education-card" aria-labelledby="feedbackHeading"><h2 id="feedbackHeading">Share your feedback</h2><p data-community-signin>Sign in to send feedback.</p><form data-feedback-form hidden><label>Your experience<textarea name="text" minlength="5" maxlength="2000" required></textarea></label><button class="profile-button" type="submit">Send feedback</button><p data-feedback-status role="status" hidden></p></form></section></div></main>
 
     <footer>
         <div class="container">
@@ -239,5 +239,5 @@
     <script src="JS/nav.js"></script>
     <script src="JS/gallery.js"></script>
     <script type="module" src="JS/navbar_auth.js"></script>
-</body>
+<script type="module" src="JS/community.js"></script></body>
 </html>

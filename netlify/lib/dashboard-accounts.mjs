@@ -1,83 +1,57 @@
 import { canManageAccounts, claimsForRole, claimsWithoutDashboardAccess, grantedRole } from './role-permissions.mjs';
-
-function json(data, status = 200) {
-  return Response.json(data, { status, headers: { 'Cache-Control': 'no-store', 'Allow': 'GET, POST, PATCH, DELETE' } });
-}
-
-function accountView(user) {
-  return { uid: user.uid, email: user.email || '', displayName: user.displayName || '', role: grantedRole(user.customClaims), emailVerified: user.emailVerified === true, disabled: user.disabled === true };
-}
-
-// Exercise the real handler with an injected Auth service in tests, without touching live accounts.
-export function createDashboardAccountsHandler({ getAuth, logger = console }) {
-  return async function dashboardAccounts(request) {
-    if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return json({ error: 'Method not allowed.' }, 405);
-    const bearer = request.headers.get('authorization')?.match(/^Bearer (\S+)$/i)?.[1];
-    if (!bearer) return json({ error: 'Sign in as a super admin first.' }, 401);
-
-    let auth;
-    try { auth = getAuth(); }
-    catch (error) {
-      logger.error('Admin SDK configuration failed:', error);
-      return json({ error: 'Account management is not configured yet.' }, 503);
-    }
-    let caller;
-    try {
-      const token = await auth.verifyIdToken(bearer, true);
-      // Read the current record so removed access cannot survive in an older token.
-      caller = await auth.getUser(token.uid);
-    } catch (error) {
-      logger.warn('Account management session rejected:', error.code);
-      return json({ error: 'Your session has expired. Sign in again.' }, 401);
-    }
-    if (caller.disabled || !canManageAccounts({ ...caller.customClaims, email_verified: caller.emailVerified })) return json({ error: 'Super admin access is required.' }, 403);
-
-    try {
-      if (request.method === 'GET') {
-        const cursor = new URL(request.url).searchParams.get('cursor') || undefined;
-        if (cursor && cursor.length > 2048) return json({ error: 'Invalid account list cursor.' }, 400);
-        const page = await auth.listUsers(1000, cursor);
-        return json({ accounts: page.users.filter(user => grantedRole(user.customClaims)).map(accountView), nextCursor: page.pageToken || null });
-      }
-      let payload;
-      try { payload = await request.json(); }
-      catch { return json({ error: 'Enter valid account details.' }, 400); }
-      const removing = request.method === 'DELETE';
-      const role = payload?.role;
-      if (!removing && role !== 'admin' && role !== 'super_admin') return json({ error: 'Choose a valid dashboard role.' }, 400);
-
-      let target;
-      if (request.method === 'POST') {
-        const email = typeof payload?.email === 'string' ? payload.email.trim() : '';
-        if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Enter a valid email address.' }, 400);
-        target = await auth.getUserByEmail(email);
-        if (grantedRole(target.customClaims)) return json({ error: 'This account already has dashboard access. Edit its role in the list below.' }, 409);
-      } else {
-        const uid = payload?.uid;
-        if (typeof uid !== 'string' || !uid.trim() || uid.length > 128) return json({ error: 'Choose a valid account.' }, 400);
-        if (uid === caller.uid) return json({ error: 'You cannot change or remove your own super admin access.' }, 409);
-        target = await auth.getUser(uid);
-        if (!grantedRole(target.customClaims)) return json({ error: 'This account no longer has dashboard access. Refresh the list.' }, 409);
-        if (payload.expectedRole !== undefined && payload.expectedRole !== grantedRole(target.customClaims)) return json({ error: 'This role has changed since you loaded the list. Refresh before editing it.' }, 409);
-      }
-      if (!removing && (target.disabled || !target.emailVerified)) return json({ error: 'The account must be enabled and its email verified before receiving a role.' }, 400);
-      if (!removing && grantedRole(target.customClaims) === role) return json({ account: accountView(target), unchanged: true });
-
-      const claims = removing ? claimsWithoutDashboardAccess(target.customClaims) : claimsForRole(target.customClaims, role);
-      await auth.setCustomUserClaims(target.uid, claims);
-      let sessionRevocationPending = false;
-      try { await auth.revokeRefreshTokens(target.uid); }
-      catch (error) {
-        sessionRevocationPending = true;
-        logger.error('Role saved but session revocation failed:', { uid: target.uid, code: error.code });
-      }
-      logger.info('Dashboard role changed', { by: caller.uid, to: target.uid, role: removing ? 'player' : role });
-      return json({ account: accountView({ ...target, customClaims: claims }), removed: removing, sessionRevocationPending });
-    } catch (error) {
-      if (error.code === 'auth/user-not-found') return json({ error: 'Account not found. Ask them to sign up and verify their email first.' }, 404);
-      if (error.code === 'auth/invalid-page-token') return json({ error: 'The account list has changed. Refresh and try again.' }, 400);
-      logger.error('Account management failed:', error);
-      return json({ error: 'Account management could not be completed. Try again later.' }, 500);
-    }
-  };
+import { session, bodyOf, json, fail, key } from './access.mjs';
+import { ensureIdentity, invite } from './provision.mjs';
+import { normalizeEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
+function view(user) { return { uid: user.uid, email: user.email || '', displayName: user.displayName || '', role: grantedRole(user.customClaims), emailVerified: user.emailVerified === true, disabled: user.disabled === true }; }
+export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation, logger = console }) {
+    return async request => {
+        if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return json({ error: 'Method not allowed.' }, 405);
+        try {
+            const auth = getAuth(), db = getDb?.(), caller = await session(request, auth, db);
+            if (!canManageAccounts({ ...caller.customClaims, email_verified: caller.emailVerified })) throw fail('Super admin access is required.', 403);
+            if (request.method === 'GET') {
+                const cursor = new URL(request.url).searchParams.get('cursor') || undefined;
+                if (cursor && cursor.length > 2048) throw fail('Invalid account list cursor.');
+                const page = await auth.listUsers(1000, cursor);
+                return json({ accounts: page.users.filter(u => grantedRole(u.customClaims)).map(view), nextCursor: page.pageToken || null });
+            }
+            const data = await bodyOf(request), removing = request.method === 'DELETE', role = data.role;
+            if (!removing && !['admin', 'super_admin', 'instructor'].includes(role)) throw fail('Choose a valid dashboard role.');
+            let target, created = false;
+            if (request.method === 'POST') {
+                const provisioned = await ensureIdentity(auth, normalizeEmail(data.email), data, sendInvitation);
+                target = provisioned.user; created = provisioned.created;
+                if (target.uid === caller.uid) throw fail('You cannot change your own super admin access.', 409);
+                if (grantedRole(target.customClaims) && !data.resendInvitation) throw fail('This account already has dashboard access. Edit its role in the list.', 409);
+                if (grantedRole(target.customClaims) && grantedRole(target.customClaims) !== role) throw fail('Use Save role to change an existing role.', 409);
+                if (db) {
+                    const names = nameParts(data);
+                    if (names.surname && names.firstName) await db.ref(`users/${target.uid}/profile`).transaction(old => old?.surname && old?.firstName ? old : { ...old, ...names });
+                }
+            } else {
+                const uid = key(data.uid);
+                if (uid === caller.uid) throw fail('You cannot change or remove your own super admin access.', 409);
+                target = await auth.getUser(uid);
+                if (!grantedRole(target.customClaims)) throw fail('This account no longer has dashboard access.', 409);
+                if (data.expectedRole !== undefined && data.expectedRole !== grantedRole(target.customClaims)) throw fail('This role has changed. Refresh before editing it.', 409);
+            }
+            if (!removing) normalizeEmail(target.email);
+            if (!removing && target.disabled) throw fail('Resolve this account’s disabled status first.', 409);
+            // Provisioned users can receive claims now, but no access until email ownership is verified.
+            const claims = removing ? claimsWithoutDashboardAccess(target.customClaims) : claimsForRole(target.customClaims, role);
+            const audit = db?.ref('website/roleAudit').push();
+            if (audit) await audit.set({ by: caller.uid, uid: target.uid, from: grantedRole(target.customClaims), role: removing ? 'player' : role, at: Date.now(), status: 'pending' });
+            await auth.setCustomUserClaims(target.uid, claims);
+            let sessionRevocationPending = false;
+            try { await auth.revokeRefreshTokens(target.uid); } catch { sessionRevocationPending = true; }
+            if (audit) await audit.update({ status: 'completed', sessionRevocationPending });
+            const activation = !removing && request.method === 'POST' && !target.emailVerified ? await invite(auth, target, sendInvitation) : { activationRequired: !target.emailVerified };
+            return json({ account: view({ ...target, customClaims: claims }), created, removed: removing, sessionRevocationPending, ...activation });
+        } catch (error) {
+            if (error.code === 'auth/user-not-found') return json({ error: 'Account not found.' }, 404);
+            if (error.code === 'auth/invalid-page-token') return json({ error: 'Refresh the account list.' }, 400);
+            if (!error.status) logger.error('Account management failed:', { code: error.code });
+            return json({ error: error.status ? error.message : 'Account management is not configured or is unavailable.' }, error.status || 503);
+        }
+    };
 }

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../CSS/home.css">
     <link rel="stylesheet" href="../CSS/account.css">
     <link rel="stylesheet" href="../CSS/instructor.css">
-</head>
+<link rel="stylesheet" href="../CSS/profile.css"><link rel="stylesheet" href="../CSS/education.css"></head>
 <body class="home-page instructor-page" style="visibility: hidden;">
     <header id="site-header">
         <div class="container nav-container">
@@ -67,133 +67,16 @@
     </div>
 
 
-    <main class="instructor-main">
-        <div class="instructor-hero">
-            <div class="container">
-                <div class="instructor-heading">
-                    <div>
-                        <p class="eyebrow">Instructor dashboard</p>
-                        <h1>Guide the next <span>discovery.</span></h1>
-                        <p class="instructor-subtitle">A class overview built around Logic Legends' four chapters, ten solo trials and the ideas waiting in the Logic Garden.</p>
-                    </div>
-                    <div class="instructor-demo"><strong>Static preview</strong><span>Illustrative class data only. These figures do not represent live student records.</span></div>
-                </div>
-                <nav class="instructor-jumps" aria-label="Dashboard sections"><a href="#overview">Class overview</a><a href="#chapters">Chapter progress</a><a href="#review">Topics to revisit</a><a href="#learners">Learner summary</a></nav>
-            </div>
-        </div>
-        <div class="container">
-            <section class="instructor-section" id="overview" aria-label="Example class overview">
-                <div class="instructor-metrics">
-                    <article class="instructor-metric"><h2>Example learners</h2><p class="instructor-metric-value">5</p><p>One illustrative learning group</p></article>
-                    <article class="instructor-metric"><h2>Class accuracy</h2><p class="instructor-metric-value">76<small>%</small></p><p>Average of the sample learner scores</p></article>
-                    <article class="instructor-metric"><h2>Trial completions</h2><p class="instructor-metric-value">34<small> / 50</small></p><p>68% of the group's possible trials</p></article>
-                    <article class="instructor-metric"><h2>Attempts per trial</h2><p class="instructor-metric-value">2.5</p><p>Average of the sample learner figures</p></article>
-                </div>
-            </section>
-            <section class="instructor-section instructor-learning-grid" aria-label="Chapter and topic overview">
-                <div class="instructor-panel" id="chapters">
-                    <div class="instructor-panel-heading"><p class="eyebrow">The solo journey</p><h2>Four chapters. Ten trials.</h2><p>Sample completions across five learners, grouped by the game's chapters.</p></div>
-                    <div class="instructor-chapters">
-                    <article class="instructor-chapter">
-                        <div class="instructor-chapter-top"><span>Chapter 01</span><span>Trials 1–3</span></div>
-                        <h3>The Awakening</h3>
-                        <ol start="1"><li>Propositional Logic</li><li>Truth Table</li><li>Rules of Inference</li></ol>
-                        <div class="instructor-progress-label"><span>15/15 sample completions</span><span>100%</span></div>
-                        <progress value="15" max="15" aria-label="The Awakening sample trial completions">100%</progress>
-                    </article>
-                    <article class="instructor-chapter">
-                        <div class="instructor-chapter-top"><span>Chapter 02</span><span>Trials 4–5</span></div>
-                        <h3>The Ascent</h3>
-                        <ol start="4"><li>Formal vs Informal Proofs</li><li>Direct and Indirect Proofs</li></ol>
-                        <div class="instructor-progress-label"><span>9/10 sample completions</span><span>90%</span></div>
-                        <progress value="9" max="10" aria-label="The Ascent sample trial completions">90%</progress>
-                    </article>
-                    <article class="instructor-chapter">
-                        <div class="instructor-chapter-top"><span>Chapter 03</span><span>Trials 6–8</span></div>
-                        <h3>The Reckoning</h3>
-                        <ol start="6"><li>Mathematical Induction</li><li>Sets</li><li>Functions &amp; Relations</li></ol>
-                        <div class="instructor-progress-label"><span>8/15 sample completions</span><span>53%</span></div>
-                        <progress value="8" max="15" aria-label="The Reckoning sample trial completions">53%</progress>
-                    </article>
-                    <article class="instructor-chapter">
-                        <div class="instructor-chapter-top"><span>Chapter 04</span><span>Trials 9–10</span></div>
-                        <h3>The Legend’s Rise</h3>
-                        <ol start="9"><li>Graphs</li><li>Trees</li></ol>
-                        <div class="instructor-progress-label"><span>2/10 sample completions</span><span>20%</span></div>
-                        <progress value="2" max="10" aria-label="The Legend’s Rise sample trial completions">20%</progress>
-                    </article>
-                    </div>
-                </div>
-                <aside class="instructor-panel" id="review" aria-labelledby="review-heading">
-                    <div class="instructor-panel-heading"><p class="eyebrow">A little extra practice</p><h2 id="review-heading">Topics to revisit</h2><p>Example topic accuracy, shown to illustrate a class review summary.</p></div>
-                    <div class="instructor-focus-list">
-                        <article class="instructor-focus-item"><div class="instructor-focus-meta"><span>Trial 08</span><span>60% accuracy</span></div><h3>Functions &amp; Relations</h3><meter min="0" max="100" value="60" aria-label="Functions and Relations example accuracy">60%</meter><p>Revisit domain, range and the connections between inputs and outputs.</p></article>
-                        <article class="instructor-focus-item"><div class="instructor-focus-meta"><span>Trial 07</span><span>66% accuracy</span></div><h3>Sets</h3><meter min="0" max="100" value="66" aria-label="Sets example accuracy">66%</meter><p>Review membership, unions and intersections before the next attempt.</p></article>
-                        <article class="instructor-focus-item"><div class="instructor-focus-meta"><span>Trial 06</span><span>70% accuracy</span></div><h3>Mathematical Induction</h3><meter min="0" max="100" value="70" aria-label="Mathematical Induction example accuracy">70%</meter><p>Connect the base case to the inductive step and follow the reasoning through.</p></article>
-                    </div>
-                    <p class="instructor-focus-note">These three topics belong to The Reckoning. Their concepts can be revisited in the Logic Garden's study library.</p>
-                </aside>
-            </section>
-            <section class="instructor-section" id="learners" aria-labelledby="learner-heading">
-                <div class="instructor-panel">
-                    <div class="instructor-panel-heading"><p class="eyebrow">Example cohort</p><h2 id="learner-heading">Learner summary</h2><p>Five fictional learners demonstrate the layout. All values are static examples.</p></div>
-                    <div class="instructor-table-scroll">
-                        <table class="instructor-table"><thead><tr><th scope="col">Learner</th><th scope="col">Trials completed</th><th scope="col">Accuracy</th><th scope="col">Avg. attempts</th><th scope="col">Next trial</th><th scope="col">Status</th></tr></thead><tbody>
-                    <tr>
-                        <td data-label="Learner"><div class="instructor-learner"><span class="instructor-learner-icon" aria-hidden="true">01</span><div><strong>Learner 01</strong><small>Sample ID · LL-001</small></div></div></td>
-                        <td data-label="Trials completed">8 / 10</td>
-                        <td data-label="Accuracy"><span class="instructor-accuracy">88%</span></td>
-                        <td data-label="Average attempts">1.8</td>
-                        <td data-label="Next trial">Graphs</td>
-                        <td data-label="Learning status"><span class="instructor-status ">On track</span></td>
-                    </tr>
-                    <tr>
-                        <td data-label="Learner"><div class="instructor-learner"><span class="instructor-learner-icon" aria-hidden="true">02</span><div><strong>Learner 02</strong><small>Sample ID · LL-002</small></div></div></td>
-                        <td data-label="Trials completed">6 / 10</td>
-                        <td data-label="Accuracy"><span class="instructor-accuracy needs-review">72%</span></td>
-                        <td data-label="Average attempts">2.6</td>
-                        <td data-label="Next trial">Sets</td>
-                        <td data-label="Learning status"><span class="instructor-status review">Practice</span></td>
-                    </tr>
-                    <tr>
-                        <td data-label="Learner"><div class="instructor-learner"><span class="instructor-learner-icon" aria-hidden="true">03</span><div><strong>Learner 03</strong><small>Sample ID · LL-003</small></div></div></td>
-                        <td data-label="Trials completed">10 / 10</td>
-                        <td data-label="Accuracy"><span class="instructor-accuracy">94%</span></td>
-                        <td data-label="Average attempts">1.2</td>
-                        <td data-label="Next trial">All trials complete</td>
-                        <td data-label="Learning status"><span class="instructor-status complete">Complete</span></td>
-                    </tr>
-                    <tr>
-                        <td data-label="Learner"><div class="instructor-learner"><span class="instructor-learner-icon" aria-hidden="true">04</span><div><strong>Learner 04</strong><small>Sample ID · LL-004</small></div></div></td>
-                        <td data-label="Trials completed">4 / 10</td>
-                        <td data-label="Accuracy"><span class="instructor-accuracy needs-review">58%</span></td>
-                        <td data-label="Average attempts">3.9</td>
-                        <td data-label="Next trial">Direct &amp; Indirect Proofs</td>
-                        <td data-label="Learning status"><span class="instructor-status review">Needs review</span></td>
-                    </tr>
-                    <tr>
-                        <td data-label="Learner"><div class="instructor-learner"><span class="instructor-learner-icon" aria-hidden="true">05</span><div><strong>Learner 05</strong><small>Sample ID · LL-005</small></div></div></td>
-                        <td data-label="Trials completed">6 / 10</td>
-                        <td data-label="Accuracy"><span class="instructor-accuracy needs-review">68%</span></td>
-                        <td data-label="Average attempts">3.0</td>
-                        <td data-label="Next trial">Sets</td>
-                        <td data-label="Learning status"><span class="instructor-status review">Practice</span></td>
-                    </tr>
-                        </tbody></table>
-                    </div>
-                </div>
-            </section>
-            <section class="instructor-section" aria-labelledby="study-heading">
-                <div class="instructor-panel instructor-study">
-                    <img src="../Images/logic-garden-courtyard.webp" alt="The fountain and stone columns in the Logic Garden courtyard" width="1920" height="909" loading="lazy">
-                    <div><p class="eyebrow">Connect practice with understanding</p><h2 id="study-heading">Return to the <span>Logic Garden.</span></h2><p>The game's study library gives learners a place to revisit the ideas behind the trials. Use the chapter topics above to frame a review of logic, proofs, sets, functions, graphs and trees.</p><a href="../index.html#garden">About the Logic Garden <span aria-hidden="true">→</span></a></div>
-                </div>
-            </section>
-        </div>
-    </main>
+    <main class="education-shell"><div class="container"><p class="eyebrow">Instructor dashboard</p><h1>Guide the next <span>discovery.</span></h1><p>Manage your sections and follow actual player progress.</p>
+<div class="education-toolbar"><label for="sectionSelect">Section<select id="sectionSelect"><option value="">Select a section</option></select></label><button id="addSection" class="profile-button" type="button">Add Section +</button></div><p id="dashboardNotice" role="status" hidden></p><p id="sectionEmpty">Create or select a section to begin.</p>
+<div id="sectionContent" hidden><section class="education-card"><h2>Section Overview</h2><div class="education-stats"><div class="education-stat">Enrolled students<strong id="studentCount">0</strong></div><div class="education-stat">Overall accuracy<strong id="averageAccuracy">No data yet</strong></div><div class="education-stat">Weakest Topic<strong id="weakestTopic">No data yet</strong></div></div><p>Accuracy uses combined correct and incorrect answer counts. Unanswered topics are excluded.</p></section>
+<section class="education-card"><div class="education-toolbar"><h2>Student roster</h2><button class="profile-button" type="button" id="showAddStudent">Add Student</button><button class="profile-button" type="button" id="refreshSection">Refresh progress</button></div><p id="rosterEmpty">No students yet</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody id="studentRows"></tbody></table></div></section>
+<section class="education-card"><h2>Learner Summary</h2><div class="table-scroll"><table class="education-table"><thead><tr><th>Name</th><th>Trials completed</th><th>Overall accuracy</th></tr></thead><tbody id="learnerRows"></tbody></table></div></section></div></div></main>
+<dialog id="sectionDialog" class="profile-dialog"><h2>Add section</h2><form id="sectionForm"><label>Section code<input id="sectionName" maxlength="40" placeholder="BSCS-22A1" required></label><p id="sectionDialogNotice" role="status" hidden></p><div class="dialog-actions"><button class="profile-button" type="button" data-close-dialog>Cancel</button><button class="profile-button" type="submit">Create section</button></div></form></dialog>
+<dialog id="studentDialog" class="profile-dialog"><h2>Add Student</h2><form id="studentForm"><label>NCST email<input name="email" type="email" maxlength="254" placeholder="student@ncst.edu.ph" required></label><div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><p>Names are required for a new account. Existing players keep their account and game history.</p><p id="studentDialogNotice" role="status" hidden></p><div class="dialog-actions"><button type="button" class="profile-button" data-close-dialog>Cancel</button><button class="profile-button" type="submit">Add Student</button><button class="profile-button" id="resendStudentInvitation" type="button">Resend invitation</button></div></form></dialog>
     <footer class="instructor-footer"><p>&copy; 2026 Logic Legends · National College of Science &amp; Technology</p></footer>
     <script src="../JS/nav.js"></script>
     <script type="module" src="../JS/navbar_auth.js"></script>
     <script type="module" src="../JS/guard.js"></script>
-</body>
+<script type="module" src="../JS/dashboard.js"></script></body>
 </html>

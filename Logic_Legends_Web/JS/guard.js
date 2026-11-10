@@ -1,25 +1,9 @@
-import { onAuthStateChanged, getIdTokenResult } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-import { auth } from './firebase.js';
-
-onAuthStateChanged(auth, async (user) => {
-    if (!user || !user.emailVerified) {
-        window.location.replace('../InstructorDashboard/error_page.html');
-        return;
+import { subscribeSession } from './session.js';
+subscribeSession(({ status, user, role }) => {
+    if (status === 'loading') return;
+    if (!user || !['admin', 'instructor', 'super_admin'].includes(role)) {
+        location.replace('../InstructorDashboard/error_page.html'); return;
     }
-
-    try {
-        const token = await getIdTokenResult(user, true);
-        if (token.claims.admin !== true && token.claims.super_admin !== true) {
-            window.location.replace('../InstructorDashboard/error_page.html');
-            return;
-        }
-
-        document.querySelectorAll('[data-super-admin-only]').forEach(section => {
-            section.hidden = token.claims.super_admin !== true;
-        });
-        document.body.style.visibility = 'visible';
-    } catch (error) {
-        console.error('Dashboard access check failed:', error);
-        window.location.replace('../InstructorDashboard/error_page.html');
-    }
+    document.querySelectorAll('[data-super-admin-only]').forEach(node => { node.hidden = role !== 'super_admin'; });
+    document.body.style.visibility = 'visible';
 });

@@ -1,17 +1,5 @@
-import { initializeApp, getApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyDF_VO9YeLPCRQ1D0OJDXSgYc3i9CxYcIc',
-  authDomain: 'logic-legends-ac66c.firebaseapp.com',
-  databaseURL: 'https://logic-legends-ac66c-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'logic-legends-ac66c',
-  storageBucket: 'logic-legends-ac66c.firebasestorage.app',
-  messagingSenderId: '251023689335',
-  appId: '1:251023689335:web:78a7dca5859d3f48ec2872'
-};
-
-const auth = getAuth(getApps().length ? getApp() : initializeApp(firebaseConfig));
+import { auth } from './firebase.js';
+import { normalizeEmail } from './account-policy.mjs';
 const form = document.getElementById('grantDashboardAccessForm');
 const emailInput = document.getElementById('adminAccountEmail');
 const roleInput = document.getElementById('adminAccountRole');
@@ -28,7 +16,7 @@ form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
 
-  const email = emailInput.value.trim();
+  let email; try { email = normalizeEmail(emailInput.value); } catch (e) { showFeedback(e.message, true); return; }
   const role = roleInput.value;
   const user = auth.currentUser;
   if (!user) {
@@ -46,7 +34,7 @@ form?.addEventListener('submit', async (event) => {
         'Authorization': `Bearer ${idToken}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, role })
+      body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), email, role })
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Access could not be granted.');
