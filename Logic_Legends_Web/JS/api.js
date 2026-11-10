@@ -27,4 +27,10 @@ export async function perform(button, target, work) {
     catch (error) { if (error.name !== 'AbortError') notice(target, error.message, true); }
     finally { button.disabled = false; }
 }
-export function playerLink(player) { const link = element('a', player.name); link.href = new URL(`../Profile/profile.html?uid=${encodeURIComponent(player.uid)}`, import.meta.url).href; return link; }
+export function playerLink(player) {
+    const link = element('a', player.name);
+    const destination = new URL('../Profile/profile.html', location.href);
+    destination.searchParams.set('uid', player.uid);
+    link.href = destination.href;
+    return link;
+}

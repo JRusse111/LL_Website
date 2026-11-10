@@ -36,7 +36,7 @@
                     <button class="account-toggle" type="button" data-account-toggle aria-expanded="false" aria-controls="account-dropdown" aria-label="Account menu"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><span class="account-toggle-name" data-account-name>Account</span><span class="account-chevron" aria-hidden="true">⌄</span></button>
                     <div class="account-dropdown" id="account-dropdown" data-account-dropdown hidden>
                         <div class="account-menu-heading"><strong data-menu-name>Account</strong><small data-menu-email></small></div>
-                        <a href="../Profile/profile.html">Profile</a>
+                        <a href="../Profile/profile.html" data-profile-nav>Profile</a>
                         <a href="../InstructorDashboard/i_dashboard.html" data-admin-nav hidden>Instructor dashboard</a>
                         <button type="button" data-logout>Logout</button>
                     </div>
@@ -59,7 +59,7 @@
         <div class="mobile-account-panel" data-mobile-user hidden>
             <div class="mobile-user-identity"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><div><strong data-mobile-account-name>Account</strong><small data-mobile-account-email></small></div></div>
             <div class="mobile-account-links">
-                <a href="../Profile/profile.html" class="mobile-link">Profile</a>
+                <a href="../Profile/profile.html" class="mobile-link" data-profile-nav>Profile</a>
                 <a href="../InstructorDashboard/i_dashboard.html" class="mobile-link" data-admin-nav hidden>Instructor dashboard</a>
                 <button type="button" data-logout>Logout</button>
             </div>
@@ -67,11 +67,14 @@
     </div>
 
 
-    <main class="education-shell"><div class="container"><p class="eyebrow">Instructor dashboard</p><h1>Guide the next <span>discovery.</span></h1><p>Manage your sections and follow actual player progress.</p>
-<div class="education-toolbar"><label for="sectionSelect">Section<select id="sectionSelect"><option value="">Select a section</option></select></label><button id="addSection" class="profile-button" type="button">Add Section +</button></div><p id="dashboardNotice" role="status" hidden></p><p id="sectionEmpty">Create or select a section to begin.</p>
+    <main class="education-shell"><div class="container"><p class="eyebrow">Instructor dashboard</p><h1>Guide the next <span>discovery.</span></h1><p>Manage sections and follow actual player progress.</p>
+<p id="dashboardNotice" role="status" hidden></p>
+<section class="education-card instructor-directory" id="instructorDirectory" hidden><h2>Choose an Instructor</h2><p>Select an Instructor account to view and manage the sections they created.</p><p id="instructorDirectoryNotice" role="status" hidden></p><p id="instructorDirectoryEmpty" hidden>No Instructor accounts are available yet.</p><div id="instructorCards" class="instructor-choice-grid"></div></section>
+<div id="instructorWorkspace" hidden><section class="education-card selected-instructor" id="selectedInstructorBar" hidden><button type="button" id="backToInstructors" class="profile-button">← All Instructors</button><div><p class="eyebrow">Selected Instructor</p><h2 id="selectedInstructorName"></h2><p id="selectedInstructorEmail"></p></div></section>
+<div class="education-toolbar"><label for="sectionSelect">Section<select id="sectionSelect"><option value="">Select a section</option></select></label><button id="addSection" class="profile-button" type="button">Add Section +</button></div><p id="sectionEmpty">Create or select a section to begin.</p>
 <div id="sectionContent" hidden><section class="education-card"><h2>Section Overview</h2><div class="education-stats"><div class="education-stat">Enrolled students<strong id="studentCount">0</strong></div><div class="education-stat">Overall accuracy<strong id="averageAccuracy">No data yet</strong></div><div class="education-stat">Weakest Topic<strong id="weakestTopic">No data yet</strong></div></div><p>Accuracy uses combined correct and incorrect answer counts. Unanswered topics are excluded.</p></section>
 <section class="education-card"><div class="education-toolbar"><h2>Student roster</h2><button class="profile-button" type="button" id="showAddStudent">Add Student</button><button class="profile-button" type="button" id="refreshSection">Refresh progress</button></div><p id="rosterEmpty">No students yet</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody id="studentRows"></tbody></table></div></section>
-<section class="education-card"><h2>Learner Summary</h2><div class="table-scroll"><table class="education-table"><thead><tr><th>Name</th><th>Trials completed</th><th>Overall accuracy</th></tr></thead><tbody id="learnerRows"></tbody></table></div></section></div></div></main>
+<section class="education-card"><h2>Learner Summary</h2><div class="table-scroll"><table class="education-table"><thead><tr><th>Name</th><th>Trials completed</th><th>Overall accuracy</th></tr></thead><tbody id="learnerRows"></tbody></table></div></section></div></div></div></main>
 <dialog id="sectionDialog" class="profile-dialog"><h2>Add section</h2><form id="sectionForm"><label>Section code<input id="sectionName" maxlength="40" placeholder="BSCS-22A1" required></label><p id="sectionDialogNotice" role="status" hidden></p><div class="dialog-actions"><button class="profile-button" type="button" data-close-dialog>Cancel</button><button class="profile-button" type="submit">Create section</button></div></form></dialog>
 <dialog id="studentDialog" class="profile-dialog"><h2>Add Student</h2><form id="studentForm"><label>NCST email<input name="email" type="email" maxlength="254" placeholder="student@ncst.edu.ph" required></label><div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><p>Names are required for a new account. Existing players keep their account and game history.</p><p id="studentDialogNotice" role="status" hidden></p><div class="dialog-actions"><button type="button" class="profile-button" data-close-dialog>Cancel</button><button class="profile-button" type="submit">Add Student</button><button class="profile-button" id="resendStudentInvitation" type="button">Resend invitation</button></div></form></dialog>
     <footer class="instructor-footer"><p>&copy; 2026 Logic Legends · National College of Science &amp; Technology</p></footer>

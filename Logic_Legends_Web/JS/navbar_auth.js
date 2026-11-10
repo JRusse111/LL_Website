@@ -52,6 +52,7 @@ subscribeSession(({ user, role, status }) => {
         panel.querySelector('[data-mobile-account-email]').textContent = user?.email || '';
     });
     document.querySelectorAll('[data-admin-nav]').forEach(item => { item.hidden = role !== 'admin' && role !== 'instructor' && role !== 'super_admin'; });
+    document.querySelectorAll('[data-profile-nav]').forEach(item => { item.hidden = role === 'instructor'; });
     menus.forEach(menu => {
         menu.hidden = !signedIn;
         if (!signedIn) { setOpen(menu, false); return; }
@@ -64,6 +65,12 @@ subscribeSession(({ user, role, status }) => {
     if (status === 'error') {
         const feedback = document.querySelector('[data-account-feedback]');
         if (feedback) { feedback.textContent = 'Your session could not be verified. Please sign in again.'; feedback.hidden = false; }
+    }
+    if (user && status === 'ready' && role === 'instructor') {
+        const path = location.pathname.toLowerCase();
+        const isDashboard = path.includes('/instructordashboard/');
+        const isLearnerRecord = path.endsWith('/profile/profile.html') && new URL(location.href).searchParams.has('uid');
+        if (!isDashboard && !isLearnerRecord) location.replace(new URL('../InstructorDashboard/i_dashboard.html', import.meta.url).href);
     }
 });
 

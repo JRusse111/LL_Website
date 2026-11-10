@@ -1,18 +1,18 @@
 import { randomBytes } from 'node:crypto';
 import { normalizeEmail, normalizeAnyEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
 import { fail } from './access.mjs';
-export async function ensureIdentity(auth, email, names, sendInvitation, { allowNonNcst = false } = {}) {
+export async function ensureIdentity(auth, email, names, sendInvitation, { allowNonNcst = false, allowPendingInvitation = false, allowMissingNames = false } = {}) {
     email = allowNonNcst ? normalizeAnyEmail(email) : normalizeEmail(email);
     let user, created = false;
     try { user = await auth.getUserByEmail(email); }
     catch (error) {
         if (error.code !== 'auth/user-not-found') throw error;
-        sendInvitation?.assertReady?.();
+        if (!allowPendingInvitation) sendInvitation?.assertReady?.();
         const n = nameParts(names);
-        if (!n.surname || !n.firstName) throw fail('Enter the new user’s surname and first name.');
+        if ((!n.surname || !n.firstName) && !allowMissingNames) throw fail('Enter the new user’s surname and first name.');
         try {
-            user = await auth.createUser({ email, emailVerified: false, password: randomBytes(36).toString('base64url'),
-                displayName: `${n.surname}, ${n.firstName}${n.middleName ? ` ${n.middleName}` : ''}` });
+            const displayName = n.surname && n.firstName ? `${n.surname}, ${n.firstName}${n.middleName ? ` ${n.middleName}` : ''}` : undefined;
+            user = await auth.createUser({ email, emailVerified: false, password: randomBytes(36).toString('base64url'), ...(displayName ? { displayName } : {}) });
             created = true;
         } catch (e) {
             if (e.code !== 'auth/email-already-exists') throw e;

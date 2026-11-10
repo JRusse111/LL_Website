@@ -22,8 +22,16 @@ subscribeSession(async next => {
         if (current !== version) return;
         render(result.player);
         const own = result.player.uid === next.user.uid;
-        document.querySelector('.profile-overview').hidden = !own;
+        $('profileOverview').hidden = !own;
+        $('profileAdventure').hidden = !own;
         $('editPlayerName').hidden = !own;
+        if (!own) {
+            document.querySelector('#profilePageHeading .eyebrow').textContent = 'Instructor view';
+            document.querySelector('#profilePageHeading h1').textContent = `${result.player.name} · Progress`;
+            document.title = `${result.player.name} | Logic Legends progress`;
+            const feedbackSection = document.querySelector('[data-feedback-form]')?.closest('.education-card');
+            if (feedbackSection) feedbackSection.hidden = true;
+        }
         if (own) for (const field of ['surname', 'firstName', 'middleName']) $('nameForm').elements[field].value = result.player.profile[field] || '';
     } catch (error) { if (current === version && error.name !== 'AbortError') notice($('progressNotice'), error.message, true); }
 });

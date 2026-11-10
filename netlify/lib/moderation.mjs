@@ -1,10 +1,10 @@
-import { fail, json, bodyOf, session, isSuper, key } from './access.mjs';
+import { fail, json, bodyOf, session, isSuper, isPlatformAdmin, key } from './access.mjs';
 const CAPABILITIES = ['feedback', 'dashboard'];
 export function createModerationHandler({ getAuth, getDb, now = Date.now, logger = console }) {
     return async request => {
         try {
             const auth = getAuth(), db = getDb(), caller = await session(request, auth, db);
-            if (!isSuper(caller)) throw fail('Super admin access is required.', 403);
+            if (!isPlatformAdmin(caller)) throw fail('Admin access is required.', 403);
             if (request.method === 'GET') {
                 const url = new URL(request.url), search = (url.searchParams.get('search') || '').trim().toLowerCase();
                 const cursor = url.searchParams.get('cursor') || undefined;

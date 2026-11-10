@@ -1,6 +1,7 @@
 import { subscribeSession } from './session.js';
 import { api, $, element, notice, perform, playerLink } from './api.js';
 let cursor = null, feedbackCursor = null, players = [], selected = null, generation = 0;
+const viewingLearnerRecord = new URL(location.href).searchParams.has('uid');
 function stateText(m) {
     const r = m.restriction, active = r?.active && (!r.expiresAt || r.expiresAt > Date.now());
     return [m.ban?.active ? `Banned until unbanned: ${m.ban.reason}` : 'Not banned', active ? `Restricted: ${r.capabilities.join(', ')} · ${r.reason} · ${r.expiresAt ? new Date(r.expiresAt).toLocaleString() : 'No expiration'}` : 'No active restrictions'].join('\n');
@@ -58,7 +59,7 @@ $('moreFeedback').addEventListener('click', event => perform(event.currentTarget
 document.querySelectorAll('[data-close-dialog]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
 subscribeSession(next => {
     generation++;
-    const allowed = next.user && next.role === 'super_admin';
+    const allowed = !viewingLearnerRecord && next.user && ['super_admin', 'admin'].includes(next.role);
     $('playerModeration').hidden = !allowed; $('feedbackManagement').hidden = !allowed;
     players = []; cursor = null; feedbackCursor = null; $('moderationRows').replaceChildren(); $('feedbackItems').replaceChildren(); $('moderationActionDialog').close();
     if (allowed) { loadPlayers().catch(e => notice($('moderationNotice'), e.message, true)); loadFeedback().catch(e => notice($('feedbackManagementNotice'), e.message, true)); }

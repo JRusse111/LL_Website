@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,
-    sendEmailVerification, sendPasswordResetEmail, updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+    sendEmailVerification, sendPasswordResetEmail, updateProfile, signOut, getIdTokenResult } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 import { auth, appUrl } from './firebase.js';
 import { normalizeEmail, normalizeAnyEmail } from './account-policy.mjs';
 import { api } from './api.js';
@@ -11,16 +11,18 @@ async function finishLogin(user) {
     }
     try {
         const email = normalizeAnyEmail(user.email);
+        const token = await getIdTokenResult(user);
+        let role = token.claims.super_admin === true ? 'super_admin' : token.claims.admin === true ? 'admin' : token.claims.instructor === true ? 'instructor' : 'player';
         try { normalizeEmail(email); }
         catch {
-            const { role } = await api('session');
+            role = (await api('session')).role;
             if (!['super_admin', 'admin', 'instructor'].includes(role)) throw new Error('New accounts must use an @ncst.edu.ph email. Other email domains are only allowed for staff accounts added by a super admin.');
         }
+        location.replace(appUrl(role === 'instructor' ? 'InstructorDashboard/i_dashboard.html' : 'Profile/profile.html'));
     } catch (error) {
         await signOut(auth);
         throw error;
     }
-    location.replace(appUrl('Profile/profile.html'));
 }
 function attach(id, work) {
     const form = document.getElementById(id); if (!form) return;

@@ -1,4 +1,5 @@
 export function canManageAccounts(claims) { return claims?.super_admin === true && claims?.email_verified === true; }
+export function canManageStaff(claims) { return (claims?.super_admin === true || claims?.admin === true) && claims?.email_verified === true; }
 export function grantedRole(claims) {
     if (claims?.super_admin === true) return 'super_admin';
     if (claims?.admin === true) return 'admin';
@@ -10,6 +11,6 @@ export function claimsWithoutDashboardAccess(currentClaims) {
     return other;
 }
 export function claimsForRole(currentClaims, role) {
-    if (!['admin', 'super_admin', 'instructor'].includes(role)) throw new Error('Invalid dashboard role');
-    return { ...claimsWithoutDashboardAccess(currentClaims), ...(role === 'instructor' ? { instructor: true } : { admin: true }), ...(role === 'super_admin' ? { super_admin: true } : {}) };
+    if (!['admin', 'instructor'].includes(role)) throw new Error('Super Admin access can only be granted through the secure bootstrap process');
+    return { ...claimsWithoutDashboardAccess(currentClaims), [role]: true };
 }

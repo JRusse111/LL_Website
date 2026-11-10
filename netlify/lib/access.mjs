@@ -6,6 +6,8 @@ export function roleOf(claims = {}) {
 }
 export const isStaff = user => ['super_admin', 'admin', 'instructor'].includes(roleOf(user.customClaims));
 export const isSuper = user => roleOf(user.customClaims) === 'super_admin';
+export const isPlatformAdmin = user => ['super_admin', 'admin'].includes(roleOf(user.customClaims));
+export const isInstructor = user => roleOf(user.customClaims) === 'instructor';
 export async function bodyOf(request) {
     const raw = await request.text();
     if (raw.length > 16000) throw fail('Request is too large.', 413);
@@ -36,12 +38,12 @@ export async function session(request, auth, db, capability, now = Date.now(), a
 }
 export async function ownedSection(db, caller, id) {
     const section = (await db.ref(`website/sections/${key(id)}`).get()).val();
-    if (!section || !isStaff(caller) || !isSuper(caller) && section.ownerUid !== caller.uid) throw fail('Section access is not permitted.', 403);
+    if (!section || !isStaff(caller) || !isPlatformAdmin(caller) && section.ownerUid !== caller.uid) throw fail('Section access is not permitted.', 403);
     return section;
 }
 export async function authorizeProfile(db, caller, uid) {
     key(uid);
-    if (caller.uid === uid || isSuper(caller)) return;
+    if (caller.uid === uid || isPlatformAdmin(caller)) return;
     if (!isStaff(caller)) throw fail('Profile access is not permitted.', 403);
     const sections = (await db.ref('website/sections').orderByChild('ownerUid').equalTo(caller.uid).get()).val() || {};
     if (!Object.values(sections).some(s => s.students?.[uid])) throw fail('This player is not enrolled in your sections.', 403);

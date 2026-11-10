@@ -12,6 +12,7 @@ let loaded = false;
 let sessionKey = '';
 let generation = 0;
 let controller = new AbortController();
+const viewingLearnerRecord = new URL(location.href).searchParams.has('uid');
 
 function feedback(message, error = false, target = $('adminFeedback')) {
     target.textContent = message;
@@ -78,17 +79,28 @@ function renderAccounts() {
         }
         const ownAccount = account.uid === session?.user?.uid;
         const roleCell = row.insertCell();
-        const select = document.createElement('select');
-        select.setAttribute('aria-label', `Access level for ${account.email || account.displayName}`);
-        for (const role of ['instructor', 'admin', 'super_admin']) {
-            const option = document.createElement('option');
-            option.value = role;
-            option.textContent = roleLabel(role);
-            select.append(option);
+        const currentRole = document.createElement('strong');
+        currentRole.textContent = roleLabel(account.role);
+        roleCell.append(currentRole);
+        const canManageRoles = session?.role === 'super_admin';
+        const select = canManageRoles ? document.createElement('select') : null;
+        if (select) {
+            select.setAttribute('aria-label', `Change access level for ${account.email || account.displayName}`);
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = account.role === 'super_admin' ? 'Choose Admin or Instructor' : 'Choose a role';
+            placeholder.disabled = true;
+            select.append(placeholder);
+            for (const role of ['admin', 'instructor']) {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = roleLabel(role);
+                select.append(option);
+            }
+            select.value = account.role === 'super_admin' ? '' : account.role;
+            select.disabled = ownAccount || busy;
+            roleCell.append(select);
         }
-        select.value = account.role;
-        select.disabled = ownAccount || busy;
-        roleCell.append(select);
         const statusCell = row.insertCell();
         statusCell.className = 'admin-status';
         statusCell.textContent = account.disabled ? 'Disabled' : account.emailVerified ? 'Verified email' : 'Email unverified';
@@ -100,17 +112,28 @@ function renderAccounts() {
             ownLabel.className = 'admin-self';
             ownLabel.textContent = 'Your account';
             actions.append(ownLabel);
+        } else if (!canManageRoles) {
+            const readOnly = document.createElement('span');
+            readOnly.className = 'admin-self';
+            readOnly.textContent = 'Instructor account';
+            actions.append(readOnly);
+            if (!account.emailVerified && !account.disabled) {
+                const resend = document.createElement('button');
+                resend.type = 'button'; resend.className = 'profile-button'; resend.textContent = 'Resend invitation';
+                resend.addEventListener('click', () => mutate('POST', { email: account.email, role: 'instructor', resendInvitation: true }, 'Invitation request completed.'));
+                actions.append(resend);
+            }
         } else {
             const save = document.createElement('button');
             save.type = 'button';
             save.className = 'profile-button';
             save.textContent = 'Save role';
             save.setAttribute('aria-label', `Save role for ${account.email || account.displayName}`);
-            save.disabled = true;
-            select.addEventListener('change', () => { save.disabled = busy || select.value === account.role; });
+            save.disabled = busy || !select.value || select.value === account.role;
+            select.addEventListener('change', () => { save.disabled = busy || !select.value || select.value === account.role; });
             save.addEventListener('click', async () => {
                 const newRole = select.value;
-                if (!await confirmChange('Change access level?', `Change ${account.email || account.displayName} from ${roleLabel(account.role)} to ${roleLabel(newRole)}? Super admins can manage other administrators.`, 'Change role')) return;
+                if (!await confirmChange('Change access level?', `Change ${account.email || account.displayName} from ${roleLabel(account.role)} to ${roleLabel(newRole)}?`, 'Change role')) return;
                 await mutate('PATCH', { uid: account.uid, role: newRole, expectedRole: account.role }, 'Access level updated.');
             });
             const remove = document.createElement('button');
@@ -123,18 +146,18 @@ function renderAccounts() {
                 if (!await confirmChange('Remove dashboard access?', `Remove dashboard access for ${account.email || account.displayName}? Their account will stay.`, 'Remove access')) return;
                 await mutate('DELETE', { uid: account.uid, expectedRole: account.role }, 'Dashboard access removed.');
             });
-            const resend = document.createElement('button');resend.type='button';resend.className='profile-button';resend.textContent='Resend invitation';resend.hidden=account.emailVerified;resend.addEventListener('click',()=>mutate('POST',{email:account.email,role:account.role,resendInvitation:true},'Invitation request completed.'));actions.append(save, remove, resend);
+            const resend = document.createElement('button');resend.type='button';resend.className='profile-button';resend.textContent='Resend invitation';resend.hidden=account.emailVerified || account.role === 'super_admin';resend.addEventListener('click',()=>mutate('POST',{email:account.email,role:account.role,resendInvitation:true},'Invitation request completed.'));actions.append(save, remove, resend);
         }
         $('adminRows').append(row);
     }
     $('adminCount').textContent = loaded ? `${filtered.length} of ${accounts.length} accounts shown${nextCursor ? ' · more available' : ''}` : '';
     $('adminEmpty').hidden = !loaded || filtered.length > 0;
-    $('adminEmpty').textContent = query ? 'No administrators match your search.' : nextCursor ? 'No administrators on this page. Load more accounts to continue.' : 'No administrator accounts are listed.';
+    $('adminEmpty').textContent = query ? 'No staff accounts match your search.' : nextCursor ? 'No staff accounts on this page. Load more accounts to continue.' : 'No staff accounts are listed.';
     $('loadMoreAdmins').hidden = !nextCursor;
 }
 
 async function loadAccounts(append = false) {
-    if (busy || session?.role !== 'super_admin') return;
+    if (busy || !['super_admin', 'admin'].includes(session?.role)) return;
     const version = generation;
     setBusy(true);
     $('adminLoading').hidden = false;
@@ -154,7 +177,7 @@ async function loadAccounts(append = false) {
 }
 
 async function mutate(method, body, message) {
-    if (busy || session?.role !== 'super_admin') return;
+    if (busy || !['super_admin', 'admin'].includes(session?.role) || session.role === 'admin' && (method !== 'POST' || body?.role !== 'instructor')) return;
     const version = generation;
     setBusy(true);
     feedback('');
@@ -164,8 +187,11 @@ async function mutate(method, body, message) {
         accounts = accounts.filter(account => account.uid !== result.account.uid);
         if (!result.removed) accounts.push(result.account);
         loaded = true;
-        feedback(message + (result.deliveryPending ? ' Invitation delivery is pending; configure mail and resend it.' : result.invitationSent ? ' Activation instructions were emailed.' : '') + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
-        if (method === 'POST') $('addAdminForm').reset();
+        feedback(message + (result.deliveryPending ? ' Access is saved, but no invitation email was sent. Ask this person to choose Forgot Password on the login page using this email, set a password, then verify the address. Configure invitation mail to enable resend.' : result.invitationSent ? ' Activation instructions were emailed.' : '') + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
+        if (method === 'POST') {
+            $('addAdminForm').reset();
+            if (session?.role === 'admin') $('adminRole').value = 'instructor';
+        }
     } catch (error) {
         if (error.name !== 'AbortError' && version === generation) feedback(error.message || 'This change could not be saved.', true);
     } finally {
@@ -178,8 +204,8 @@ $('addAdminForm').addEventListener('submit', async event => {
     if (busy || !$('addAdminForm').reportValidity()) return;
     let email; try { email = normalizeAnyEmail($('adminEmail').value); } catch (e) { feedback(e.message, true); return; }
     const role = $('adminRole').value;
-    if (!await confirmChange('Add administrator?', `Give ${email} ${roleLabel(role)} access? ${role === 'super_admin' ? 'They will be able to add, change and remove administrator access.' : 'They will be able to view the instructor dashboard.'}`, 'Grant access')) return;
-    await mutate('POST', { ...Object.fromEntries(new FormData($('addAdminForm'))), email, role }, 'Account access saved.');
+    if (!await confirmChange('Add staff account?', `Give ${email} ${roleLabel(role)} access?`, 'Grant access')) return;
+    await mutate('POST', { ...Object.fromEntries(new FormData($('addAdminForm'))), email, role }, 'Staff account access saved.');
 });
 $('refreshAdmins').addEventListener('click', () => loadAccounts());
 $('loadMoreAdmins').addEventListener('click', () => loadAccounts(true));
@@ -207,7 +233,18 @@ subscribeSession(next => {
     $('profileLoading').hidden = true;
     $('profileGuest').hidden = !!next.user;
     $('profileData').hidden = !next.user;
-    $('administrators').hidden = !next.user?.emailVerified || next.role !== 'super_admin';
+    $('administrators').hidden = viewingLearnerRecord || !next.user?.emailVerified || !['super_admin', 'admin'].includes(next.role);
+    const adminRole = $('adminRole');
+    const adminOption = adminRole.querySelector('option[value="admin"]');
+    if (adminOption) adminOption.hidden = next.role !== 'super_admin';
+    if (next.role === 'admin') adminRole.value = 'instructor';
+    const staffHeading = document.querySelector('#administrators .profile-section-heading > div');
+    if (staffHeading) {
+        staffHeading.querySelector('.eyebrow').textContent = next.role === 'admin' ? 'Admin tools' : 'Super admin tools';
+        staffHeading.querySelector('p:last-child').textContent = next.role === 'admin'
+            ? 'Review Instructor accounts and add new Instructors. A Super Admin assigns Admin access and manages roles.'
+            : 'View staff accounts, add Admins or Instructors, change roles, or remove access. Super Admin access is granted only through the secure bootstrap process.';
+    }
     if (!next.user) {
         feedback('', false, $('profileNotice'));
         // Clear private identity details as well as hiding the view when a session ends.
@@ -229,5 +266,5 @@ subscribeSession(next => {
     const date = new Date(user.metadata?.creationTime || '');
     $('profileJoined').textContent = Number.isNaN(date.getTime()) ? 'Unavailable' : date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     feedback(user.emailVerified ? '' : 'Check your inbox and verify your email before accessing administrator tools.', false, $('profileNotice'));
-    if (next.role === 'super_admin' && !loaded && !busy) loadAccounts();
+    if (['super_admin', 'admin'].includes(next.role) && !loaded && !busy) loadAccounts();
 });

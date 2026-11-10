@@ -1,4 +1,5 @@
 import { normalizeAnyEmail } from '../Logic_Legends_Web/JS/account-policy.mjs';
+import { claimsWithoutDashboardAccess } from '../netlify/lib/role-permissions.mjs';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -17,7 +18,7 @@ try {
   const auth = getAuth();
   const user = await auth.getUserByEmail(email);
   if (!user.emailVerified || user.disabled) throw new Error('Account must be enabled and email-verified first');
-  await auth.setCustomUserClaims(user.uid, { ...user.customClaims, admin: true, super_admin: true });
+  await auth.setCustomUserClaims(user.uid, { ...claimsWithoutDashboardAccess(user.customClaims), super_admin: true });
   console.log(`Super admin access granted to ${user.email}. Sign out and sign in again.`);
 } catch (error) {
   console.error('Could not grant first admin:', error.message);

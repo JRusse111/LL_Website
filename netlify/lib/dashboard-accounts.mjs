@@ -1,4 +1,4 @@
-import { canManageAccounts, claimsForRole, claimsWithoutDashboardAccess, grantedRole } from './role-permissions.mjs';
+import { canManageStaff, claimsForRole, claimsWithoutDashboardAccess, grantedRole } from './role-permissions.mjs';
 import { session, bodyOf, json, fail, key } from './access.mjs';
 import { ensureIdentity, invite } from './provision.mjs';
 import { normalizeAnyEmail, nameParts } from '../../Logic_Legends_Web/JS/account-policy.mjs';
@@ -8,18 +8,21 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
         if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return json({ error: 'Method not allowed.' }, 405);
         try {
             const auth = getAuth(), db = getDb?.(), caller = await session(request, auth, db);
-            if (!canManageAccounts({ ...caller.customClaims, email_verified: caller.emailVerified })) throw fail('Super admin access is required.', 403);
+            const superAdmin = caller.customClaims?.super_admin === true;
+            if (!canManageStaff({ ...caller.customClaims, email_verified: caller.emailVerified })) throw fail('Admin access is required.', 403);
             if (request.method === 'GET') {
                 const cursor = new URL(request.url).searchParams.get('cursor') || undefined;
                 if (cursor && cursor.length > 2048) throw fail('Invalid account list cursor.');
                 const page = await auth.listUsers(1000, cursor);
-                return json({ accounts: page.users.filter(u => grantedRole(u.customClaims)).map(view), nextCursor: page.pageToken || null });
+                return json({ accounts: page.users.filter(u => superAdmin ? grantedRole(u.customClaims) : u.customClaims?.instructor === true).map(view), nextCursor: page.pageToken || null });
             }
+            if (!superAdmin && request.method !== 'POST') throw fail('Only a Super Admin can change or remove staff roles.', 403);
             const data = await bodyOf(request), removing = request.method === 'DELETE', role = data.role;
-            if (!removing && !['admin', 'super_admin', 'instructor'].includes(role)) throw fail('Choose a valid dashboard role.');
+            if (!removing && !['admin', 'instructor'].includes(role)) throw fail('Choose Admin or Instructor. Super Admin access can only be granted through the secure bootstrap process.');
+            if (!superAdmin && role !== 'instructor') throw fail('Admins can only add Instructor accounts.', 403);
             let target, created = false;
             if (request.method === 'POST') {
-                const provisioned = await ensureIdentity(auth, normalizeAnyEmail(data.email), data, sendInvitation, { allowNonNcst: true });
+                const provisioned = await ensureIdentity(auth, normalizeAnyEmail(data.email), data, sendInvitation, { allowNonNcst: true, allowPendingInvitation: true, allowMissingNames: true });
                 target = provisioned.user; created = provisioned.created;
                 if (target.uid === caller.uid) throw fail('You cannot change your own super admin access.', 409);
                 if (grantedRole(target.customClaims) && !data.resendInvitation) throw fail('This account already has dashboard access. Edit its role in the list.', 409);
@@ -33,6 +36,7 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
                 if (uid === caller.uid) throw fail('You cannot change or remove your own super admin access.', 409);
                 target = await auth.getUser(uid);
                 if (!grantedRole(target.customClaims)) throw fail('This account no longer has dashboard access.', 409);
+                if (!superAdmin && target.customClaims?.instructor !== true) throw fail('Admins can only change Instructor accounts.', 403);
                 if (data.expectedRole !== undefined && data.expectedRole !== grantedRole(target.customClaims)) throw fail('This role has changed. Refresh before editing it.', 409);
             }
             if (!removing) normalizeAnyEmail(target.email);

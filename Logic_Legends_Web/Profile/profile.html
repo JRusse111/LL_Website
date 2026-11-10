@@ -67,7 +67,7 @@
     </div>
 
     <main class="profile-main">
-        <div class="profile-heading">
+        <div class="profile-heading" id="profilePageHeading">
             <div class="container">
                 <p class="eyebrow">Your Logic Legends account</p>
                 <h1>Your <span>profile.</span></h1>
@@ -84,7 +84,7 @@
             </div>
             <p id="profileNotice" class="profile-feedback" role="status" aria-live="polite" hidden></p>
             <div id="profileData" hidden>
-                <div class="profile-overview">
+                <div class="profile-overview" id="profileOverview">
                     <aside class="profile-card profile-identity" aria-labelledby="profileName">
                         <div class="profile-avatar" id="profileAvatar" aria-hidden="true"></div>
                         <h2 id="profileName"></h2>
@@ -95,7 +95,7 @@
                             <div><dt>Member since</dt><dd id="profileJoined"></dd></div>
                         </dl>
                     </aside>
-                    <section class="profile-card profile-adventure" aria-labelledby="adventureHeading">
+                    <section class="profile-card profile-adventure" id="profileAdventure" aria-labelledby="adventureHeading">
                         <p class="eyebrow">Player profile</p>
                         <h2 id="adventureHeading">Continue your <span>adventure.</span></h2>
                         <p>Follow your saved progress across all ten trials.</p>
@@ -108,18 +108,17 @@
                 <section id="administrators" class="profile-section" aria-labelledby="adminHeading" hidden>
                     <div class="profile-card">
                         <div class="profile-section-heading">
-                            <div><p class="eyebrow">Super admin tools</p><h2 id="adminHeading">Administrator accounts</h2> <p>View who has dashboard access, add an administrator or update an existing role.</p></div>
+                            <div><p class="eyebrow">Super admin tools</p><h2 id="adminHeading">Staff accounts</h2> <p>Add Admins or Instructors, change their role, or remove their access. Super admin access can only be granted through the secure bootstrap process.</p></div>
                             <button type="button" class="profile-button" id="refreshAdmins">Refresh list</button>
                         </div>
                         <form id="addAdminForm" class="add-admin-form">
                             <div><label for="adminEmail">Account email</label><input id="adminEmail" type="email" name="email" maxlength="254" autocomplete="off" placeholder="name@example.com" required></div>
-                            <div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><div><label for="adminRole">Access level</label><select id="adminRole" name="role"><option value="instructor">Instructor</option><option value="admin">Admin</option><option value="super_admin">Super admin</option></select></div>
+                            <div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><div><label for="adminRole">Access level</label><select id="adminRole" name="role"><option value="admin">Admin</option><option value="instructor">Instructor</option></select></div>
                             <button type="submit" class="profile-button">Create / grant access</button>
                         </form>
-                        <!-- <p class="admin-help">Add an existing, verified account. Admins can view the dashboard. Super admins can also manage administrator access.</p> -->
                         <p id="adminFeedback" class="profile-feedback" role="status" aria-live="polite" hidden></p>
                         <div class="admin-toolbar">
-                            <div class="admin-search"><label for="adminSearch">Find an administrator</label><input id="adminSearch" type="search" placeholder="Search by name or email" autocomplete="off"></div>
+                            <div class="admin-search"><label for="adminSearch">Find a staff account</label><input id="adminSearch" type="search" placeholder="Search by name or email" autocomplete="off"></div>
                             <p class="admin-count" id="adminCount" aria-live="polite"></p>
                         </div>
                         <p id="adminLoading" role="status" hidden>Loading administrator accounts…</p>
@@ -134,8 +133,8 @@
                         <!-- <p class="admin-help">Removing access keeps the player's account. You cannot change or remove your own super admin access.</p> -->
                     </div>
                 </section>
-                <section class="education-card" id="gameProgress" hidden><h2 id="progressName">Player progress</h2><p id="progressSummary"></p><p id="progressNotice" role="status" hidden></p><details id="editPlayerName"><summary>Update your name</summary><form id="nameForm"><div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><button class="profile-button" type="submit">Save name</button></form></details><div class="table-scroll"><table class="education-table"><thead><tr><th>Trial</th><th>Status</th><th>Correct</th><th>Incorrect</th><th>Accuracy</th><th>Timer retries</th></tr></thead><tbody id="trialRows"></tbody></table></div><p>Retries come from saved Game Over / Try Again records, not incorrect answers. Unanswered trials show “No data yet.”</p></section><section class="education-card" aria-labelledby="feedbackHeading"><h2 id="feedbackHeading">Share your feedback</h2><p data-community-signin>Sign in to send feedback.</p><form data-feedback-form hidden><label>Your experience<textarea name="text" minlength="5" maxlength="2000" required></textarea></label><button class="profile-button" type="submit">Send feedback</button><p data-feedback-status role="status" hidden></p></form></section><section class="education-card" id="playerModeration" hidden><p class="eyebrow">Super admin only</p><h2>Player Moderation</h2><p>Bans suspend Firebase account access until unbanned. Restrictions below affect only the supported website capabilities. No account or progress is deleted.</p><form id="playerSearchForm" class="education-toolbar"><label>Find players<input id="playerSearch" type="search" placeholder="Name or email"></label><button class="profile-button" type="submit">Search</button></form><p id="moderationNotice" role="status" hidden></p><p id="moderationEmpty" hidden>No matching players on this page. Load more to continue the search.</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Player</th><th>Status / reason / duration</th><th>Actions</th></tr></thead><tbody id="moderationRows"></tbody></table></div><button id="morePlayers" type="button" class="profile-button" hidden>Load more players</button></section>
-<section class="education-card" id="feedbackManagement" hidden><p class="eyebrow">Super admin only</p><h2>Player feedback</h2><button class="profile-button" type="button" id="refreshFeedback">Refresh feedback</button><p id="feedbackManagementNotice" role="status" hidden></p><div id="feedbackItems"></div><button id="moreFeedback" type="button" class="profile-button" hidden>Load earlier feedback</button></section><div class="profile-session">
+                <section class="education-card" id="gameProgress" hidden><h2 id="progressName">Player progress</h2><p id="progressSummary"></p><p id="progressNotice" role="status" hidden></p><details id="editPlayerName"><summary>Update your name</summary><form id="nameForm"><div class="education-fields"><label>Surname<input name="surname" maxlength="80" autocomplete="family-name"></label><label>First name<input name="firstName" maxlength="80" autocomplete="given-name"></label><label>Middle name (optional)<input name="middleName" maxlength="80" autocomplete="additional-name"></label></div><button class="profile-button" type="submit">Save name</button></form></details><div class="table-scroll"><table class="education-table"><thead><tr><th>Trial</th><th>Status</th><th>Correct</th><th>Incorrect</th><th>Accuracy</th><th>Timer retries</th></tr></thead><tbody id="trialRows"></tbody></table></div><p>Retries come from saved Game Over / Try Again records, not incorrect answers. Unanswered trials show “No data yet.”</p></section><section class="education-card" aria-labelledby="feedbackHeading"><h2 id="feedbackHeading">Share your feedback</h2><p data-community-signin>Sign in to send feedback.</p><form data-feedback-form hidden><label>Your experience<textarea name="text" minlength="5" maxlength="2000" required></textarea></label><button class="profile-button" type="submit">Send feedback</button><p data-feedback-status role="status" hidden></p></form></section><section class="education-card" id="playerModeration" hidden><p class="eyebrow">Admin tools</p><h2>Player Moderation</h2><p>Bans suspend Firebase account access until unbanned. Restrictions below affect only the supported website capabilities. No account or progress is deleted.</p><form id="playerSearchForm" class="education-toolbar"><label>Find players<input id="playerSearch" type="search" placeholder="Name or email"></label><button class="profile-button" type="submit">Search</button></form><p id="moderationNotice" role="status" hidden></p><p id="moderationEmpty" hidden>No matching players on this page. Load more to continue the search.</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Player</th><th>Status / reason / duration</th><th>Actions</th></tr></thead><tbody id="moderationRows"></tbody></table></div><button id="morePlayers" type="button" class="profile-button" hidden>Load more players</button></section>
+<section class="education-card" id="feedbackManagement" hidden><p class="eyebrow">Admin tools</p><h2>Player feedback</h2><button class="profile-button" type="button" id="refreshFeedback">Refresh feedback</button><p id="feedbackManagementNotice" role="status" hidden></p><div id="feedbackItems"></div><button id="moreFeedback" type="button" class="profile-button" hidden>Load earlier feedback</button></section><div class="profile-session">
 
                     <button type="button" class="profile-button profile-danger" data-logout>Logout</button>
                 </div>

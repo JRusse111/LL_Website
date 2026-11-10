@@ -6,6 +6,18 @@
 .education-card h2 { font-size:1.65rem; margin-bottom:.8rem; }
 .education-card p { line-height:1.65; margin:.6rem 0; }
 .education-toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:.85rem; margin:1rem 0; }
+.instructor-choice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; margin-top:1rem; }
+.instructor-choice { display:flex; flex-direction:column; align-items:flex-start; gap:.45rem; min-height:125px; padding:1.1rem; border:1px solid #8a6a3c; border-radius:10px; background:#0c252f; color:#fff3d6; text-align:left; cursor:pointer; font:inherit; }
+.instructor-choice:hover,.instructor-choice:focus-visible { border-color:#f3c46c; background:#173e46; }
+.instructor-choice:disabled { opacity:.55; cursor:not-allowed; }
+.instructor-choice strong { font:700 1.05rem 'Roboto Condensed',sans-serif; }
+.instructor-choice span,.instructor-choice small { color:#bfd2c7; overflow-wrap:anywhere; }
+.instructor-choice small { margin-top:auto; color:#f3c46c; }
+.selected-instructor { display:flex; align-items:center; gap:1.25rem; }
+.selected-instructor h2 { margin:0; }
+.selected-instructor .eyebrow { margin:.2rem 0; color:#f3c46c; font-size:.72rem; }
+.selected-instructor p:last-child { margin:.25rem 0 0; color:#bfd2c7; overflow-wrap:anywhere; }
+.selected-instructor .profile-button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.65rem 1rem; border:1px solid #819789; border-radius:8px; background:#264a53; color:#fff0d4; font:700 .9rem 'Roboto Condensed',sans-serif; cursor:pointer; }
 .education-toolbar label { flex:1; min-width:200px; }
 .education-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin:1rem 0; }
 .add-admin-form > div:first-child,.add-admin-form > .education-fields { grid-column:1/-1; }
@@ -41,4 +53,4 @@
 .profile-dialog > form:not([method="dialog"]) { display:block; margin-top:1rem; }
 .profile-dialog fieldset { min-width:0; margin-top:1rem; padding:.85rem; border:1px solid #8ba297; border-radius:7px; }
 .education-card :focus-visible,.profile-dialog :focus-visible { outline:3px solid #f5ce76; outline-offset:3px; }
-@media(max-width:600px) { .education-shell { padding-top:6.8rem; } .education-table th,.education-table td { padding:.65rem .5rem; } .education-toolbar>* { flex-basis:100%; } .education-stats { grid-template-columns:1fr; } }
+@media(max-width:600px) { .education-shell { padding-top:6.8rem; } .education-table th,.education-table td { padding:.65rem .5rem; } .education-toolbar>* { flex-basis:100%; } .education-stats { grid-template-columns:1fr; } .selected-instructor { align-items:flex-start; flex-direction:column; } }

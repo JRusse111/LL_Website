@@ -1,9 +1,31 @@
 import { subscribeSession } from './session.js';
 import { api, $, element, percent, notice, perform, playerLink } from './api.js';
 import { normalizeEmail } from './account-policy.mjs';
-let selected = '', version = 0;
+let selected = '', selectedOwner = '', version = 0, activeRole = null;
+function managerView() { return activeRole === 'admin' || activeRole === 'super_admin'; }
+function openInstructor(instructor) {
+    selectedOwner = instructor.uid; selected = '';
+    $('selectedInstructorName').textContent = instructor.displayName || instructor.email || 'Instructor';
+    $('selectedInstructorEmail').textContent = instructor.email || '';
+    $('instructorDirectory').hidden = true; $('selectedInstructorBar').hidden = false; $('instructorWorkspace').hidden = false;
+    loadSections().catch(e => notice($('dashboardNotice'), e.message, true));
+}
+async function loadInstructors() {
+    $('instructorDirectoryNotice').hidden = true;
+    $('instructorDirectoryNotice').textContent = '';
+    const { instructors } = await api('instructors');
+    $('instructorCards').replaceChildren();
+    $('instructorDirectoryEmpty').hidden = instructors.length > 0;
+    for (const instructor of instructors) {
+        const card = element('button', null, 'instructor-choice');
+        card.type = 'button'; card.disabled = instructor.disabled;
+        card.append(element('strong', instructor.displayName || instructor.email || 'Instructor'), element('span', instructor.email || 'No email address'), element('small', `${instructor.sectionCount} ${instructor.sectionCount === 1 ? 'section' : 'sections'}${instructor.disabled ? ' · Disabled' : ''}`));
+        card.addEventListener('click', () => openInstructor(instructor));
+        $('instructorCards').append(card);
+    }
+}
 async function loadSections() {
-    const current = ++version, result = await api('sections');
+    const current = ++version, result = await api('sections', { params: managerView() && selectedOwner ? { instructorUid: selectedOwner } : {} });
     if (current !== version) return;
     $('sectionSelect').replaceChildren(element('option', 'Select a section'));
     $('sectionSelect').firstChild.value = '';
@@ -43,9 +65,13 @@ $('addSection').addEventListener('click', () => $('sectionDialog').showModal());
 $('sectionForm').addEventListener('submit', event => {
     event.preventDefault(); const button = event.submitter;
     perform(button, $('sectionDialogNotice'), async () => {
-        const result = await api('sections', { method: 'POST', body: { name: $('sectionName').value } });
+        const result = await api('sections', { method: 'POST', body: { name: $('sectionName').value, ...(selectedOwner ? { ownerUid: selectedOwner } : {}) } });
         selected = result.section.id; $('sectionDialog').close(); $('sectionForm').reset(); await loadSections();
     });
+});
+$('backToInstructors').addEventListener('click', () => {
+    version++; selected = ''; selectedOwner = ''; $('sectionContent').hidden = true; $('sectionEmpty').hidden = true;
+    $('selectedInstructorBar').hidden = true; $('instructorWorkspace').hidden = true; $('instructorDirectory').hidden = false;
 });
 $('showAddStudent').addEventListener('click', () => $('studentDialog').showModal());
 $('studentForm').addEventListener('submit', event => {
@@ -66,6 +92,18 @@ $('refreshSection').addEventListener('click', event => perform(event.target, $('
 document.querySelectorAll('[data-close-dialog]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
 subscribeSession(next => {
     if (next.status === 'loading') return;
-    if (!next.user || !['super_admin', 'admin', 'instructor'].includes(next.role)) { version++; selected = ''; $('sectionContent').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren(); return; }
-    loadSections().catch(e => { selected = ''; $('sectionContent').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren(); notice($('dashboardNotice'), e.message, true); });
+    activeRole = next.user ? next.role : null;
+    version++; selected = ''; selectedOwner = '';
+    $('sectionContent').hidden = true; $('sectionEmpty').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren();
+    if (!next.user || !['super_admin', 'admin', 'instructor'].includes(next.role)) {
+        $('instructorDirectory').hidden = true; $('instructorWorkspace').hidden = true; return;
+    }
+    $('dashboardNotice').hidden = true;
+    if (managerView()) {
+        $('instructorDirectory').hidden = false; $('instructorWorkspace').hidden = true; $('selectedInstructorBar').hidden = true;
+        loadInstructors().catch(e => { $('instructorDirectoryNotice').textContent = e.message; $('instructorDirectoryNotice').hidden = false; });
+    } else {
+        $('instructorDirectory').hidden = true; $('selectedInstructorBar').hidden = true; $('instructorWorkspace').hidden = false;
+        loadSections().catch(e => { selected = ''; $('sectionContent').hidden = true; $('studentRows').replaceChildren(); $('learnerRows').replaceChildren(); notice($('dashboardNotice'), e.message, true); });
+    }
 });
