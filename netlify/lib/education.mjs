@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { normalizeEmail, nameParts, formatName } from '../../Logic_Legends_Web/JS/account-policy.mjs';
-import { fail, json, bodyOf, session, isStaff, isSuper, isPlatformAdmin, isInstructor, ownedSection, authorizeProfile, key } from './access.mjs';
+import { fail, json, bodyOf, session, isStaff, isSuper, isPlatformAdmin, ownedSection, authorizeProfile, key } from './access.mjs';
 import { ensureIdentity, invite } from './provision.mjs';
 import { playerProgress, sectionOverview } from './progress.mjs';
 
@@ -25,7 +25,6 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
             const caller = await session(request, auth, db, capability, now(), action === 'profile-setup' && request.method === 'PATCH');
             const data = request.method === 'GET' ? {} : await bodyOf(request);
             if (action === 'profile-setup' && request.method === 'PATCH') {
-                if (isInstructor(caller)) throw fail('Instructor accounts use the dashboard only.', 403);
                 const names = nameParts(data);
                 if (!names.surname || !names.firstName) throw fail('Enter your surname and first name.');
                 await saveNames(db, caller.uid, names);
@@ -34,13 +33,11 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
             if (action === 'session' && request.method === 'GET') return json({ uid: caller.uid, role: isSuper(caller) ? 'super_admin' : caller.customClaims?.admin ? 'admin' : caller.customClaims?.instructor ? 'instructor' : 'player' });
             if (action === 'profile' && request.method === 'GET') {
                 const uid = url.searchParams.get('uid') || caller.uid;
-                if (isInstructor(caller) && (!url.searchParams.has('uid') || uid === caller.uid)) throw fail('Open an enrolled learner from your Instructor Dashboard.', 403);
                 await authorizeProfile(db, caller, uid);
                 if (uid !== caller.uid && !isPlatformAdmin(caller)) await session(request, auth, db, 'dashboard', now());
                 return json({ player: await profile(db, auth, uid) });
             }
             if (action === 'profile' && request.method === 'PATCH') {
-                if (isInstructor(caller)) throw fail('Instructor accounts use the dashboard only.', 403);
                 const names = nameParts(data);
                 if (!names.surname || !names.firstName) throw fail('Enter your surname and first name.');
                 await db.ref(`users/${caller.uid}/profile`).update(names);
@@ -67,18 +64,21 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
             if (action === 'sections') {
                 if (!isStaff(caller)) throw fail('Instructor access is required.', 403);
                 if (request.method === 'GET') {
-                    let ref = db.ref('website/sections');
+                    // Filtering this modest section collection in the trusted function avoids
+                    // breaking reads on deployments whose RTDB rules lack the ownerUid index.
+                    const allSections = (await db.ref('website/sections').get()).val() || {};
+                    let ownerUid = caller.uid;
                     if (isPlatformAdmin(caller)) {
                         const instructorUid = url.searchParams.get('instructorUid');
                         if (instructorUid) {
                             const instructor = await auth.getUser(key(instructorUid));
                             if (instructor.customClaims?.instructor !== true) throw fail('Choose an Instructor account.', 400);
-                            ref = ref.orderByChild('ownerUid').equalTo(instructor.uid);
+                            ownerUid = instructor.uid;
                         } else if (!caller.customClaims?.instructor) {
                             throw fail('Select an Instructor to view their sections.', 400);
-                        } else ref = ref.orderByChild('ownerUid').equalTo(caller.uid);
-                    } else ref = ref.orderByChild('ownerUid').equalTo(caller.uid);
-                    const sections = (await ref.get()).val() || {};
+                        }
+                    }
+                    const sections = Object.fromEntries(Object.entries(allSections).filter(([, section]) => section.ownerUid === ownerUid));
                     return json({ sections: Object.entries(sections).map(([id, s]) => ({ id, name: s.name, ownerUid: s.ownerUid, count: Object.keys(s.students || {}).length })).sort((a, b) => a.name.localeCompare(b.name)) });
                 }
                 if (request.method === 'POST') {
@@ -118,7 +118,7 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     await saveNames(db, user.uid, data);
                     const enrolled = await db.ref(`website/sections/${id}/students/${user.uid}`).transaction(current => current ? undefined : { by: caller.uid, enrolledAt: now() });
                     // A duplicate does not generate another invitation or another student identity.
-                    if (!enrolled.committed && !data.resendInvitation) throw fail('This student is already enrolled.', 409);
+                    if (!enrolled.committed) throw fail('This student is already enrolled.', 409);
                     const activation = !user.emailVerified ? await invite(auth, user, sendInvitation) : { activationRequired: false };
                     return json({ player: await profile(db, auth, user.uid), created, alreadyEnrolled: !enrolled.committed, ...activation }, created ? 201 : 200);
                 }
@@ -130,7 +130,6 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
             }
             if (action === 'feedback') {
                 if (request.method === 'POST') {
-                    if (isInstructor(caller)) throw fail('Instructor accounts use the dashboard only.', 403);
                     const text = trim(data.text, 2000);
                     if (text.length < 5) throw fail('Enter between 5 and 2,000 characters.');
                     const gate = await db.ref(`website/feedbackRate/${caller.uid}`).transaction(last => last && now() - last < 30000 ? undefined : now());
@@ -149,7 +148,6 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                 }
             }
             if (action === 'leaderboard' && request.method === 'GET') {
-                if (isInstructor(caller)) throw fail('Instructor accounts use the dashboard only.', 403);
                 // One read-only snapshot. No coins/rewards as substitutes for points and no subscriptions.
                 if (!pointsField) return json({ entries: [], capturedAt: now(), configurationRequired: true });
                 if (!/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(pointsField)) throw fail('The leaderboard source is not configured correctly.', 503);

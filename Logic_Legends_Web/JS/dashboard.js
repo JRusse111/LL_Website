@@ -66,7 +66,22 @@ $('sectionForm').addEventListener('submit', event => {
     event.preventDefault(); const button = event.submitter;
     perform(button, $('sectionDialogNotice'), async () => {
         const result = await api('sections', { method: 'POST', body: { name: $('sectionName').value, ...(selectedOwner ? { ownerUid: selectedOwner } : {}) } });
-        selected = result.section.id; $('sectionDialog').close(); $('sectionForm').reset(); await loadSections();
+        selected = result.section.id; $('sectionDialog').close(); $('sectionForm').reset();
+        try { await loadSections(); }
+        catch (error) {
+            // Creation has already committed. Keep the new section usable if the
+            // follow-up list refresh fails, instead of reporting creation as failed.
+            if (![...$('sectionSelect').options].some(option => option.value === result.section.id)) {
+                const option = element('option', result.section.name);
+                option.value = result.section.id;
+                $('sectionSelect').append(option);
+            }
+            $('sectionSelect').value = selected;
+            $('sectionEmpty').hidden = true;
+            try { await loadRoster(); }
+            catch { $('sectionContent').hidden = true; }
+            notice($('dashboardNotice'), `Section created. The section list could not refresh: ${error.message}`, true);
+        }
     });
 });
 $('backToInstructors').addEventListener('click', () => {
@@ -80,14 +95,9 @@ $('studentForm').addEventListener('submit', event => {
         const fields = Object.fromEntries(new FormData(event.target)); fields.email = normalizeEmail(fields.email); fields.sectionId = selected;
         const result = await api('enroll', { method: 'POST', body: fields });
         $('studentDialog').close(); event.target.reset(); await loadRoster();
-        notice($('dashboardNotice'), result.deliveryPending ? 'Student enrolled. Invitation delivery is pending. Use Resend invitation after mail is configured.' : result.created ? 'Student enrolled. Activation instructions were emailed; no separate registration is needed.' : 'Existing player linked. Saved progress is shown now.');
+        notice($('dashboardNotice'), result.deliveryPending ? 'Student enrolled. No invitation email was sent; ask them to use Forgot Password with this email, set a password, then verify the address.' : result.created ? 'Student enrolled. Activation instructions were emailed; no separate registration is needed.' : 'Existing player linked. Saved progress is shown now.');
     });
 });
-$('resendStudentInvitation').addEventListener('click', event => perform(event.target, $('studentDialogNotice'), async () => {
-    const fields = Object.fromEntries(new FormData($('studentForm'))); fields.email = normalizeEmail(fields.email); fields.sectionId = selected; fields.resendInvitation = true;
-    const result = await api('enroll', { method: 'POST', body: fields });
-    notice($('studentDialogNotice'), result.invitationSent ? 'Invitation sent.' : result.activationRequired ? 'Invitation delivery is pending. Contact the site administrator.' : 'This email is already verified.', result.deliveryPending);
-}));
 $('refreshSection').addEventListener('click', event => perform(event.target, $('dashboardNotice'), loadRoster));
 document.querySelectorAll('[data-close-dialog]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
 subscribeSession(next => {

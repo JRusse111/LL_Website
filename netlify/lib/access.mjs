@@ -45,6 +45,6 @@ export async function authorizeProfile(db, caller, uid) {
     key(uid);
     if (caller.uid === uid || isPlatformAdmin(caller)) return;
     if (!isStaff(caller)) throw fail('Profile access is not permitted.', 403);
-    const sections = (await db.ref('website/sections').orderByChild('ownerUid').equalTo(caller.uid).get()).val() || {};
-    if (!Object.values(sections).some(s => s.students?.[uid])) throw fail('This player is not enrolled in your sections.', 403);
+    const sections = (await db.ref('website/sections').get()).val() || {};
+    if (!Object.values(sections).some(section => section.ownerUid === caller.uid && section.students?.[uid])) throw fail('This player is not enrolled in your sections.', 403);
 }

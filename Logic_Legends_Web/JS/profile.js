@@ -117,12 +117,6 @@ function renderAccounts() {
             readOnly.className = 'admin-self';
             readOnly.textContent = 'Instructor account';
             actions.append(readOnly);
-            if (!account.emailVerified && !account.disabled) {
-                const resend = document.createElement('button');
-                resend.type = 'button'; resend.className = 'profile-button'; resend.textContent = 'Resend invitation';
-                resend.addEventListener('click', () => mutate('POST', { email: account.email, role: 'instructor', resendInvitation: true }, 'Invitation request completed.'));
-                actions.append(resend);
-            }
         } else {
             const save = document.createElement('button');
             save.type = 'button';
@@ -146,7 +140,7 @@ function renderAccounts() {
                 if (!await confirmChange('Remove dashboard access?', `Remove dashboard access for ${account.email || account.displayName}? Their account will stay.`, 'Remove access')) return;
                 await mutate('DELETE', { uid: account.uid, expectedRole: account.role }, 'Dashboard access removed.');
             });
-            const resend = document.createElement('button');resend.type='button';resend.className='profile-button';resend.textContent='Resend invitation';resend.hidden=account.emailVerified || account.role === 'super_admin';resend.addEventListener('click',()=>mutate('POST',{email:account.email,role:account.role,resendInvitation:true},'Invitation request completed.'));actions.append(save, remove, resend);
+            actions.append(save, remove);
         }
         $('adminRows').append(row);
     }
@@ -187,7 +181,7 @@ async function mutate(method, body, message) {
         accounts = accounts.filter(account => account.uid !== result.account.uid);
         if (!result.removed) accounts.push(result.account);
         loaded = true;
-        feedback(message + (result.deliveryPending ? ' Access is saved, but no invitation email was sent. Ask this person to choose Forgot Password on the login page using this email, set a password, then verify the address. Configure invitation mail to enable resend.' : result.invitationSent ? ' Activation instructions were emailed.' : '') + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
+        feedback(message + (result.deliveryPending ? ' Access is saved, but no invitation email was sent. Ask this person to choose Forgot Password on the login page using this email, set a password, then verify the address.' : result.invitationSent ? ' Activation instructions were emailed.' : '') + (result.sessionRevocationPending ? ' The role is saved; existing sessions may take time to refresh.' : ''));
         if (method === 'POST') {
             $('addAdminForm').reset();
             if (session?.role === 'admin') $('adminRole').value = 'instructor';

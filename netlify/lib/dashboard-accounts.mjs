@@ -25,7 +25,7 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
                 const provisioned = await ensureIdentity(auth, normalizeAnyEmail(data.email), data, sendInvitation, { allowNonNcst: true, allowPendingInvitation: true, allowMissingNames: true });
                 target = provisioned.user; created = provisioned.created;
                 if (target.uid === caller.uid) throw fail('You cannot change your own super admin access.', 409);
-                if (grantedRole(target.customClaims) && !data.resendInvitation) throw fail('This account already has dashboard access. Edit its role in the list.', 409);
+                if (grantedRole(target.customClaims)) throw fail('This account already has dashboard access. Edit its role in the list.', 409);
                 if (grantedRole(target.customClaims) && grantedRole(target.customClaims) !== role) throw fail('Use Save role to change an existing role.', 409);
                 if (db) {
                     const names = nameParts(data);

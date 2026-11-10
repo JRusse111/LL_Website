@@ -6,6 +6,14 @@ function stateText(m) {
     const r = m.restriction, active = r?.active && (!r.expiresAt || r.expiresAt > Date.now());
     return [m.ban?.active ? `Banned until unbanned: ${m.ban.reason}` : 'Not banned', active ? `Restricted: ${r.capabilities.join(', ')} · ${r.reason} · ${r.expiresAt ? new Date(r.expiresAt).toLocaleString() : 'No expiration'}` : 'No active restrictions'].join('\n');
 }
+function moderationActions(player) {
+    const restriction = player.moderation.restriction;
+    const restrictionActive = restriction?.active && (!restriction.expiresAt || restriction.expiresAt > Date.now());
+    return [
+        ...(player.moderation.ban?.active ? ['unban'] : ['ban']),
+        ...(restrictionActive ? ['unrestrict'] : ['restrict'])
+    ];
+}
 function openAction(player, action) {
     selected = { uid: player.uid, action };
     $('moderationForm').reset(); $('moderationActionTitle').textContent = `${action[0].toUpperCase() + action.slice(1)} ${player.name || player.email}?`;
@@ -17,7 +25,7 @@ function renderPlayers() {
         const row = element('tr'), identity = element('td'); identity.append(playerLink({uid:player.uid,name:player.name || player.uid}), element('small', player.email));
         row.append(identity, element('td', `${stateText(player.moderation)}${player.disabled && !player.moderation.ban?.active ? '\nAuth disabled for another reason' : ''}`, 'preserve-lines'));
         const actions = element('td');
-        for (const action of ['ban', 'unban', 'restrict', 'unrestrict']) {
+        for (const action of moderationActions(player)) {
             const button = element('button', ({ ban: 'Ban', unban: 'Unban', restrict: 'Restrict', unrestrict: 'Remove restriction' })[action], 'profile-button');
             button.type = 'button'; button.addEventListener('click', () => openAction(player, action)); actions.append(button);
         }
