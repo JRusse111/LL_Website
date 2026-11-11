@@ -172,6 +172,13 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     if (!result.committed) throw fail('Submission not found.', 404);
                     return json({ reviewed: true });
                 }
+                if (request.method === 'DELETE') {
+                    if (!isSuper(caller)) throw fail('Super Admin access is required to remove feedback.', 403);
+                    const ref = db.ref(`website/feedback/${key(data.id)}`);
+                    const result = await ref.transaction(entry => entry && (entry.kind === 'player-report' || entry.source === 'game') ? null : undefined);
+                    if (!result.committed) throw fail('Report or game feedback not found.', 404);
+                    return json({ removed: true });
+                }
                 if (request.method === 'POST') {
                     const text = trim(data.text, 2000);
                     if (text.length < 5) throw fail('Enter between 5 and 2,000 characters.');
@@ -187,7 +194,7 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     const before = url.searchParams.get('before');
                     if (before) ref = ref.endBefore(key(before));
                     const records = (await ref.limitToLast(100).get()).val() || {};
-                    return json({ feedback: Object.entries(records).reverse().map(([id, entry]) => ({ id, ...entry })), nextCursor: Object.keys(records).length === 100 ? Object.keys(records)[0] : null });
+                    return json({ feedback: Object.entries(records).reverse().map(([id, entry]) => ({ ...entry, id })), nextCursor: Object.keys(records).length === 100 ? Object.keys(records)[0] : null });
                 }
             }
             if (action === 'leaderboard' && request.method === 'GET') {

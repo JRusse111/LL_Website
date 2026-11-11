@@ -86,6 +86,18 @@ async function loadFeedback(append = false) {
                 article.append(mark);
             }
         }
+        if (managementRole === 'super_admin' && (report || entry.source === 'game')) {
+            const remove = element('button', 'Remove feedback', 'profile-button profile-danger');
+            remove.type = 'button';
+            remove.addEventListener('click', () => {
+                if (!window.confirm('Permanently remove this report or game feedback?')) return;
+                perform(remove, $('feedbackManagementNotice'), async () => {
+                    await api('feedback', { method: 'DELETE', body: { id: entry.id } });
+                    if (current === generation) article.remove();
+                });
+            });
+            article.append(remove);
+        }
         $('feedbackItems').append(article);
     }
     feedbackCursor = result.nextCursor; $('moreFeedback').hidden = !feedbackCursor;
