@@ -120,7 +120,7 @@ subscribeSession(next => {
     generation++;
     const allowed = !viewingLearnerRecord && next.user && ['super_admin', 'admin'].includes(next.role);
     const shareFeedback = $('shareFeedback');
-    if (allowed) $('feedbackManagement').insertBefore(shareFeedback, $('refreshFeedback'));
+    if (allowed) $('feedbackManagement').append(shareFeedback);
     else $('gameProgress').after(shareFeedback);
     $('playerModeration').hidden = !allowed; $('feedbackManagement').hidden = !allowed;
     players = []; cursor = null; feedbackCursor = null; $('moderationRows').replaceChildren(); $('feedbackItems').replaceChildren(); $('moderationActionDialog').close();

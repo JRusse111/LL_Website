@@ -4,6 +4,16 @@ import { subscribeSession } from './session.js';
 
 const $ = id => document.getElementById(id);
 const roleLabel = role => ({ super_admin: 'Super admin', admin: 'Admin', instructor: 'Instructor', player: 'Player' }[role] || 'Player');
+const profileNav = $('profileAdminNavigation');
+function updateProfileNavigation() {
+    const current = location.hash || '#profileOverview';
+    profileNav?.querySelectorAll('a').forEach(link => {
+        if (link.hash === current) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+    });
+}
+profileNav?.addEventListener('click', event => { if (event.target.closest('a')) updateProfileNavigation(); });
+window.addEventListener('hashchange', updateProfileNavigation);
 let session = null;
 let accounts = [];
 let nextCursor = null;
@@ -230,6 +240,8 @@ subscribeSession(next => {
     const adminWorkspace = !viewingLearnerRecord && !!next.user && ['super_admin', 'admin'].includes(next.role);
     $('profileData').classList.toggle('admin-workspace', adminWorkspace);
     $('profileAdminNavigation').hidden = !adminWorkspace;
+    $('profileAdminNavRole').textContent = roleLabel(next.role);
+    updateProfileNavigation();
     $('administrators').hidden = viewingLearnerRecord || !next.user?.emailVerified || !['super_admin', 'admin'].includes(next.role);
     const adminRole = $('adminRole');
     const adminOption = adminRole.querySelector('option[value="admin"]');
