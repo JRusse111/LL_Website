@@ -26,7 +26,7 @@ export async function session(request, auth, db, capability, now = Date.now(), a
     if (user.disabled || !allowUnverified && !user.emailVerified) throw fail('Verify your email and sign in with an enabled account.', 403);
     try { normalizeEmail(user.email); }
     catch {
-        if (!isStaff(user)) throw fail('Use an @ncst.edu.ph account unless a super admin has granted you staff access.', 403);
+        if (!isStaff(user)) throw fail('Please use your NCST account to continue.', 403);
     }
     const moderation = db ? (await db.ref(`website/moderation/${user.uid}`).get()).val() || {} : {};
     if (moderation.ban?.active) throw fail('This account is banned. Contact the administrator.', 403);

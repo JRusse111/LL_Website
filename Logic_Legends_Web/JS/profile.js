@@ -227,6 +227,9 @@ subscribeSession(next => {
     $('profileLoading').hidden = true;
     $('profileGuest').hidden = !!next.user;
     $('profileData').hidden = !next.user;
+    const adminWorkspace = !viewingLearnerRecord && !!next.user && ['super_admin', 'admin'].includes(next.role);
+    $('profileData').classList.toggle('admin-workspace', adminWorkspace);
+    $('profileAdminNavigation').hidden = !adminWorkspace;
     $('administrators').hidden = viewingLearnerRecord || !next.user?.emailVerified || !['super_admin', 'admin'].includes(next.role);
     const adminRole = $('adminRole');
     const adminOption = adminRole.querySelector('option[value="admin"]');

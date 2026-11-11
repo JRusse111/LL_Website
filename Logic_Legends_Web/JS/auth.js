@@ -16,7 +16,7 @@ async function finishLogin(user) {
         try { normalizeEmail(email); }
         catch {
             role = (await api('session')).role;
-            if (!['super_admin', 'admin', 'instructor'].includes(role)) throw new Error('New accounts must use an @ncst.edu.ph email. Other email domains are only allowed for staff accounts added by a super admin.');
+            if (!['super_admin', 'admin', 'instructor'].includes(role)) throw new Error('Please use your NCST account to continue.');
         }
         location.replace(appUrl(role === 'instructor' ? 'InstructorDashboard/i_dashboard.html' : 'Profile/profile.html'));
     } catch (error) {

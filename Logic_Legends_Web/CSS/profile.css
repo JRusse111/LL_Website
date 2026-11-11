@@ -6,6 +6,18 @@
 .profile-heading h1 span { color: var(--gold); }
 .profile-heading p:last-child { color: #c0d3ca; max-width: 650px; font-size: .95rem; }
 .profile-content { padding-top: 2rem; }
+.profile-admin-shell { min-width: 0; }
+.profile-admin-main { min-width: 0; }
+#profileData.admin-workspace .profile-admin-shell { display: grid; grid-template-columns: minmax(190px,230px) minmax(0,1fr); gap: 1.5rem; align-items: start; }
+#profileData.admin-workspace .profile-admin-main { display: grid; gap: 1.5rem; }
+.profile-admin-navigation { position: sticky; top: 82px; display: grid; gap: .35rem; align-content: start; padding: 1.1rem; border: 1px solid #8a6a3c; border-radius: 14px; background: linear-gradient(145deg,#153942,#102b35); box-shadow: 0 14px 30px #0003; }
+.profile-admin-navigation .eyebrow { margin: .2rem .7rem .45rem; color: #f3c46c; }
+.profile-admin-navigation a { display: block; padding: .7rem .75rem; border-radius: 8px; color: #f1e6c9; font: 700 .88rem 'Roboto Condensed',sans-serif; text-decoration: none; }
+.profile-admin-navigation a:hover,.profile-admin-navigation a:focus-visible { background: #28505a; color: #ffd37a; }
+.profile-admin-navigation a:focus-visible { outline: 2px solid #f3c46c; outline-offset: 2px; }
+#profileData.admin-workspace .profile-admin-main > * { scroll-margin-top: 88px; }
+#feedbackManagement #shareFeedback { margin: 1.2rem 0 1.5rem; padding: 1rem 0 1.4rem; border: 0; border-bottom: 1px solid #8fa79055; border-radius: 0; background: transparent; box-shadow: none; }
+#feedbackManagement #shareFeedback h2 { font-size: 1.35rem; }
 .profile-state { padding: 2rem; margin-bottom: 1.5rem; background: #13343e; border: 1px solid #6a6346; border-radius: 14px; }
 .profile-state h2 { font-size: 1.8rem; margin-bottom: .7rem; }
 .profile-state p { margin-bottom: 1rem; color: #c9d9d2; }
@@ -70,6 +82,10 @@
 .profile-dialog form { display: flex; justify-content: flex-end; gap: .8rem; margin-top: 1.5rem; }
 .profile-page footer { padding: 1.5rem; border-top: 1px solid #6d5b38; text-align: center; color: #a8c2b6; font-size: .75rem; }
 @media (max-width: 800px) {
+    #profileData.admin-workspace .profile-admin-shell { grid-template-columns: minmax(0,1fr); }
+    .profile-admin-navigation { position: sticky; top: 60px; z-index: 2; display: flex; gap: .25rem; overflow-x: auto; white-space: nowrap; padding: .65rem; }
+    .profile-admin-navigation .eyebrow { align-self: center; margin: 0 .45rem; }
+    .profile-admin-navigation a { flex: 0 0 auto; padding: .6rem .7rem; }
     .profile-overview { grid-template-columns: 1fr; }
     .profile-identity { display: grid; grid-template-columns: 72px minmax(0,1fr); gap: 0 1.25rem; }
     .profile-avatar { grid-row: 1/4; }

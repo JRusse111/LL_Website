@@ -119,6 +119,9 @@ document.querySelectorAll('[data-close-dialog]').forEach(b => b.addEventListener
 subscribeSession(next => {
     generation++;
     const allowed = !viewingLearnerRecord && next.user && ['super_admin', 'admin'].includes(next.role);
+    const shareFeedback = $('shareFeedback');
+    if (allowed) $('feedbackManagement').insertBefore(shareFeedback, $('refreshFeedback'));
+    else $('gameProgress').after(shareFeedback);
     $('playerModeration').hidden = !allowed; $('feedbackManagement').hidden = !allowed;
     players = []; cursor = null; feedbackCursor = null; $('moderationRows').replaceChildren(); $('feedbackItems').replaceChildren(); $('moderationActionDialog').close();
     managementRole = next.role || 'admin';
