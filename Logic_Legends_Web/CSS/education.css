@@ -40,6 +40,9 @@ form[data-feedback-form] textarea { margin-bottom:.15rem; }
 .education-table th,.education-table td { padding:.85rem; border-bottom:1px solid #8fa79044; vertical-align:top; }
 .education-table th { color:#edce91; }
 .education-table td:first-child { min-width:150px; }
+.section-accuracy-bar { width:min(240px,32vw); min-width:100px; height:12px; overflow:hidden; border:1px solid #8ba297; border-radius:999px; background:#091e29; }
+.section-accuracy-bar span { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#54c7a6,#f3c46c); transition:width .25s ease; }
+.section-accuracy-bar.is-empty span { width:0; }
 .education-table a { text-decoration:underline; color:#e8d49e; }
 .education-table small { display:block; padding-top:.4rem; overflow-wrap:anywhere; }
 .education-table button { margin:0 .35rem .45rem 0; }

@@ -56,7 +56,24 @@ async function loadRoster() {
     $('sectionTrialRows').replaceChildren();
     for (const topic of orderedTopics) {
         const row = element('tr');
-        row.append(element('td', `Trial ${topic.number} / ${topic.title}`), element('td', topic.correct), element('td', topic.incorrect), element('td', percent(topic.accuracy)));
+        row.append(element('td', `Trial ${topic.number} / ${topic.title}`), element('td', percent(topic.accuracy)));
+        const progressCell = element('td');
+        const progress = element('div', null, `section-accuracy-bar${topic.accuracy == null ? ' is-empty' : ''}`);
+        if (topic.accuracy == null) {
+            progress.setAttribute('role', 'img');
+            progress.setAttribute('aria-label', 'No accuracy data yet');
+        } else {
+            progress.setAttribute('role', 'progressbar');
+            progress.setAttribute('aria-label', `Section accuracy for Trial ${topic.number}: ${percent(topic.accuracy)}`);
+            progress.setAttribute('aria-valuemin', '0');
+            progress.setAttribute('aria-valuemax', '100');
+            progress.setAttribute('aria-valuenow', String(Math.max(0, Math.min(100, topic.accuracy))));
+        }
+        const fill = element('span');
+        if (topic.accuracy != null) fill.style.width = `${Math.max(0, Math.min(100, topic.accuracy))}%`;
+        progress.append(fill);
+        progressCell.append(progress);
+        row.append(progressCell);
         $('sectionTrialRows').append(row);
     }
     $('rosterEmpty').hidden = players.length > 0;
