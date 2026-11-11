@@ -28,7 +28,7 @@ subscribeSession(async next => {
         $('profileAdventure').hidden = !own;
         $('editPlayerName').hidden = !own;
         if (!own) {
-            document.querySelector('#profilePageHeading .eyebrow').textContent = 'Instructor view';
+            document.querySelector('#profilePageHeading .eyebrow').textContent = 'Student';
             document.querySelector('#profilePageHeading h1').textContent = `${result.player.name} · Progress`;
             document.title = `${result.player.name} | Logic Legends progress`;
             const feedbackSection = document.querySelector('[data-feedback-form]')?.closest('.education-card');
