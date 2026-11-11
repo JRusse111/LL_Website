@@ -39,11 +39,18 @@ async function loadRoster() {
     const current = ++version;
     $('studentRows').replaceChildren(); $('learnerRows').replaceChildren();
     $('sectionContent').hidden = !selected; $('sectionEmpty').hidden = !!selected;
-    if (!selected) return;
+    if (!selected) {
+        $('sectionJoinCode').textContent = '—'; $('copySectionJoinCode').disabled = true;
+        notice($('sectionJoinCodeNotice'), ''); return;
+    }
     notice($('dashboardNotice'), 'Loading section…');
     const result = await api('section', { params: { id: selected } });
     if (current !== version) return;
     const { overview, players } = result;
+    const joinCode = result.section.joinCode || '';
+    $('sectionJoinCode').textContent = joinCode ? `${joinCode.slice(0, 4)}-${joinCode.slice(4)}` : 'Unavailable';
+    $('copySectionJoinCode').disabled = !joinCode;
+    notice($('sectionJoinCodeNotice'), '');
     $('studentCount').textContent = String(overview.total);
     $('averageAccuracy').textContent = percent(overview.accuracy);
     $('weakestTopic').textContent = overview.weakest ? `${overview.weakest.title} · ${percent(overview.weakest.accuracy)}` : 'No data yet';
@@ -85,11 +92,34 @@ async function loadRoster() {
             await api('enroll', { method: 'DELETE', body: { sectionId: selected, uid: player.uid } }); await loadRoster();
         })); actions.append(remove); row.append(actions); $('studentRows').append(row);
         const summary = element('tr'), summaryName = element('td'); summaryName.append(playerLink(player));
-        summary.append(summaryName, element('td', `${player.completed} / 10`), element('td', percent(player.accuracy))); $('learnerRows').append(summary);
+        const breakdownCell = element('td'), breakdown = element('button', 'View trials', 'profile-button');
+        breakdown.type = 'button'; breakdown.setAttribute('aria-label', `View trial breakdown for ${player.name}`);
+        breakdown.addEventListener('click', () => showStudentTrials(player));
+        breakdownCell.append(breakdown);
+        summary.append(summaryName, element('td', `${player.completed} / 10`), element('td', percent(player.accuracy)), breakdownCell); $('learnerRows').append(summary);
     }
     notice($('dashboardNotice'), '');
 }
+function showStudentTrials(player) {
+    $('studentProgressTitle').textContent = `${player.name} · Trial breakdown`;
+    $('studentProgressSummary').textContent = `${player.completed} / 10 trials completed · ${percent(player.accuracy)} overall accuracy`;
+    const trials = [...(player.trials || [])].sort((a, b) => a.number - b.number);
+    $('studentTrialRows').replaceChildren();
+    for (const trial of trials) {
+        const row = element('tr');
+        row.append(element('td', `Trial ${trial.number} / ${trial.title}`), element('td', trial.completed ? 'Completed' : 'Not completed', trial.completed ? 'status-complete' : 'status-incomplete'), element('td', String(trial.correct ?? 0)), element('td', String(trial.incorrect ?? 0)), element('td', percent(trial.accuracy)), element('td', String(trial.retries ?? 0)));
+        $('studentTrialRows').append(row);
+    }
+    $('studentProgressDialog').showModal();
+}
 $('sectionSelect').addEventListener('change', async () => { selected = $('sectionSelect').value; try { await loadRoster(); } catch (e) { notice($('dashboardNotice'), e.message, true); } });
+$('copySectionJoinCode').addEventListener('click', async event => {
+    const code = resultCode();
+    if (!code) return;
+    try { await navigator.clipboard.writeText(code); notice($('sectionJoinCodeNotice'), 'Join code copied.'); }
+    catch { notice($('sectionJoinCodeNotice'), 'Copy is unavailable. Select and copy the code.'); }
+});
+function resultCode() { return $('sectionJoinCode').textContent.replace(/-/g, '').trim(); }
 $('addSection').addEventListener('click', () => $('sectionDialog').showModal());
 $('sectionForm').addEventListener('submit', event => {
     event.preventDefault(); const button = event.submitter;

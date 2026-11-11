@@ -1,10 +1,47 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import { normalizeEmail, nameParts, formatName } from '../../Logic_Legends_Web/JS/account-policy.mjs';
 import { fail, json, bodyOf, session, isStaff, isSuper, isPlatformAdmin, ownedSection, authorizeProfile, key } from './access.mjs';
 import { ensureIdentity, invite } from './provision.mjs';
 import { playerProgress, sectionOverview } from './progress.mjs';
 
 const trim = (value, max) => typeof value === 'string' ? value.trim().slice(0, max) : '';
+const JOIN_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const newJoinCode = () => Array.from({ length: 8 }, () => JOIN_CODE_ALPHABET[randomInt(JOIN_CODE_ALPHABET.length)]).join('');
+const normalizeJoinCode = value => typeof value === 'string' ? value.toUpperCase().replace(/[\s-]/g, '') : '';
+async function reserveJoinCode(db, sectionId, now, preferred = '') {
+    for (let attempt = 0; attempt < 20; attempt++) {
+        const code = preferred || newJoinCode();
+        const reservation = db.ref(`website/sectionJoinCodes/${code}`);
+        const existing = (await reservation.get()).val();
+        if (existing?.sectionId === sectionId) return code;
+        if (existing && preferred) return '';
+        const result = await reservation.transaction(current => current ? undefined : { sectionId, createdAt: now() });
+        if (result.committed) return code;
+        if (preferred) return '';
+    }
+    return '';
+}
+async function releaseJoinCode(db, code, sectionId) {
+    if (!code) return;
+    await db.ref(`website/sectionJoinCodes/${code}`).transaction(current => current?.sectionId === sectionId ? null : undefined);
+}
+async function ensureSectionJoinCode(db, id, section, now) {
+    const current = normalizeJoinCode(section.joinCode);
+    if (current && await reserveJoinCode(db, id, now, current)) return current;
+    for (let attempt = 0; attempt < 5; attempt++) {
+        const code = await reserveJoinCode(db, id, now);
+        if (!code) continue;
+        const result = await db.ref(`website/sections/${id}`).transaction(value => value && value.ownerUid === section.ownerUid
+            ? (value.joinCode ? undefined : { ...value, joinCode: code }) : undefined);
+        if (result.committed) return code;
+        await releaseJoinCode(db, code, id);
+        const latest = (await db.ref(`website/sections/${id}`).get()).val();
+        if (!latest) return '';
+        const existing = normalizeJoinCode(latest.joinCode);
+        if (existing && await reserveJoinCode(db, id, now, existing)) return existing;
+    }
+    throw fail('Could not create a join code for this section. Try again.', 503);
+}
 async function profile(db, auth, uid) {
     const [data, user] = await Promise.all([db.ref(`users/${key(uid)}`).get(), auth.getUser(uid)]);
     return playerProgress(uid, data.val() || {}, user);
@@ -44,6 +81,27 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                 await auth.updateUser(caller.uid, { displayName });
                 await db.ref(`users/${caller.uid}/profile`).update(names);
                 return json({ player: await profile(db, auth, caller.uid) });
+            }
+            if (action === 'my-sections' && request.method === 'GET') {
+                if (isStaff(caller)) throw fail('Section joining is for player accounts.', 403);
+                const allSections = (await db.ref('website/sections').get()).val() || {};
+                const sections = Object.entries(allSections)
+                    .filter(([, section]) => section.students?.[caller.uid])
+                    .map(([id, section]) => ({ id, name: section.name }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                return json({ sections });
+            }
+            if (action === 'join-section' && request.method === 'POST') {
+                if (isStaff(caller)) throw fail('Section joining is for player accounts.', 403);
+                const code = normalizeJoinCode(data.code);
+                if (!/^[A-HJ-NP-Z2-9]{8}$/.test(code)) throw fail('Enter a valid 8-character section join code.');
+                const sectionId = (await db.ref(`website/sectionJoinCodes/${code}`).get()).val()?.sectionId;
+                if (!sectionId) throw fail('That section join code was not found.', 404);
+                const sectionRef = db.ref(`website/sections/${key(sectionId)}`), section = (await sectionRef.get()).val();
+                if (!section || normalizeJoinCode(section.joinCode) !== code) throw fail('That section join code is no longer active.', 404);
+                const membership = await db.ref(`website/sections/${sectionId}/students/${caller.uid}`).transaction(current => current ? undefined : { by: caller.uid, enrolledAt: now(), selfJoined: true });
+                if (!membership.committed) throw fail('You already joined this section.', 409);
+                return json({ joined: true, section: { id: sectionId, name: section.name } }, 201);
             }
             if (action === 'instructors' && request.method === 'GET') {
                 if (!isPlatformAdmin(caller)) throw fail('Admin access is required to browse instructor accounts.', 403);
@@ -94,13 +152,16 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     } else if (isPlatformAdmin(caller) && caller.customClaims?.instructor !== true) throw fail('Choose an Instructor account first.', 400);
                     else if (!isPlatformAdmin(caller) && data.ownerUid && data.ownerUid !== caller.uid) throw fail('You can only create sections for your own account.', 403);
                     const id = createHash('sha256').update(`${ownerUid}|${name}`).digest('hex');
-                    const result = await db.ref(`website/sections/${id}`).transaction(current => current ? undefined : { name, ownerUid, createdAt: now() });
-                    if (!result.committed) throw fail('This section already exists.', 409);
-                    return json({ section: { id, name, ownerUid, count: 0 } }, 201);
+                    const joinCode = await reserveJoinCode(db, id, now);
+                    if (!joinCode) throw fail('Could not create a join code for this section. Try again.', 503);
+                    const result = await db.ref(`website/sections/${id}`).transaction(current => current ? undefined : { name, ownerUid, createdAt: now(), joinCode });
+                    if (!result.committed) { await releaseJoinCode(db, joinCode, id); throw fail('This section already exists.', 409); }
+                    return json({ section: { id, name, ownerUid, joinCode, count: 0 } }, 201);
                 }
             }
             if (action === 'section' && request.method === 'GET') {
                 const id = url.searchParams.get('id'), section = await ownedSection(db, caller, id);
+                const joinCode = await ensureSectionJoinCode(db, id, section, now);
                 const ids = Object.keys(section.students || {}), players = [];
                 // Bound parallel Auth/RTDB calls instead of loading the entire users collection.
                 for (let i = 0; i < ids.length; i += 10) {
@@ -110,7 +171,7 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     })));
                 }
                 players.sort((a, b) => (a.profile.surname || a.name).localeCompare(b.profile.surname || b.name) || (a.profile.firstName || '').localeCompare(b.profile.firstName || '') || a.uid.localeCompare(b.uid));
-                return json({ section: { id, name: section.name }, players, overview: sectionOverview(players) });
+                return json({ section: { id, name: section.name, joinCode }, players, overview: sectionOverview(players) });
             }
             if (action === 'enroll') {
                 const id = key(data.sectionId);

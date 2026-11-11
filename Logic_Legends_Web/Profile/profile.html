@@ -117,6 +117,18 @@
                         </div>
                     </section>
                 </div>
+                <section class="education-card section-membership-card" id="studentSectionMembership" aria-labelledby="sectionMembershipHeading" hidden>
+                    <h2 id="sectionMembershipHeading">Your sections</h2>
+                    <p>Enter the join code shared by your instructor to join a section.</p>
+                    <form id="joinSectionForm" class="section-join-form">
+                        <label for="joinSectionCodeInput">Section join code<input id="joinSectionCodeInput" name="code" autocomplete="off" autocapitalize="characters" maxlength="9" placeholder="ABCD-EFGH" required></label>
+                        <button class="profile-button" type="submit">Join section</button>
+                    </form>
+                    <p id="joinSectionNotice" role="status" aria-live="polite" hidden></p>
+                    <h3>Joined sections</h3>
+                    <p id="mySectionsEmpty" hidden>You have not joined a section yet.</p>
+                    <ul id="mySectionsList" class="joined-sections-list"></ul>
+                </section>
                 </section>
                 <section id="administrators" class="profile-section" aria-labelledby="adminHeading" data-admin-panel hidden>
                     <div class="profile-card">
@@ -166,5 +178,5 @@
     <script src="../JS/nav.js"></script>
     <script type="module" src="../JS/navbar_auth.js"></script>
     <script type="module" src="../JS/profile.js"></script>
-<dialog id="moderationActionDialog" class="profile-dialog"><h2 id="moderationActionTitle">Confirm moderation</h2><form id="moderationForm"><label>Reason<textarea id="moderationReason" minlength="5" maxlength="500" required></textarea></label><fieldset id="restrictionOptions" hidden><legend>Game access</legend><label><input type="checkbox" value="game" checked>Block this account from playing Logic Legends</label><label>Restriction expires (optional)<input id="restrictionExpiry" type="datetime-local"></label></fieldset><label><input id="confirmModeration" type="checkbox" required>I confirm this moderation action.</label><p id="moderationDialogNotice" role="status" hidden></p><div class="dialog-actions"><button type="button" class="profile-button" data-close-dialog>Cancel</button><button type="submit" class="profile-button profile-danger">Apply action</button></div></form></dialog><script type="module" src="../JS/player-progress.js"></script><script type="module" src="../JS/community.js"></script><script type="module" src="../JS/admin-tools.js"></script></body>
+<dialog id="moderationActionDialog" class="profile-dialog"><h2 id="moderationActionTitle">Confirm moderation</h2><form id="moderationForm"><label>Reason<textarea id="moderationReason" minlength="5" maxlength="500" required></textarea></label><fieldset id="restrictionOptions" hidden><legend>Game access</legend><label><input type="checkbox" value="game" checked>Block this account from playing Logic Legends</label><label>Restriction expires (optional)<input id="restrictionExpiry" type="datetime-local"></label></fieldset><label><input id="confirmModeration" type="checkbox" required>I confirm this moderation action.</label><p id="moderationDialogNotice" role="status" hidden></p><div class="dialog-actions"><button type="button" class="profile-button" data-close-dialog>Cancel</button><button type="submit" class="profile-button profile-danger">Apply action</button></div></form></dialog><script type="module" src="../JS/player-progress.js"></script><script type="module" src="../JS/community.js"></script><script type="module" src="../JS/admin-tools.js"></script><script type="module" src="../JS/section-membership.js"></script></body>
 </html>

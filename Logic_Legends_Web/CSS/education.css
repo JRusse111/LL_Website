@@ -50,6 +50,15 @@ form[data-feedback-form] textarea { margin-bottom:.15rem; }
 .education-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
 .education-stat { padding:1rem; background:#091e2955; border:1px solid #8fa79044; border-radius:9px; }
 .education-stat strong { display:block; font-size:1.4rem; line-height:1.5; margin-top:.6rem; }
+.join-code-stat strong { letter-spacing:.12em; color:#f3c46c; }
+.join-code-stat .profile-button { margin-top:.65rem; }
+.join-code-stat [role=status] { display:block; padding:0; font-size:.82rem; }
+.student-progress-dialog { width:min(900px,calc(100vw - 2rem)); }
+.section-join-form { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:.85rem; max-width:680px; margin:1rem 0; }
+.section-join-form label { min-width:0; }
+.section-join-form .profile-button { min-height:44px; padding:.65rem 1rem; border:1px solid #819789; border-radius:8px; background:#264a53; color:#fff0d4; font:700 .9rem 'Roboto Condensed',sans-serif; cursor:pointer; }
+.joined-sections-list { display:flex; flex-wrap:wrap; gap:.65rem; padding:0; list-style:none; }
+.joined-sections-list li { padding:.55rem .8rem; border:1px solid #8fa79066; border-radius:999px; background:#091e2955; }
 .status-complete { color:#a5f0b1; font-weight:700; }
 .status-incomplete,.is-error { color:#ffaeae; }
 .preserve-lines { white-space:pre-line; overflow-wrap:anywhere; }
@@ -62,4 +71,4 @@ form[data-feedback-form] textarea { margin-bottom:.15rem; }
 .profile-dialog > form:not([method="dialog"]) { display:block; margin-top:1rem; }
 .profile-dialog fieldset { min-width:0; margin-top:1rem; padding:.85rem; border:1px solid #8ba297; border-radius:7px; }
 .education-card :focus-visible,.profile-dialog :focus-visible { outline:3px solid #f5ce76; outline-offset:3px; }
-@media(max-width:600px) { .education-shell { padding-top:6.8rem; } .education-table th,.education-table td { padding:.65rem .5rem; } .education-toolbar>* { flex-basis:100%; } .education-stats { grid-template-columns:1fr; } .selected-instructor { align-items:flex-start; flex-direction:column; } }
+@media(max-width:600px) { .education-shell { padding-top:6.8rem; } .education-table th,.education-table td { padding:.65rem .5rem; } .education-toolbar>* { flex-basis:100%; } .education-stats { grid-template-columns:1fr; } .selected-instructor { align-items:flex-start; flex-direction:column; } .section-join-form { grid-template-columns:1fr; } .section-join-form .profile-button { justify-self:start; } }
