@@ -127,10 +127,15 @@
 .gallery-count { position: absolute; right: 0; color: #bacdce; font: 700 .9rem 'Roboto Condensed',Impact,sans-serif; letter-spacing: .13em; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .download-section { background: #091c25; }
+.community-section { padding-top: 2rem; padding-bottom: 3rem; }
+.community-feedback-card { margin-top: 0; }
+.leaderboard-main { min-height: calc(100svh - 180px); padding: clamp(7rem,12vh,10rem) 0 4rem; }
+.leaderboard-card { margin: 0; }
+.leaderboard-card h1 { font-size: clamp(2.5rem,5vw,4rem); text-transform: uppercase; }
 .download-panel { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding-block: clamp(2rem,5vw,4rem); background: linear-gradient(120deg,#204f50,#10313a); border: 3px solid #9c6b3b; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,.3); }
 .download-panel p:not(.eyebrow) { max-width: 580px; margin-bottom: 1.5rem; }
 .download-mark img { width: clamp(120px,20vw,250px); filter: drop-shadow(0 8px 12px rgba(0,0,0,.45)); }
-.home-page footer { background: #0b2029; border-color: #906233; }
+.home-page footer.site-footer { background: #0b2029; border-color: #906233; }
 .home-page footer h4 { color: var(--gold); }
 @media (max-width: 900px) {
     .intro-grid,.garden-grid { grid-template-columns: 1fr; }

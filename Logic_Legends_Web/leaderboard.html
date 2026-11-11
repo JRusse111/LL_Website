@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="See the Logic Legends player leaderboard.">
+    <title>Logic Legends | Leaderboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Roboto+Condensed:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/global.css">
+    <link rel="stylesheet" href="CSS/home.css">
+    <link rel="stylesheet" href="CSS/account.css">
+    <link rel="stylesheet" href="CSS/education.css">
+</head>
+<body class="home-page leaderboard-page">
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="index.html#hero" class="logo"><img src="Images/logo_transparent.png" alt="">LOGIC LEGENDS</a>
+            <nav aria-label="Main navigation"><ul class="nav-links">
+                <li><a href="index.html#about">About</a></li><li><a href="index.html#solo">Solo trials</a></li><li><a href="index.html#garden">Logic Garden</a></li><li><a href="index.html#features">Features</a></li><li><a href="index.html#gallery">Gallery</a></li><li><a href="index.html#download">Download</a></li><li><a href="leaderboard.html" aria-current="page">Leaderboard</a></li>
+            </ul></nav>
+            <div class="account-nav" aria-label="Account">
+                <a class="login-btn" data-login-link href="LoginPage/login_page.html">LOGIN</a>
+                <div class="account-menu" data-user-menu hidden>
+                    <button class="account-toggle" type="button" data-account-toggle aria-expanded="false" aria-controls="account-dropdown" aria-label="Account menu"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><span class="account-toggle-name" data-account-name>Account</span><span class="account-chevron" aria-hidden="true">⌄</span></button>
+                    <div class="account-dropdown" id="account-dropdown" data-account-dropdown hidden><div class="account-menu-heading"><strong data-menu-name>Account</strong><small data-menu-email></small></div><a href="Profile/profile.html">Profile</a><a href="InstructorDashboard/i_dashboard.html" data-admin-nav hidden>Instructor dashboard</a><button type="button" data-logout>Logout</button></div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <p class="account-message" data-account-feedback role="alert" hidden></p>
+    </header>
+    <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" inert>
+        <ul><li><a href="index.html#about" class="mobile-link">About</a></li><li><a href="index.html#solo" class="mobile-link">Solo trials</a></li><li><a href="index.html#garden" class="mobile-link">Logic Garden</a></li><li><a href="index.html#features" class="mobile-link">Features</a></li><li><a href="index.html#gallery" class="mobile-link">Gallery</a></li><li><a href="index.html#download" class="mobile-link">Download</a></li><li><a href="leaderboard.html" class="mobile-link" aria-current="page">Leaderboard</a></li></ul>
+        <div class="mobile-account-panel" data-mobile-user hidden><div class="mobile-user-identity"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg><div><strong data-mobile-account-name>Account</strong><small data-mobile-account-email></small></div></div><div class="mobile-account-links"><a href="Profile/profile.html" class="mobile-link">Profile</a><a href="InstructorDashboard/i_dashboard.html" class="mobile-link" data-admin-nav hidden>Instructor dashboard</a><button type="button" data-logout>Logout</button></div></div>
+    </div>
+    <main class="leaderboard-main"><div class="container"><section class="education-card leaderboard-card" aria-labelledby="leaderboardHeading"><p class="eyebrow">Logic Legends community</p><h1 id="leaderboardHeading">Leaderboard</h1><p>See how adventurers are progressing through Logic Legends.</p><p data-leaderboard-status role="status">Sign in to view the leaderboard snapshot.</p><div class="table-scroll"><table class="education-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody data-leaderboard-rows></tbody></table></div></section></div></main>
+    <footer class="site-footer"><div class="container"><div class="footer-grid"><div class="footer-col logo-col"><a href="index.html#hero" class="logo"><img src="Images/logo_transparent.png" alt="">LOGIC LEGENDS</a></div><div class="footer-bottom"><div class="footer-col"><h4>Thesis Project</h4><p>Computer Science Department</p></div><div class="footer-col"><h4>Development Team</h4><p>Logic Legends Team</p></div><div class="footer-col"><h4>Institution</h4><p>National College of Science &amp; Technology 2026</p></div></div></div><div class="copyright"><p>&copy; 2026 Logic Legends. All rights reserved.</p></div></div></footer>
+    <script src="JS/nav.js"></script><script type="module" src="JS/navbar_auth.js"></script><script type="module" src="JS/community.js"></script>
+</body>
+</html>
