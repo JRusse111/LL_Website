@@ -1,4 +1,6 @@
-import { subscribeSession } from './session.js';
+import { reload } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { auth } from './firebase.js';
+import { subscribeSession, refreshCurrentSession } from './session.js';
 import { api, $, element, percent, notice, perform } from './api.js';
 let version = 0;
 function render(player) {
@@ -37,6 +39,9 @@ subscribeSession(async next => {
 });
 $('nameForm').addEventListener('submit', event => {
     event.preventDefault(); perform(event.submitter, $('progressNotice'), async () => {
-        const result = await api('profile', { method: 'PATCH', body: Object.fromEntries(new FormData(event.target)) }); render(result.player); notice($('progressNotice'), 'Name saved.');
+        const result = await api('profile', { method: 'PATCH', body: Object.fromEntries(new FormData(event.target)) });
+        if (auth.currentUser) await reload(auth.currentUser);
+        await refreshCurrentSession();
+        render(result.player); notice($('progressNotice'), 'Name saved.');
     });
 });

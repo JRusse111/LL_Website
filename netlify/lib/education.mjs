@@ -40,6 +40,8 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
             if (action === 'profile' && request.method === 'PATCH') {
                 const names = nameParts(data);
                 if (!names.surname || !names.firstName) throw fail('Enter your surname and first name.');
+                const displayName = `${names.surname}, ${names.firstName}${names.middleName ? ` ${names.middleName}` : ''}`;
+                await auth.updateUser(caller.uid, { displayName });
                 await db.ref(`users/${caller.uid}/profile`).update(names);
                 return json({ player: await profile(db, auth, caller.uid) });
             }
@@ -166,17 +168,19 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                 if (request.method === 'PATCH') {
                     if (!isPlatformAdmin(caller)) throw fail('Admin access is required.', 403);
                     const ref = db.ref(`website/feedback/${key(data.id)}`);
-                    const result = await ref.transaction(entry => entry?.version === 2 && entry?.source === 'game'
-                        ? { ...entry, reviewStatus: 'reviewed', reviewedAt: entry.reviewedAt || now(), reviewedBy: entry.reviewedBy || caller.uid }
-                        : undefined);
-                    if (!result.committed) throw fail('Submission not found.', 404);
+                    const snapshot = await ref.get(), entry = snapshot.val();
+                    if (!snapshot.exists()) throw fail('Feedback record not found. Refresh the list and try again.', 404);
+                    if (entry?.version !== 2 || entry?.source !== 'game') throw fail('Only game submissions can be marked reviewed.', 409);
+                    await ref.update({ reviewStatus: 'reviewed', reviewedAt: entry.reviewedAt || now(), reviewedBy: entry.reviewedBy || caller.uid });
                     return json({ reviewed: true });
                 }
                 if (request.method === 'DELETE') {
                     if (!isSuper(caller)) throw fail('Super Admin access is required to remove feedback.', 403);
                     const ref = db.ref(`website/feedback/${key(data.id)}`);
-                    const result = await ref.transaction(entry => entry && (entry.kind === 'player-report' || entry.source === 'game') ? null : undefined);
-                    if (!result.committed) throw fail('Report or game feedback not found.', 404);
+                    const snapshot = await ref.get(), entry = snapshot.val();
+                    if (!snapshot.exists()) throw fail('Feedback record not found. Refresh the list and try again.', 404);
+                    if (entry?.kind !== 'player-report' && entry?.source !== 'game') throw fail('Only player reports and game feedback can be removed.', 409);
+                    await ref.remove();
                     return json({ removed: true });
                 }
                 if (request.method === 'POST') {

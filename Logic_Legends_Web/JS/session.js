@@ -20,4 +20,5 @@ onIdTokenChanged(auth, refresh);
 // Recheck once when returning to a tab. There are no live progress/leaderboard subscriptions.
 document.addEventListener('visibilitychange', () => { if (!document.hidden && auth.currentUser) refresh(auth.currentUser); });
 export function subscribeSession(listener) { listeners.add(listener); listener(state); return () => listeners.delete(listener); }
+export async function refreshCurrentSession() { if (auth.currentUser) await refresh(auth.currentUser); }
 export async function logout() { await signOut(auth); location.assign(appUrl('LoginPage/login_page.html')); }
