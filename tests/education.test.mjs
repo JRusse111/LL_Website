@@ -139,3 +139,54 @@ test('editing an existing legacy role cannot grant access to a non-NCST email', 
     assert.equal(response.status,400); assert.equal(s.users.get('admin').customClaims.super_admin,undefined);
     assert.equal((await s.call(null,{endpoint:'accounts',method:'DELETE',body:{uid:'admin'}})).status,200);
 });
+
+test('game reports and feedback enter the existing private review queue', async () => {
+    const s = setup();
+    const report = { kind: 'player-report', targetUid: 'outsider', reason: 'other', description: 'A description of the issue.' };
+    const submit = (uid, body) => s.call('game-feedback', { uid, method: 'POST', body });
+    assert.equal((await submit(null, report)).status, 401);
+    for (const body of [{ ...report, targetUid: 'player' }, { ...report, description: '  ' }, { ...report, reason: 'invalid' },
+        { ...report, description: 'a'.repeat(2001) }, { kind: 'feedback', category: 'bug', subject: '', description: 'Details' }])
+        assert.equal((await submit('player', body)).status, 400);
+    assert.equal((await submit('player', { ...report, targetUid: 'missing' })).status, 404);
+    const sent = await submit('player', { ...report, uid: 'owner', submittedAt: 1, reviewStatus: 'reviewed' });
+    assert.equal(sent.status, 201);
+    assert.equal((await submit('player', report)).status, 429);
+    assert.equal((await s.call('feedback', { uid: 'player' })).status, 403);
+    assert.equal((await s.call('feedback', { uid: 'player', method: 'PATCH', body: { id: sent.data.id } })).status, 403);
+    const entry = (await s.call('feedback', { uid: 'admin' })).data.feedback[0];
+    assert.equal(entry.id, sent.data.id);
+    assert.equal(entry.uid, 'player');
+    assert.equal(entry.targetUid, 'outsider');
+    assert.equal(entry.reason, 'other');
+    assert.equal(entry.submittedAt, 1800000000000);
+    assert.equal(entry.reviewStatus, 'pending');
+    assert.equal((await s.call(null, { endpoint: 'moderation', params: { uid: entry.targetUid }, uid: 'player' })).status, 403);
+    assert.equal((await s.call(null, { endpoint: 'moderation', params: { uid: entry.targetUid }, uid: 'admin' })).data.players[0].uid, 'outsider');
+    assert.equal((await s.call('feedback', { uid: 'admin', method: 'PATCH', body: { id: entry.id } })).status, 200);
+    assert.equal(s.db.data.website.feedback[entry.id].reviewStatus, 'reviewed');
+    assert.equal(s.users.get('outsider').disabled, false);
+    s.users.get('admin').email = 'admin@example.test';
+    const feedback = await submit('admin', { kind: 'feedback', category: 'bug', subject: 'A menu issue', description: 'Steps to reproduce.' });
+    assert.equal(feedback.status, 201);
+    assert.equal(s.db.data.website.feedback[feedback.data.id].category, 'bug');
+    assert.equal(s.db.data.website.feedback[feedback.data.id].subject, 'A menu issue');
+});
+
+test('existing restrictions and bans apply to game submissions from signed-in accounts', async () => {
+    const s = setup();
+    const feedback = { kind: 'feedback', category: 'general', subject: 'Feedback', description: 'Helpful details.' };
+    const submit = uid => s.call('game-feedback', { uid, method: 'POST', body: feedback });
+    const moderate = body => s.call(null, { endpoint: 'moderation', uid: 'owner', method: 'POST', body: {
+        uid: 'player', reason: 'Administrator review.', confirm: true, ...body } });
+    s.users.get('teacher').email = 'teacher@example.test';
+    assert.equal((await submit('teacher')).status, 403);
+    await moderate({ action: 'restrict', capabilities: ['feedback'] });
+    assert.equal((await submit('player')).status, 403);
+    assert.equal((await s.call('profile', { uid: 'player' })).status, 200);
+    await moderate({ action: 'unrestrict' });
+    await moderate({ action: 'restrict', capabilities: ['dashboard'] });
+    assert.equal((await submit('player')).status, 201);
+    await moderate({ action: 'ban' });
+    assert.equal((await submit('player')).status, 403);
+});

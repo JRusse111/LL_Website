@@ -1,5 +1,5 @@
-import { fail, json, bodyOf, session, isSuper, isPlatformAdmin, key } from './access.mjs';
-const CAPABILITIES = ['feedback', 'dashboard'];
+import { fail, json, bodyOf, session, isSuper, isPlatformAdmin, roleOf, key } from './access.mjs';
+const CAPABILITIES = ['game'];
 export function createModerationHandler({ getAuth, getDb, now = Date.now, logger = console }) {
     return async request => {
         try {
@@ -9,11 +9,20 @@ export function createModerationHandler({ getAuth, getDb, now = Date.now, logger
                 const url = new URL(request.url), search = (url.searchParams.get('search') || '').trim().toLowerCase();
                 const cursor = url.searchParams.get('cursor') || undefined;
                 if (cursor && cursor.length > 2048) throw fail('Invalid search cursor.');
+                const exact = url.searchParams.get('uid');
+                if (exact != null) {
+                    let user;
+                    const uid = key(exact);
+                    try { user = await auth.getUser(uid); }
+                    catch (error) { if (error.code === 'auth/user-not-found') throw fail('Player not found.', 404); throw error; }
+                    return json({ managementRole: roleOf(caller.customClaims), managementUid: caller.uid, players: [{ uid, email: user.email || '', name: user.displayName || '', disabled: user.disabled,
+                        role: roleOf(user.customClaims), moderation: (await db.ref(`website/moderation/${uid}`).get()).val() || {} }] });
+                }
                 const page = await auth.listUsers(100, cursor);
                 const users = page.users.filter(u => !search || `${u.email || ''} ${u.displayName || ''} ${u.uid}`.toLowerCase().includes(search));
                 const players = await Promise.all(users.map(async user => ({ uid: user.uid, email: user.email || '', name: user.displayName || '', disabled: user.disabled,
-                    moderation: (await db.ref(`website/moderation/${user.uid}`).get()).val() || {} })));
-                return json({ players, nextCursor: page.pageToken || null, capabilities: CAPABILITIES });
+                    role: roleOf(user.customClaims), moderation: (await db.ref(`website/moderation/${user.uid}`).get()).val() || {} })));
+                return json({ players, nextCursor: page.pageToken || null, capabilities: CAPABILITIES, managementRole: roleOf(caller.customClaims), managementUid: caller.uid });
             }
             if (request.method !== 'POST') throw fail('Method not allowed.', 405);
             const data = await bodyOf(request), uid = key(data.uid), action = data.action;
@@ -22,6 +31,9 @@ export function createModerationHandler({ getAuth, getDb, now = Date.now, logger
             if (reason.length < 5 || reason.length > 500 || data.confirm !== true) throw fail('Enter a reason (5–500 characters) and confirm the action.');
             const target = await auth.getUser(uid);
             if (uid === caller.uid || isSuper(target)) throw fail('You cannot moderate your own account or another super admin.', 409);
+            if (!isSuper(caller) && roleOf(target.customClaims) !== 'player') {
+                throw fail('Admins can only moderate player and student accounts. Super Admin access is required to moderate staff accounts.', 403);
+            }
             const ref = db.ref(`website/moderation/${uid}`), current = (await ref.get()).val() || {};
             let capabilities = [], expiresAt = null;
             if (action === 'restrict') {
@@ -48,7 +60,7 @@ export function createModerationHandler({ getAuth, getDb, now = Date.now, logger
                     await ref.child('ban').update({ active: false, by: caller.uid, reason, at: now() });
                     // Deliberately retain the separate restriction.
                 } else if (action === 'restrict') {
-                    await ref.child('restriction').set({ active: true, by: caller.uid, reason, at: now(), expiresAt, capabilities });
+                    await ref.child('restriction').set({ active: true, by: caller.uid, reason, at: now(), expiresAt, capabilities, gameBlocked: capabilities.includes('game') });
                 } else await ref.child('restriction').update({ active: false, by: caller.uid, reason, at: now() });
                 await audit.update({ status: 'completed' });
             } catch (error) {

@@ -21,7 +21,7 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
         try {
             const auth = getAuth(), db = getDb(), url = new URL(request.url);
             const action = url.searchParams.get('action') || 'session';
-            const capability = ['instructors', 'sections', 'section', 'enroll'].includes(action) ? 'dashboard' : action === 'feedback' && request.method === 'POST' ? 'feedback' : undefined;
+            const capability = ['instructors', 'sections', 'section', 'enroll'].includes(action) ? 'dashboard' : ['feedback', 'game-feedback'].includes(action) && request.method === 'POST' ? 'feedback' : undefined;
             const caller = await session(request, auth, db, capability, now(), action === 'profile-setup' && request.method === 'PATCH');
             const data = request.method === 'GET' ? {} : await bodyOf(request);
             if (action === 'profile-setup' && request.method === 'PATCH') {
@@ -128,7 +128,50 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                     return json({ removed: true }); // Never remove Auth users, progress or another section's membership.
                 }
             }
+            if (action === 'game-feedback' && request.method === 'POST') {
+                if (!isPlatformAdmin(caller)) {
+                    try { normalizeEmail(caller.email); }
+                    catch { throw fail('Use a verified @ncst.edu.ph account to play Logic Legends.', 403); }
+                }
+                if (!data || typeof data !== 'object' || Array.isArray(data)) throw fail('Enter valid submission details.');
+                const kind = data.kind;
+                const categories = ['general', 'bug', 'suggestion', 'other'];
+                const reasons = ['cheating', 'harassment', 'language', 'username', 'spam', 'unsportsmanlike', 'other'];
+                const description = typeof data.description === 'string' ? data.description.trim() : '';
+                if (description.length > 2000) throw fail('Keep the description within 2,000 characters.');
+                const record = { uid: caller.uid, author: caller.displayName || caller.email, source: 'game',
+                    version: 2, kind, text: description, submittedAt: now(), reviewStatus: 'pending' };
+                if (kind === 'feedback') {
+                    const subject = typeof data.subject === 'string' ? data.subject.trim() : '';
+                    if (!categories.includes(data.category) || !subject || subject.length > 120 || description.length < 5)
+                        throw fail('Choose a category, enter a subject (up to 120 characters), and describe the issue (5–2,000 characters).');
+                    Object.assign(record, { category: data.category, subject });
+                } else if (kind === 'player-report') {
+                    const targetUid = key(data.targetUid);
+                    if (targetUid === caller.uid) throw fail('You cannot report yourself.');
+                    if (!reasons.includes(data.reason) || data.reason === 'other' && !description)
+                        throw fail('Choose a report reason and describe the issue if you choose Others.');
+                    let target;
+                    try { target = await auth.getUser(targetUid); }
+                    catch (error) { if (error.code === 'auth/user-not-found') throw fail('Player not found.', 404); throw error; }
+                    Object.assign(record, { targetUid, targetName: target.displayName || target.uid, reason: data.reason });
+                } else throw fail('Choose a valid submission type.');
+                const gate = await db.ref(`website/feedbackRate/${caller.uid}`).transaction(last => last && now() - last < 30000 ? undefined : now());
+                if (!gate.committed) throw fail('Please wait 30 seconds between submissions.', 429);
+                const ref = db.ref('website/feedback').push();
+                await ref.set(record);
+                return json({ submitted: true, id: ref.key }, 201);
+            }
             if (action === 'feedback') {
+                if (request.method === 'PATCH') {
+                    if (!isPlatformAdmin(caller)) throw fail('Admin access is required.', 403);
+                    const ref = db.ref(`website/feedback/${key(data.id)}`);
+                    const result = await ref.transaction(entry => entry?.version === 2 && entry?.source === 'game'
+                        ? { ...entry, reviewStatus: 'reviewed', reviewedAt: entry.reviewedAt || now(), reviewedBy: entry.reviewedBy || caller.uid }
+                        : undefined);
+                    if (!result.committed) throw fail('Submission not found.', 404);
+                    return json({ reviewed: true });
+                }
                 if (request.method === 'POST') {
                     const text = trim(data.text, 2000);
                     if (text.length < 5) throw fail('Enter between 5 and 2,000 characters.');

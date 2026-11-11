@@ -47,7 +47,18 @@ export function createDashboardAccountsHandler({ getAuth, getDb, sendInvitation,
             if (audit) await audit.set({ by: caller.uid, uid: target.uid, from: grantedRole(target.customClaims), role: removing ? 'player' : role, at: Date.now(), status: 'pending' });
             await auth.setCustomUserClaims(target.uid, claims);
             let sessionRevocationPending = false;
-            try { await auth.revokeRefreshTokens(target.uid); } catch { sessionRevocationPending = true; }
+            try {
+                await auth.revokeRefreshTokens(target.uid);
+                // RTDB evaluates cached ID token claims until refresh. Mirror the
+                // revocation cutoff in the same guard that already handles bans.
+                if (db) {
+                    const revokedAt = Date.parse((await auth.getUser(target.uid)).tokensValidAfterTime || '');
+                    if (Number.isFinite(revokedAt)) {
+                        const cutoff = Math.floor(revokedAt / 1000);
+                        await db.ref(`website/moderation/${target.uid}/sessionsRevokedAt`).transaction(old => Math.max(old || 0, cutoff));
+                    }
+                }
+            } catch { sessionRevocationPending = true; }
             if (audit) await audit.update({ status: 'completed', sessionRevocationPending });
             const activation = !removing && request.method === 'POST' && !target.emailVerified ? await invite(auth, target, sendInvitation) : { activationRequired: !target.emailVerified };
             return json({ account: view({ ...target, customClaims: claims }), created, removed: removing, sessionRevocationPending, ...activation });
