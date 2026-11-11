@@ -34,6 +34,7 @@
 .auth-form label { display: block; margin-bottom: .45rem; color: #f5e6c5; font-size: .8rem; font-weight: 600; }
 .auth-page .input-group { margin-bottom: 1.1rem; }
 .auth-page .form-input { min-height: 51px; border: 1px solid #63817b; border-radius: 9px; padding: .85rem 3rem .85rem 2.8rem; color: #fff3d6; background: #0a222c; font-size: .93rem; box-shadow: inset 0 2px 5px #0002; }
+.auth-page .education-fields input.form-input { display: block; width: 100%; min-height: 51px; margin-top: .4rem; padding: .85rem; }
 .auth-page .form-input::placeholder { color: #92aaa7; opacity: 1; }
 .auth-page .form-input:focus { outline: 2px solid #f3c46c; outline-offset: 2px; border-color: #f3c46c; box-shadow: none; }
 .auth-page .input-icon-left { color: #b5c7b8; }

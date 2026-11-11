@@ -135,7 +135,7 @@ function renderAccounts() {
         } else if (!canManageRoles) {
             const readOnly = document.createElement('span');
             readOnly.className = 'admin-self';
-            readOnly.textContent = 'Instructor account';
+            readOnly.textContent = 'Staff account · view only';
             actions.append(readOnly);
         } else {
             const save = document.createElement('button');
@@ -262,12 +262,13 @@ subscribeSession(next => {
     const adminRole = $('adminRole');
     const adminOption = adminRole.querySelector('option[value="admin"]');
     if (adminOption) adminOption.hidden = next.role !== 'super_admin';
+    adminRole.disabled = next.role === 'admin';
     if (next.role === 'admin') adminRole.value = 'instructor';
     const staffHeading = document.querySelector('#administrators .profile-section-heading > div');
     if (staffHeading) {
         staffHeading.querySelector('.eyebrow').textContent = next.role === 'admin' ? 'Admin tools' : 'Super admin tools';
         staffHeading.querySelector('p:last-child').textContent = next.role === 'admin'
-            ? 'Review Instructor accounts and add new Instructors. A Super Admin assigns Admin access and manages roles.'
+            ? 'View Admin and Instructor accounts, and add new Instructors. Super Admin accounts and role controls are private to Super Admins.'
             : 'View staff accounts, add Admins or Instructors, change roles, or remove access. Super Admin access is granted only through the secure bootstrap process.';
     }
     if (!next.user) {
