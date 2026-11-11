@@ -116,8 +116,7 @@ export function createEducationHandler({ getAuth, getDb, sendInvitation, pointsF
                 const id = key(data.sectionId);
                 await ownedSection(db, caller, id);
                 if (request.method === 'POST') {
-                    const { user, created } = await ensureIdentity(auth, normalizeEmail(data.email), data, sendInvitation);
-                    await saveNames(db, user.uid, data);
+                    const { user, created } = await ensureIdentity(auth, normalizeEmail(data.email), data, sendInvitation, { allowMissingNames: true });
                     const enrolled = await db.ref(`website/sections/${id}/students/${user.uid}`).transaction(current => current ? undefined : { by: caller.uid, enrolledAt: now() });
                     // A duplicate does not generate another invitation or another student identity.
                     if (!enrolled.committed) throw fail('This student is already enrolled.', 409);

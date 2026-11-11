@@ -47,6 +47,18 @@ async function loadRoster() {
     $('studentCount').textContent = String(overview.total);
     $('averageAccuracy').textContent = percent(overview.accuracy);
     $('weakestTopic').textContent = overview.weakest ? `${overview.weakest.title} · ${percent(overview.weakest.accuracy)}` : 'No data yet';
+    const orderedTopics = [...(overview.topics || [])].sort((a, b) => {
+        if (a.accuracy == null && b.accuracy == null) return a.number - b.number;
+        if (a.accuracy == null) return 1;
+        if (b.accuracy == null) return -1;
+        return b.accuracy - a.accuracy || a.number - b.number;
+    });
+    $('sectionTrialRows').replaceChildren();
+    for (const topic of orderedTopics) {
+        const row = element('tr');
+        row.append(element('td', `Trial ${topic.number} / ${topic.title}`), element('td', topic.correct), element('td', topic.incorrect), element('td', percent(topic.accuracy)));
+        $('sectionTrialRows').append(row);
+    }
     $('rosterEmpty').hidden = players.length > 0;
     for (const player of players) {
         const row = element('tr'), name = element('td'); name.append(playerLink(player)); row.append(name);
@@ -92,7 +104,7 @@ $('showAddStudent').addEventListener('click', () => $('studentDialog').showModal
 $('studentForm').addEventListener('submit', event => {
     event.preventDefault();
     perform(event.submitter, $('studentDialogNotice'), async () => {
-        const fields = Object.fromEntries(new FormData(event.target)); fields.email = normalizeEmail(fields.email); fields.sectionId = selected;
+        const fields = { email: normalizeEmail(new FormData(event.target).get('email')), sectionId: selected };
         const result = await api('enroll', { method: 'POST', body: fields });
         $('studentDialog').close(); event.target.reset(); await loadRoster();
         notice($('dashboardNotice'), result.deliveryPending ? 'Student enrolled. No invitation email was sent; ask them to use Forgot Password with this email, set a password, then verify the address.' : result.created ? 'Student enrolled. Activation instructions were emailed; no separate registration is needed.' : 'Existing player linked. Saved progress is shown now.');
