@@ -5,15 +5,25 @@ import { subscribeSession } from './session.js';
 const $ = id => document.getElementById(id);
 const roleLabel = role => ({ super_admin: 'Super admin', admin: 'Admin', instructor: 'Instructor', player: 'Player' }[role] || 'Player');
 const profileNav = $('profileAdminNavigation');
-function updateProfileNavigation() {
-    const current = location.hash || '#profileOverview';
+function activateAdminPanel(id, scroll = true, updateHistory = true) {
+    const panels = [...document.querySelectorAll('#profileData [data-admin-panel]')];
+    const target = panels.find(panel => panel.id === id) || panels.find(panel => panel.id === 'overviewPanel');
+    if (!target) return;
+    panels.forEach(panel => { panel.dataset.panelActive = String(panel === target); });
     profileNav?.querySelectorAll('a').forEach(link => {
-        if (link.hash === current) link.setAttribute('aria-current', 'location');
+        if (link.hash === `#${target.id}`) link.setAttribute('aria-current', 'location');
         else link.removeAttribute('aria-current');
     });
+    if (updateHistory && location.hash !== `#${target.id}`) history.pushState(null, '', `#${target.id}`);
+    if (scroll) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-profileNav?.addEventListener('click', event => { if (event.target.closest('a')) updateProfileNavigation(); });
-window.addEventListener('hashchange', updateProfileNavigation);
+profileNav?.addEventListener('click', event => {
+    const link = event.target.closest('a');
+    if (!link) return;
+    event.preventDefault();
+    activateAdminPanel(link.hash.slice(1));
+});
+window.addEventListener('popstate', () => activateAdminPanel(location.hash.slice(1), false, false));
 let session = null;
 let accounts = [];
 let nextCursor = null;
@@ -241,7 +251,13 @@ subscribeSession(next => {
     $('profileData').classList.toggle('admin-workspace', adminWorkspace);
     $('profileAdminNavigation').hidden = !adminWorkspace;
     $('profileAdminNavRole').textContent = roleLabel(next.role);
-    updateProfileNavigation();
+    if (adminWorkspace) {
+        $('overviewPanel').append($('gameProgress'));
+        activateAdminPanel(location.hash.slice(1) || 'overviewPanel', false);
+    } else {
+        $('overviewPanel').after($('gameProgress'));
+        document.querySelectorAll('#profileData [data-admin-panel]').forEach(panel => delete panel.dataset.panelActive);
+    }
     $('administrators').hidden = viewingLearnerRecord || !next.user?.emailVerified || !['super_admin', 'admin'].includes(next.role);
     const adminRole = $('adminRole');
     const adminOption = adminRole.querySelector('option[value="admin"]');

@@ -8,9 +8,9 @@
 .profile-content { padding-top: 2rem; }
 .profile-admin-shell { min-width: 0; }
 .profile-admin-main { min-width: 0; }
-#profileData.admin-workspace .profile-admin-shell { display: grid; grid-template-columns: minmax(190px,230px) minmax(0,1fr); gap: 1.5rem; align-items: start; }
-#profileData.admin-workspace .profile-admin-main { display: grid; gap: 1.5rem; }
-.profile-admin-navigation { position: sticky; top: 82px; display: grid; gap: .35rem; align-content: start; padding: 1.1rem; border: 1px solid #8a6a3c; border-radius: 14px; background: linear-gradient(145deg,#153942,#102b35); box-shadow: 0 14px 30px #0003; }
+#profileData.admin-workspace .profile-admin-shell { display: block; }
+#profileData.admin-workspace .profile-admin-main { position: relative; left: calc(50% + 110px); transform: translateX(-50%); width: min(1000px,calc(100vw - 280px)); margin: 0; }
+.profile-admin-navigation { position: fixed; left: 0; top: 60px; z-index: 15; width: 220px; height: calc(100vh - 60px); height: calc(100dvh - 60px); overflow-y: auto; display: grid; gap: .35rem; align-content: start; padding: 1.1rem; border: 0; border-right: 1px solid #8a6a3c; border-radius: 0; background: linear-gradient(180deg,#102a34,#0b2029); box-shadow: 8px 0 24px #0002; }
 .profile-admin-nav-heading { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .15rem .6rem .55rem; border-bottom: 1px solid #8fa79033; margin-bottom: .35rem; }
 .profile-admin-navigation .eyebrow { margin: 0; color: #f3c46c; }
 .profile-nav-role { padding: .2rem .45rem; border: 1px solid #987b45; border-radius: 999px; color: #ffdda0; font: 700 .66rem 'Roboto Condensed',sans-serif; text-transform: uppercase; white-space: nowrap; }
@@ -18,7 +18,9 @@
 .profile-admin-navigation a:hover,.profile-admin-navigation a:focus-visible { background: #28505a; color: #ffd37a; }
 .profile-admin-navigation a:focus-visible { outline: 2px solid #f3c46c; outline-offset: 2px; }
 .profile-admin-navigation a[aria-current="location"] { background: linear-gradient(90deg,#3d4d3a,#294b4b); box-shadow: inset 3px 0 #f3c46c; color: #ffd37a; }
-#profileData.admin-workspace .profile-admin-main > * { scroll-margin-top: 88px; }
+#profileData.admin-workspace .profile-admin-main > [data-admin-panel] { display: none; scroll-margin-top: 76px; }
+#profileData.admin-workspace .profile-admin-main > [data-admin-panel][data-panel-active="true"] { display: block; }
+#profileData.admin-workspace .profile-admin-main > #overviewPanel[data-panel-active="true"] { display: grid; gap: 1.5rem; }
 #feedbackManagement #shareFeedback { margin: 1.2rem 0 1.5rem; padding: 1rem 0 1.4rem; border: 0; border-bottom: 1px solid #8fa79055; border-radius: 0; background: transparent; box-shadow: none; }
 #feedbackManagement #shareFeedback h2 { font-size: 1.35rem; }
 .profile-state { padding: 2rem; margin-bottom: 1.5rem; background: #13343e; border: 1px solid #6a6346; border-radius: 14px; }
@@ -85,8 +87,8 @@
 .profile-dialog form { display: flex; justify-content: flex-end; gap: .8rem; margin-top: 1.5rem; }
 .profile-page footer { padding: 1.5rem; border-top: 1px solid #6d5b38; text-align: center; color: #a8c2b6; font-size: .75rem; }
 @media (max-width: 800px) {
-    #profileData.admin-workspace .profile-admin-shell { grid-template-columns: minmax(0,1fr); }
-    .profile-admin-navigation { position: sticky; top: 60px; z-index: 2; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .25rem; overflow: visible; padding: .7rem; }
+    #profileData.admin-workspace .profile-admin-main { position: static; left: auto; transform: none; width: 100%; margin: 0; }
+    .profile-admin-navigation { position: sticky; top: 60px; z-index: 15; width: 100%; height: auto; max-height: none; margin-bottom: 1.25rem; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .25rem; overflow: visible; padding: .7rem; border: 1px solid #8a6a3c; border-radius: 14px; box-shadow: 0 10px 24px #0003; }
     .profile-admin-nav-heading { grid-column: 1/-1; }
     .profile-admin-navigation a { min-width: 0; padding: .6rem .65rem; white-space: normal; }
     .profile-overview { grid-template-columns: 1fr; }
@@ -100,6 +102,11 @@
     .admin-table td { border: 0; padding: .4rem 0; }
     .admin-table select { max-width: 250px; }
     .admin-table-scroll { overflow-x: visible; }
+}
+@media (min-width: 801px) and (max-width: 1400px) {
+    #profileData.admin-workspace .profile-admin-main { position: static; left: auto; transform: none; width: 100%; margin: 0; }
+    .profile-admin-navigation { position: sticky; top: 60px; width: 100%; height: auto; max-height: none; margin-bottom: 1.25rem; grid-template-columns: repeat(2,minmax(0,1fr)); border: 1px solid #8a6a3c; border-radius: 14px; box-shadow: 0 10px 24px #0003; }
+    .profile-admin-nav-heading { grid-column: 1/-1; }
 }
 @media (max-width: 480px) {
     .profile-card { padding: 1.35rem; }
